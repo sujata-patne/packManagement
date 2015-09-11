@@ -30,6 +30,7 @@ myApp.controller('addPackCtrl', function ($scope, $http, $stateParams,$state, ng
         if (isValid) {
             Packs.addEditPack(packData,function(data){
                 if(data.success){
+                    $scope.pack_grid = data.pack_grid;
                     $scope.success = data.message;
                     $scope.successvisible = true;
                 }else{
