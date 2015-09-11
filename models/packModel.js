@@ -56,10 +56,11 @@ exports.saveIconPackContentType = function(dbConnection,data,callback){
 }
 
 exports.getContentTypesByPackId = function(dbConnection,packId,callback){
-	var query = dbConnection.query("SELECT cd.* FROM `icn_pack_content_type` "+
-				                            " pct inner join `catalogue_detail` cd "+
-				                            " on (pct.pct_cnt_type = cd.cd_id) "+
-				                            " where pct.pct_pk_id = ?",packId,
+	var query = dbConnection.query("SELECT *,(select cd_name from catalogue_detail cd "+
+									" , `icn_packs` as ip where cd.cd_id = ip.pk_cnt_display_opt Limit 1 ) as type "+
+									"FROM ikon_cms.`icn_pack_content_type` pct inner join `catalogue_detail` cd on "+
+									"(pct.pct_cnt_type = cd.cd_id) inner join icn_packs ip on(ip.pk_id = pct_pk_id) "+
+									"where pct.pct_pk_id = ?",packId,
 		            function(err,response){
                             callback(err,response);
                     }

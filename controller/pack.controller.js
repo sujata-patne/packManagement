@@ -3,7 +3,7 @@ var async = require("async");
 var packManager = require('../models/packModel');
 
 exports.getData = function (req, res, next) {
-    try {
+    try {   
             if (req.session && req.session.pack_UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     async.parallel({
@@ -33,15 +33,12 @@ exports.getData = function (req, res, next) {
                       });
                    });
             }else{
-
+                
+                res.redirect('/accountlogin');
             }
         }catch(err){
-
-
-      }
-
-
-      
+                 res.status(500).json(err.message);
+      }      
 };
 
 exports.addEditPack = function (req, res, next) {
@@ -122,10 +119,10 @@ exports.addEditPack = function (req, res, next) {
             });//conn.
             
         }else{
-
+            res.redirect('/accountlogin');
         }
 	} catch(err){
-
+         res.status(500).json(err.message);
 	}
 }; //AddEditPack
 
