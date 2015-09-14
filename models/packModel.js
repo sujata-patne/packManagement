@@ -32,6 +32,12 @@ exports.getPackByName = function(dbConnection,packName,callback){
         });
 }
 
+exports.getPacksForStore = function(dbConnection,storeId,callback){
+		dbConnection.query("SELECT * FROM `icn_packs` WHERE pk_st_id = ?",storeId,function (err, response) {
+	            callback(err, response);
+        });
+}
+
 exports.savePack = function(dbConnection,data,callback){
 	var query = dbConnection.query("INSERT INTO `icn_packs` SET ? ",data, function (err, response) {
 		callback(err,response);
@@ -65,4 +71,10 @@ exports.getContentTypesByPackId = function(dbConnection,packId,callback){
                             callback(err,response);
                     }
     );
+}
+
+exports.updateContentTypeStatus = function(dbConnection,packId,contentTypeId,active,callback){
+	var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_is_active = ? WHERE pct_pk_id = ? AND  pct_cnt_type = ? ",[active,packId,contentTypeId], function (err, response) {
+		callback(err,response);
+	});
 }
