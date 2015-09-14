@@ -1,6 +1,3 @@
-/**
- * Created by sujata.patne on 7/6/2015.
- */
 var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress']);
 var ContentTypeDetails = [
     {'Manual': [
@@ -36,6 +33,7 @@ myApp.config(function ($stateProvider) {
             controller: "addPackCtrl",
             url: "/add-pack"
         })
+
         .state("add-search-content", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
@@ -45,6 +43,11 @@ myApp.config(function ($stateProvider) {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
             url: "/edit-search-content/:id"
+        })
+        .state("add-content-list", {
+            templateUrl: "partials/add-content-list.html",
+            controller: "contentListCtrl",
+            url: "/add-content-list"
         })
         .state('users', {
             templateUrl: 'partials/add-edit-users.html',

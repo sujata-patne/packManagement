@@ -6,7 +6,7 @@ exports.getContentTypes = function(dbConnection,storeId,callback){
                                 'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
                                 'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
                                 'WHERE st.st_id = ? ', [storeId], function (err, ContentTypes) {
-        callback(err, ContentTypes)
+        callback(err, ContentTypes);
     });
 }
 
@@ -29,6 +29,12 @@ exports.getPackByName = function(dbConnection,packName,callback){
 	            }else{
 	                callback(err,false);
 	            }
+        });
+}
+
+exports.getPacksForStore = function(dbConnection,storeId,callback){
+		dbConnection.query("SELECT * FROM `icn_packs` WHERE pk_st_id = ?",storeId,function (err, response) {
+	            callback(err, response);
         });
 }
 
@@ -65,4 +71,10 @@ exports.getContentTypesByPackId = function(dbConnection,packId,callback){
                             callback(err,response);
                     }
     );
+}
+
+exports.updateContentTypeStatus = function(dbConnection,packId,contentTypeId,active,callback){
+	var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_is_active = ? WHERE pct_pk_id = ? AND  pct_cnt_type = ? ",[active,packId,contentTypeId], function (err, response) {
+		callback(err,response);
+	});
 }

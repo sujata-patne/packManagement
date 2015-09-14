@@ -1,6 +1,7 @@
 
 var mysql = require('../config/db').pool;
 var nodemailer = require('nodemailer');
+var userManager = require('../models/userModel');
 
 
 function getDate(val) {
@@ -40,7 +41,9 @@ exports.pages = function (req, res, next) {
 
     var pagesjson = [
         { 'pagename': 'Add Pack', 'href': 'add-pack', 'id': 'add-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Add Search Content', 'href': 'add-search-content', 'id': 'add-search-content', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] }
+        { 'pagename': 'Add Search Content', 'href': 'add-search-content', 'id': 'add-search-content', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+        { 'pagename': 'Add Content List', 'href': 'add-content-list', 'id': 'add-content-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+        { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
     ];
 
     if (req.session) {
@@ -75,10 +78,10 @@ exports.login = function (req, res, next) {
     if (req.session) {
         if (req.session.pack_UserName) {
             if (req.session.pack_StoreId) {
-                res.redirect("/plan-list");
+                res.redirect("/add-pack");
             }
             else {
-                res.redirect("/plan-list");
+                res.redirect("/add-pack");
             }
         }
         else {
@@ -129,24 +132,25 @@ exports.logout = function (req, res, next) {
 exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
-            var query = connection_central.query('SELECT * FROM icn_login_detail AS user JOIN icn_store_user AS store_user ON user.ld_id = store_user.su_ld_id where BINARY ld_user_id= ? and BINARY ld_user_pwd = ? ', [req.body.username, req.body.password], function (err, row, fields) {
+            userManager.getUserDetails( connection_central, req.body.username, req.body.password, function( err, userDetails ){
+                //console.log( userDetails[0] );
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
                 } else {
-                    if (row.length > 0) {
-                        if (row[0].ld_active == 1) {
-                            if(row[0].ld_role == 'Store Manager') {
+                    if (userDetails.length > 0) {
+                        if (userDetails[0].ld_active == 1) {
+                            if(userDetails[0].ld_role == 'Store Manager') {
 
                                 var session = req.session;
-                                session.pack_UserId = row[0].ld_id;
-                                session.pack_UserRole = row[0].ld_role;
+                                session.pack_UserId = userDetails[0].ld_id;
+                                session.pack_UserRole = userDetails[0].ld_role;
                                 session.pack_UserName = req.body.username;
                                 session.pack_Password = req.body.password;
-                                session.pack_Email = row[0].ld_email_id;
-                                session.pack_FullName = row[0].ld_display_name;
-                                session.pack_lastlogin = row[0].ld_last_login;
-                                session.pack_UserType = row[0].ld_user_type;
-                                session.pack_StoreId = row[0].su_st_id;//coming from new store's user table.
+                                session.pack_Email = userDetails[0].ld_email_id;
+                                session.pack_FullName = userDetails[0].ld_display_name;
+                                session.pack_lastlogin = userDetails[0].ld_last_login;
+                                session.pack_UserType = userDetails[0].ld_user_type;
+                                session.pack_StoreId = userDetails[0].su_st_id;//coming from new store's user table.
                                 connection_central.release();
                                 res.redirect('/');
                             } else {
@@ -164,7 +168,7 @@ exports.authenticate = function (req, res, next) {
                     }
                 }
             });
-        })
+        });
     }
     catch (error) {
         res.render('account-login', { error: 'Error in database connection.' });
@@ -181,7 +185,9 @@ function getPages(role) {
 
         var pagesjson = [
             { 'pagename': 'Add Pack', 'href': 'add-pack', 'id': 'add-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Add Search Content', 'href': 'add-search-content', 'id': 'add-search-content', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] }
+            { 'pagename': 'Add Search Content', 'href': 'add-search-content', 'id': 'add-search-content', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Add Content List', 'href': 'add-content-list', 'id': 'add-content-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
         ];
         return pagesjson;
     }
@@ -207,12 +213,13 @@ exports.viewForgotPassword = function (req, res, next) {
 exports.forgotPassword = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
-            var query = connection_central.query('SELECT * FROM icn_login_detail where BINARY ld_user_id= ? and BINARY ld_email_id = ? ', [req.body.userid, req.body.emailid], function (err, row, fields) {
+
+            userManager.getUserByUserIdByEmail( connection_central, req.body.userid, req.body.emailid, function( err, userDetails ){
+                console.log( userDetails[0] );
                 if (err) {
-                    res.render('account-forgot', { error: 'Error in database connection.', msg: '' });
-                }
-                else {
-                    if (row.length > 0) {
+                    res.render('account-login', { error: 'Error in database connection.' });
+                } else {
+                    if (userDetails.length > 0) {
 
                         var smtpTransport = nodemailer.createTransport({
                             service: "Gmail",
@@ -222,9 +229,9 @@ exports.forgotPassword = function (req, res, next) {
                             }
                         });
                         var mailOptions = {
-                            to: session.Email,//'sujata.patne@jetsynthesys.com',
+                            to: req.body.emailid,//'sujata.patne@jetsynthesys.com',
                             subject: 'Forgot Password',
-                            html: "<p>Hi, " + row[0].ld_user_id + " <br />This is your password: " + row[0].ld_user_pwd + "</p>"
+                            html: "<p>Hi, " + userDetails[0].ld_user_id + " <br />This is your password: " + userDetails[0].ld_user_pwd + "</p>"
                         }
                         smtpTransport.sendMail(mailOptions, function (error, response) {
                             if (error) {
@@ -272,15 +279,15 @@ exports.changePassword = function (req, res) {
         if (req.session) {
             if (req.session.pack_UserName) {
                 var session = req.session;
+                console.log( req.session.pack_Email );
                 mysql.getConnection('CMS', function (err, connection_central) {
-                    if (req.body.oldpassword == session.Password) {
-                        var query = connection_central.query('UPDATE icn_login_detail SET ld_user_pwd=?, ld_modified_on=? WHERE ld_id=?', [req.body.newpassword, new Date(), session.UserId], function (err, result) {
+                    if(req.body.oldpassword == session.pack_Password) {
+                        userManager.updateUser( connection_central, req.body.newpassword, new Date(), session.pack_UserId, function( err, response ) {
                             if (err) {
                                 connection_central.release();
                                 res.status(500).json(err.message);
-                            }
-                            else {
-                                session.Password = req.body.newpassword;
+                            }else {
+                                session.pack_Password = req.body.newpassword;
                                 var smtpTransport = nodemailer.createTransport({
                                     service: "Gmail",
                                     auth: {
@@ -289,27 +296,22 @@ exports.changePassword = function (req, res) {
                                     }
                                 });
                                 var mailOptions = {
-                                    to: session.Email,
+                                    to: session.pack_Email,
                                     subject: 'Change Password',
-                                    html: "<p>Hi, " + session.UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
+                                    html: "<p>Hi, " + session.pack_UserName + " <br />This is your password: " + req.body.newpassword + "</p>"
                                 }
                                 smtpTransport.sendMail(mailOptions, function (error, response) {
                                     if (error) {
                                         connection_central.release();
-                                        console.log(error);
                                         res.end("error");
                                     } else {
                                         connection_central.release();
                                         res.send({ success: true, message: 'Password updated successfully. Please check your mail.' });
-
-                                        //res.render('changepassword', { success: true, message: 'Password updated successfully. Please check your mail.' });
-                                        //res.end("sent");
                                     }
                                 });
                             }
-                        });
-                    }
-                    else {
+                        }); 
+                    }else {
                         connection_central.release();
                         res.send({ success: false, message: 'Old Password does not match.' });
                     }
