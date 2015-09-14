@@ -13,6 +13,12 @@ exports.getData = function (req, res, next) {
                                 callback(err, ContentTypes);
                             });
                         }, 
+                        StorePacks: function (callback) {
+
+                            packManager.getPacksForStore( connection_ikon_cms, req.session.pack_StoreId, function(err,StorePacks){
+                                callback(err, StorePacks);
+                            });
+                        }, 
                         PackTypes: function (callback) {
                             packManager.getPackTypes( connection_ikon_cms, function(err,PackTypes){
                                 callback(err, PackTypes);
@@ -26,6 +32,74 @@ exports.getData = function (req, res, next) {
                                 connection_ikon_cms.release();
                                 res.status(500).json(err.message);
                                 console.log(err.message)
+                            } else {
+                                connection_ikon_cms.release();
+                                res.send(results);
+                            }
+                      });
+                   });
+            }else{
+                
+                res.redirect('/accountlogin');
+            }
+        }catch(err){
+                 res.status(500).json(err.message);
+      }      
+};
+
+exports.blockUnBlockContentType = function (req, res, next) {
+      try {   
+            if (req.session && req.session.pack_UserName) {
+
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                         async.parallel({
+                            updateContentTypeStatus : function(callback){
+                                packManager.updateContentTypeStatus( connection_ikon_cms, req.body.packId,req.body.contentTypeId,req.body.active, function(err,response){
+                                        console.log("hihoijoi");
+                                        console.log(response);
+                                     callback(err, response);
+                                });
+                            }
+
+                        },function(err,results){
+                                    if(err){
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                        console.log(err.message);
+                                     }else{
+                                        connection_ikon_cms.release();
+                                        res.send({ success: true, message: 'Content Type ' + req.body.Status + ' successfully.' });
+                                     }
+                        });
+                });
+            }else{
+                 res.redirect('/accountlogin');
+            }
+        }catch(err){
+             res.status(500).json(err.message);
+        }
+
+};
+
+
+exports.getContentTypesByPack = function (req, res, next) {
+    try {   
+            if (req.session && req.session.pack_UserName) {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                    async.parallel({
+                         PackContentTypes: function (callback) {
+
+                            packManager.getContentTypesByPackId( connection_ikon_cms, req.body.packId, function(err,PackContentTypes){
+                                callback(err, PackContentTypes);
+                            });
+                        }
+                    },
+                     function (err, results) {
+                        //console.log(results.OperatorDetails)
+                            if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                                console.log(err.message);
                             } else {
                                 connection_ikon_cms.release();
                                 res.send(results);
