@@ -6,7 +6,7 @@ exports.getContentTypes = function(dbConnection,storeId,callback){
                                 'inner join catalogue_detail As cd on mlm.cmd_entity_detail = cd.cd_id ' +
                                 'JOIN icn_manage_content_type as ct ON ct.mct_cnt_type_id = cd.cd_id ' +
                                 'WHERE st.st_id = ? ', [storeId], function (err, ContentTypes) {
-        callback(err, ContentTypes)
+        callback(err, ContentTypes);
     });
 }
 

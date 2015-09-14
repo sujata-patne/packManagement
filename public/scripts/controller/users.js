@@ -203,8 +203,10 @@ myApp.controller('usersCtrl', function ($scope, $http, ngProgress, $timeout, Use
                     $scope.ConfirmPassword = "";
                     $scope.success = data.message;
                     $scope.successvisible = true;
-                }
-                else {
+                    setTimeout(function(){
+                        window.location.href = 'logout'; 
+                    }, 1000 );
+                }else {
                     $scope.error = data.message;
                     $scope.errorvisible = true;
                 }
