@@ -145,9 +145,9 @@ exports.addEditPack = function (req, res, next) {
                                 pk_cnt_display_opt : req.body.pack_type,
                                 pk_is_active : 1,
                                 pk_created_on: new Date(),
-                                pk_created_by: req.session.Plan_UserName,
+                                pk_created_by: req.session.Pack_UserName,
                                 pk_modified_on: new Date(),
-                                pk_modified_by: req.session.Plan_UserName
+                                pk_modified_by: req.session.Pack_UserName
                             }
                             
                             var result = saveIconPack(connection_ikon_cms,data);
@@ -164,7 +164,11 @@ exports.addEditPack = function (req, res, next) {
                                                 pct_id : lastInsertedPackTypeId,
                                                 pct_pk_id : results.MaxPackId,
                                                 pct_cnt_type : v_pack_content_types[i],
-                                                pct_is_active : 1
+                                                pct_is_active : 1,
+                                                pct_created_on: new Date(),
+                                                pct_created_by: req.session.Pack_UserName,
+                                                pct_modified_on: new Date(),
+                                                pct_modified_by: req.session.Pack_UserName
                                             }
                                             contentTypeResponse = saveIconPackContentType( connection_ikon_cms,contentTypeData );
                                             if(contentTypeResponse == true){
