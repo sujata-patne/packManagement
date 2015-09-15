@@ -4,8 +4,8 @@ myApp.service('Search', ['$http', function ($http) {
     service.baseRestUrl = '';
 
     //PrePopulate Add Search form  :
-    service.getContentTypeDetails = function (success, error) {
-        $http.get(service.baseRestUrl + '/contentTypeDetails').success(function (items) {
+    service.getContentTypeDetails = function (pctId, success, error) {
+        $http.get(service.baseRestUrl + '/contentTypeDetails/'+pctId).success(function (items) {
             success(items);
         }).error(function (err) {
             error(err);

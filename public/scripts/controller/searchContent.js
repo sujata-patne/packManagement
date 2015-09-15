@@ -2,8 +2,10 @@
  * Created by sujata.patne on 11-09-2015.
  */
 
-myApp.controller('searchContentCtrl', function ($scope, $http, $stateParams,$state, ngProgress, Search) {
+myApp.controller('searchContentCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search) {
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
+    $scope.pctId = $stateParams.id;
+    //console.log($scope.pctId)
     $scope.packId = "";
     $scope.contentTypeId = 8;//wallpaper
     $scope.success = "";
@@ -16,10 +18,9 @@ myApp.controller('searchContentCtrl', function ($scope, $http, $stateParams,$sta
     $scope.ContentTypeDetails = angular.copy(ContentTypeDetails);
     $scope.Wallpaper = $scope.ContentTypeDetails[0].Manual[0].Wallpaper;
     $scope.contentTypeData = {};
-    $scope.contentTypeDataDetails = [];
 
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
-    Search.getContentTypeDetails(function(data){
+    Search.getContentTypeDetails($scope.pctId, function(data){
         $scope.packDetails = angular.copy(data.packDetails);
         $scope.Keywords = angular.copy(data.keywords);
         $scope.Language = angular.copy(data.languages);
@@ -66,11 +67,12 @@ myApp.controller('searchContentCtrl', function ($scope, $http, $stateParams,$sta
 
 
     $scope.submitForm = function (isValid) {
-
+        $scope.contentTypeDataDetails = [];
         if (isValid) {
             angular.forEach($scope.contentTypeData.data,function(value,key){
                 var data = {};
                 data[$scope[key+'_id']] = value;
+               // data = {'key':$scope[key+'_id'] = value;
                 $scope.contentTypeDataDetails.push(data);
             })
 

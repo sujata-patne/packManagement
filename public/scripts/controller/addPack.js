@@ -1,4 +1,4 @@
-myApp.controller('addPackCtrl', function ($scope, $http, $stateParams,$state, ngProgress, Packs) {
+myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Packs) {
 
 	$scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
 	// $scope.PageTitle = "Add";
@@ -46,6 +46,9 @@ myApp.controller('addPackCtrl', function ($scope, $http, $stateParams,$state, ng
                     $scope.errorvisible = true;
                 }
                 ngProgress.complete();
+            },function(error){
+                console.log(error)
+                toastr.success(error)
             });
         }
     };

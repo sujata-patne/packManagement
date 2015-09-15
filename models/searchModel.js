@@ -75,8 +75,8 @@ exports.getContentId = function(dbConnection, callback){
     });
 }
 exports.getLastSearchCriteriaId = function( dbConnection, callback ) {
-    var query = dbConnection.query("SELECT MAX(pcr_id) as id FROM `icn_pack_content_rule`", function ( err, response ) {
-        pcrId = response[0].id != null ? parseInt(response[0].id + 1) : 1;
+    var query = dbConnection.query("SELECT MAX(pcr_id) as pcr_id FROM `icn_pack_content_rule`", function ( err, response ) {
+        pcrId = response[0].pcr_id != null ? parseInt(response[0].pcr_id + 1) : 1;
         callback( err,pcrId );
     });
 }
@@ -180,10 +180,11 @@ exports.getSearchCriteriaData = function(dbConnection,searchData,callback) {
 
 exports.searchCriteriaFieldExist = function(dbConnection,pctId,metaDataTypeId,callback){
     dbConnection.query("SELECT pk_id as id FROM icn_packs AS pk " +
-        "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id" +
-        "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id" +
-        " WHERE pcr_pct_id = ? AND pcr_metadata_type = ?",
+        "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
+        "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id " +
+        "WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ",
         [pctId, metaDataTypeId],function (err, result) {
+            console.log(result.length)
             if(result.length > 0){
                 callback(err,true);
             }else{
@@ -197,7 +198,7 @@ exports.addSearchCriteriaField = function(dbConnection,data,callback){
     });
 }
 exports.editSearchCriteriaField = function(dbConnection,data,callback){
-    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ?', [data, data.pctId, data.searchCriteriaId]",data, function (err, response) {
+    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ', [data, data.pctId, data.searchCriteriaId]",data, function (err, response) {
         callback(err,response);
     });
 }
