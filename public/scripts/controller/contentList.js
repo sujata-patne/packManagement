@@ -11,8 +11,13 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
     ngProgress.height('3px');
     $scope.isAdded = false;
 
-    Packs.getData(function(data){
+    preData = {
+            state : "get-pack"
+        }
+    Packs.getData(preData,function(data){
         $scope.StorePacks = data.StorePacks;
+    },function(error){
+        console.log(error);
     });
 
     $scope.packChange  = function(){

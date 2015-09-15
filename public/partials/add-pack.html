@@ -60,7 +60,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-5 col-sm-7">
                                 <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
-                                <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
+                                <button type="reset" ng-hide="edit_mode" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
                             </div>
                         </div>
                     </div>
@@ -71,8 +71,8 @@
                                 <tr>
                                     <th><u><small>Pack Name:</small></u>&nbsp;&nbsp;{{pack_added_name}}<br/>
                                         <u><small>Pack Type:</small></u>&nbsp;&nbsp;{{type_added_name}}</th>
-                                    <th><u>Added On:</u> <br/> </th>
-                                    <th><u>Last Updated On:</u> <br/><i class="fa fa-spinner padding-left-25pc"></i> </th>
+                                    <th><u>Added On:</u> <br/> {{pack_added_date | date:'dd-MMM-yyyy'}}</th>
+                                    <th><u>Last Updated On:</u> <br/>{{pack_modified_date | date:'dd-MMM-yyyy'}}</th>
                                     <th><u>Active Packages :</u> <br/><i class="fa fa-spinner padding-left-25pc"></i></th>
                                 </tr>
                                 </thead>

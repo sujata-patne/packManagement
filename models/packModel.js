@@ -31,6 +31,16 @@ exports.getPackByName = function(dbConnection,packName,callback){
 	            }
         });
 }
+exports.getPackByNameForUpdate = function( dbConnection,packName,packId,callback ){
+		dbConnection.query("SELECT pk_id as id FROM `icn_packs` WHERE lower(pk_name) = ? AND pk_id != ?",
+			[packName,packId],function (err, result) {
+	            if(result.length > 0){
+	                callback(err,true);
+	            }else{
+	                callback(err,false);
+	            }
+        });
+}
 
 exports.getPacksForStore = function(dbConnection,storeId,callback){
 		dbConnection.query("SELECT * FROM `icn_packs` WHERE pk_st_id = ?",storeId,function (err, response) {
@@ -40,6 +50,18 @@ exports.getPacksForStore = function(dbConnection,storeId,callback){
 
 exports.savePack = function(dbConnection,data,callback){
 	var query = dbConnection.query("INSERT INTO `icn_packs` SET ? ",data, function (err, response) {
+		callback(err,response);
+	});
+}
+
+exports.updatePack = function(dbConnection,data,packId,callback){
+	var query = dbConnection.query("UPDATE `icn_packs` SET ? WHERE pk_id = ?",[data,packId], function (err, response) {
+		callback(err,response);
+	});
+}
+
+exports.deletePackContentTypes = function(dbConnection,packId,callback){
+	var query = dbConnection.query("DELETE FROM `icn_pack_content_type` WHERE pct_pk_id = ?",[packId], function (err, response) {
 		callback(err,response);
 	});
 }

@@ -33,7 +33,11 @@ myApp.config(function ($stateProvider) {
             controller: "addPackCtrl",
             url: "/add-pack"
         })
-
+        .state("edit-pack", {
+            templateUrl: "partials/add-pack.html",
+            controller: "addPackCtrl",
+            url: "/edit-pack/:id"
+        })
         .state("add-search-content", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",

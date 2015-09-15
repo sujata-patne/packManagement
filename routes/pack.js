@@ -7,6 +7,8 @@ module.exports = function (app) {
         .post(pack.getContentTypesByPack);
     app.route('/blockUnBlockContentType')
         .post(pack.blockUnBlockContentType);
-    app.route('/addEditPack')
-        .post(pack.addEditPack);
+    app.route('/addPack')
+        .post(pack.addPack);
+    app.route('/editPack')
+        .post(pack.editPack);
 }

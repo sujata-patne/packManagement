@@ -4,8 +4,8 @@ myApp.service('Packs', ['$http', function ($http) {
     service.baseRestUrl = '';
 
     //PrePopulate Add Pack form  : 
-    service.getData = function (success, error) {
-        $http.post(service.baseRestUrl + '/getData').success(function (items) {
+    service.getData = function ( data,success, error ) {
+        $http.post(service.baseRestUrl + '/getData',data).success(function (items) {
             success(items);
         }).error(function (err) {
             error(err);
@@ -29,8 +29,16 @@ myApp.service('Packs', ['$http', function ($http) {
     }
 
 
-    service.addEditPack = function (data,success, error) {
-        $http.post(service.baseRestUrl + '/addEditPack',data).success(function (items) {
+    service.addPack = function (data,success, error) {
+        $http.post(service.baseRestUrl + '/addPack',data).success(function (items) {
+            success(items);
+        }).error(function (err) {
+            error(err);
+        });
+    }
+
+    service.editPack = function (data,success, error) {
+        $http.post(service.baseRestUrl + '/editPack',data).success(function (items) {
             success(items);
         }).error(function (err) {
             error(err);
