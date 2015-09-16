@@ -338,10 +338,10 @@ function deletePackContentTypes( connection_ikon_cms,packId ){
 function saveIconPackContentType( connection_ikon_cms, data ){
     packManager.saveIconPackContentType( connection_ikon_cms, data, function(err,response ){
         if(err){
-             connection_ikon_cms.release();
-             res.status(500).json(err.message);
-             return false;
-         }
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            return false;
+        }
     });
     return true;
 }

@@ -1,5 +1,6 @@
 myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state, ngProgress, Packs, $window) {
-
+    $('.removeActiveClass').removeClass('active');
+    $('#add-content-list').addClass('active');
 	$scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
 	// $scope.PageTitle = "Add";
 	$scope.success = "";
@@ -69,6 +70,6 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
     }
 
     $scope.EditPack = function ( pctID ) {
-        $window.location.href = "/#/edit-search-content/" + pctID;
+            $window.location.href = "/#/search-content/" + pctID;
     }
 });

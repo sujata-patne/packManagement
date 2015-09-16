@@ -18,7 +18,7 @@
     <div class="content">
         <div class="content-container">
             <div class="content-header">
-                <h2 class="content-header-title">Add Content</h2>
+                <h2 class="content-header-title">Search Content</h2>
             </div>
             <!-- /.content-header -->
             <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
@@ -28,10 +28,10 @@
             <form method="post" class="form-horizontal" role="form" name="searchForm" data-ng-submit="submitForm(searchForm.$valid)" novalidate>
                 <div class="row">
                     <div class="col-md-2">
-                        <input type="hidden" name="packId" class="form-control" data-ng-model="packDetails.packId">
-                        <input type="hidden" name="contentTypeId" class="form-control" data-ng-model="packDetails.contentTypeId">
-                        <input type="hidden" name="display" class="form-control" data-ng-model="packDetails.display">
-                        <input type="hidden" name="pctId" class="form-control" data-ng-model="packDetails.pctId">
+                        <input type="hidden" name="packId" class="form-control" data-ng-model="packId">
+                        <input type="hidden" name="contentTypeId" class="form-control" data-ng-model="contentTypeId">
+                        <input type="hidden" name="display" class="form-control" data-ng-model="display">
+                        <input type="hidden" name="pctId" class="form-control" data-ng-model="pctId">
                     </div>
                     <div class="col-md-8">
                         <fieldset class="searchGroup">
@@ -39,7 +39,7 @@
                             <div class="form-group">
                                 <label for="title" class="col-md-3 control-label">Title</label>
                                 <div class="col-md-4">
-                                    <input type="text" name="title" class="form-control" placeholder="Title" data-ng-model="contentTypeData.data['Content_Title']" data-ng-change="getContentData()">
+                                    <input type="text" name="title" class="form-control" placeholder="Title" data-ng-model="contentTypeData['Content_Title']" >
                                 </div>
                                 <label for="title" class="col-md-1 control-label">Word</label>
                                 <div class="col-md-4">
@@ -49,7 +49,7 @@
                             <div class="form-group">
                                 <label for="title" class="col-md-3 control-label">Property Title</label>
                                 <div class="col-md-4">
-                                    <input type="text" name="propertyTitle" class="form-control" placeholder="Property Title" data-ng-model="contentTypeData.data['Property']" data-ng-change="getContentData()">
+                                    <input type="text" name="propertyTitle" class="form-control" placeholder="Property Title" data-ng-model="contentTypeData['Property']" >
                                 </div>
                                 <label for="title" class="col-md-1 control-label">Word</label>
                                 <div class="col-md-4">
@@ -59,13 +59,13 @@
                             <div class="form-group">
                                 <label for="title" class="col-md-3 control-label">Keywords</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="keywords" class="form-control" placeholder="Keywords" data-ng-model="contentTypeData.data['Keywords']" data-ng-change="getContentData()">
+                                    <input type="text" name="keywords" class="form-control" placeholder="Keywords" data-ng-model="contentTypeData['Keywords']" >
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="title" class="col-md-3 control-label">Content Ids</label>
                                 <div class="col-md-9">
-                                    <input type="text" name="contentIds" class="form-control" placeholder="Content Ids" data-ng-model="contentTypeData.data['Content_Ids']" data-ng-change="getContentData()">
+                                    <input type="text" name="contentIds" class="form-control" placeholder="Content Ids" data-ng-model="contentTypeData['Content_Ids']">
                                 </div>
                             </div>
                         </fieldset>
@@ -76,19 +76,18 @@
                                 <div class="col-md-3">
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
                                     <label for="title" class="col-md-1 control-label">Days</label>-->
-                                    <select ng-options="year for year in years" class="form-control" data-ng-model="releaseDurationStart"  >
+                                    <select ng-options="year for year in years" name="releaseDurationStart" class="form-control" data-ng-model="releaseDurationStart"  >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
-                                {{releaseDurationStart}}
                                 <label for="title" class="col-md-1 control-label">To</label>
                                 <div class="col-md-3">
-                                    <select ng-options="year for year in years" class="form-control" data-ng-model="releaseDurationEnd" ng-required="releaseDurationStart == ''"  >
+                                    <select ng-options="year for year in years" name="releaseDurationEnd" class="form-control" data-ng-model="releaseDurationEnd" ng-required="releaseDurationStart"  >
                                         <option value="">-- Select --</option>
                                     </select>
-                                    <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseDurationEnd.$touched">
-                                        <span ng-show="searchForm.releaseDurationEnd.$error.required">Limit is required.</span>
-                                    </span>
+                                    <!--<span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseDurationEnd.$touched">-->
+                                        <span ng-show="searchForm.releaseDurationEnd.$error.required">To Release Duration is required.</span>
+                                    <!--</span>-->
                                 </div>
                             </div>
                         </div>
@@ -96,7 +95,7 @@
                             <div ng-repeat="(key,element) in value">
                                 <label class="col-sm-3 control-label">{{key}}</label>
                                 <div class="col-sm-6">
-                                    <select data-ng-options="item.cd_id as item.cd_name for item in {{element}}" class="form-control" data-ng-model="contentTypeData.data[element]" data-ng-change="getContentData()"  >
+                                    <select data-ng-options="item.cd_id as item.cd_name for item in {{element}}" class="form-control" data-ng-model="contentTypeData[element]" >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -105,7 +104,7 @@
                         <fieldset class="searchGroup">
                             <label>Show List for selection </label>
                             <div class="form-group">
-                                <label for="title" class="col-md-2 col-xs-12 control-label">No. of Records</label>
+                                <label for="title" class="col-md-2 col-xs-12 control-label" style="padding-top:0px; text-align: left">No. of Records</label>
                                 <div class="col-md-2 col-xs-6">
                                     <input type="radio" name="noOfRecords" value="1" ng-model="noOfRecords" required>&nbsp;<label>Limited</label>
                                 </div>
@@ -124,12 +123,31 @@
                             <div class="form-group" style="color: red" ng-show="searchForm.$submitted">
                                 <span ng-show="searchForm.noOfRecords.$error.required">Please Select option for No. of Records.</span>
                             </div>
+                            <div class="form-group" ng-show="display != 459">
+                                <div class="col-md-3 col-xs-12">
+                                    <input type="radio" name="ruleType" value="1" ng-model="ruleType" >&nbsp;
+                                    <label class="control-label">Automic Pack Creation</label>
+                                </div>
+                                <div class="col-md-9 col-xs-12" ng-show="ruleType == 1">
+                                    <label for="title" class="col-md-5 col-xs-6 control-label">Publish list post every</label>
+                                    <div class="col-md-6 col-xs-5">
+                                        <input type="text" name="nextRuleDuration" class="form-control" placeholder="Days" data-ng-model="nextRuleDuration">
+                                    </div>
+                                    <label for="title" class="col-md-1 col-xs-1 control-label">Days</label>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="display == 459">
+                                <div class="col-md-12 col-xs-12">
+                                    <input type="radio" name="ruleType" value="2" ng-model="ruleType" >&nbsp;
+                                    <label class="control-label">Manual Pack Creation</label>
+                                </div>
+                            </div>
                             <div class="form-group">
-                                <label for="title" class="col-md-2 control-label">Action</label>
+                                <label for="title" class="col-md-1 control-label">Action</label>
                                 <div class="col-md-10">
-                                    <input type="radio" name="action" value="1" ng-model="action" required>&nbsp;<label>Add Selected Content</label>
+                                    <input type="radio" name="action" value="1" ng-model="action" required>&nbsp;<label class="control-label">Add Selected Content</label>
                                <br />
-                                    <input type="radio" name="action" value="2" ng-model="action" required>&nbsp;<label>Remove Unwanted Content</label>
+                                    <input type="radio" name="action" value="2" ng-model="action" required>&nbsp;<label class="control-label">Remove Unwanted Content</label>
                                 </div>
                             </div>
                             <div class="form-group" style="color: red" ng-show="searchForm.$submitted">

@@ -1,5 +1,6 @@
 myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Packs) {
-
+    $('.removeActiveClass').removeClass('active');
+    $('#add-pack').addClass('active');
 	$scope.PageTitle = $state.current.name == "edit-pack" ? "Edit " : "Add ";
 	// $scope.PageTitle = "Add";
 	$scope.success = "";
@@ -102,7 +103,7 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
     }
 
     $scope.EditPack = function ( pctID ) {
-            $window.location.href = "/#/add-search-content/" + pctID;
+            $window.location.href = "/#/search-content/" + pctID;
     }
 
     $scope.BlockUnBlockContentType = function( packId,contentTypeId, isActive ){

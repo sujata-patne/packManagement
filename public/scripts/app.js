@@ -25,7 +25,23 @@ var ContentTypeDetails = [
         }
     ]
 }];
-
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-center",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 myApp.config(function ($stateProvider) {
     $stateProvider
         .state("add-pack", {
@@ -38,16 +54,16 @@ myApp.config(function ($stateProvider) {
             controller: "addPackCtrl",
             url: "/edit-pack/:id"
         })
-        .state("add-search-content", {
+        .state("search-content", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
-            url: "/add-search-content"
+            url: "/search-content/:id"
         })
-        .state("edit-search-content", {
+        /*.state("edit-search-content", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
             url: "/edit-search-content/:id"
-        })
+        })*/
         .state("add-content-list", {
             templateUrl: "partials/add-content-list.html",
             controller: "contentListCtrl",
@@ -56,7 +72,12 @@ myApp.config(function ($stateProvider) {
         .state("show-content-list", {
             templateUrl: "partials/show-content-list.html",
             controller: "showContentListCtrl",
-            url: "/show-content-list"
+            url: "/show-content-list/:pctId/:limitCount/:action/:title/:property"
+        })
+        .state("show-packs-list", {
+            templateUrl: "partials/show-packs-list.html",
+            controller: "showPacksListCtrl",
+            url: "/show-packs-list"
         })
         .state('users', {
             templateUrl: 'partials/add-edit-users.html',
