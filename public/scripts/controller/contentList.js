@@ -66,6 +66,6 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
     }
 
     $scope.EditPack = function ( pctID ) {
-            $window.location.href = "/#/edit-search-content/" + pctID;
+            $window.location.href = "/#/search-content/" + pctID;
     }
 });

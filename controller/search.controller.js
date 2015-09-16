@@ -68,8 +68,13 @@ exports.getContentTypeDetails = function (req, res, next) {
                         });
                     },
                     packDetails: function (callback) {
-                        SearchModel.getPackDetails( connection_ikon_cms,req.query.pctId, function(err,packDetails){
+                        SearchModel.getPackDetails( connection_ikon_cms,req.params.pctId, function(err,packDetails){
                             callback(err, packDetails);
+                        });
+                    },
+                    packSearchDetails: function (callback) {
+                        SearchModel.getPackSearchDetails( connection_ikon_cms,req.params.pctId, function(err,packSearchDetails){
+                            callback(err, packSearchDetails);
                         });
                     }
                 },
@@ -86,10 +91,10 @@ exports.getContentTypeDetails = function (req, res, next) {
                 })
             })
         }else{
-
+            res.redirect('/accountlogin');
         }
     }catch(err){
-
+        res.status(500).json(err.message);
     }
 };
 
@@ -98,62 +103,68 @@ exports.saveSearchData = function (req, res, next) {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
-                    SearchCriteriaData : function(callback){
+                    /*SearchCriteriaData : function(callback){
+                        console.log(req.body)
                         SearchModel.getSearchCriteriaData(connection_ikon_cms,req.body,function(err,response){
                             callback(err,response);
                         });
-                    }
+                    }*/
                 },function (err, results) {
-                    if (results.PackExists) {
-                        connection_ikon_cms.release();
-                        res.send({"success": false, "message": "Pack Name must be unique."});
-                    } else {
-                        var count = req.body.contentTypeDataDetails.length;
-                        addEditSearch(0)
+                    //console.log(results.SearchCriteriaData)
+                    var packData = {
+                        pk_id : req.body.packId,
+                        pk_rule_type : req.body.ruleType,
+                        pk_nxt_rule_duration : req.body.nextRuleDuration,
+                        pk_modified_on: new Date(),
+                        pk_modified_by: req.session.pack_UserName
                     }
 
+                    packUpdateResponse = updatePackData( connection_ikon_cms,packData );
 
+                    var count = req.body.contentTypeDataDetails.length;
+                    addEditSearch(0)
                     function addEditSearch(cnt) {
                         var j = cnt;
-                        console.log("count : "+cnt +" : "+count)
                         for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
-                            //var searchFieldId = req.body.contentTypeDataDetails[j];
-                        console.log("param : "+req.body.pctId + " : "+ searchFieldId)
-                            SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, req.body.contentTypeDataDetails[j][searchFieldId],function(err,response) {
-                                if(err){
+                            SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, searchFieldId, function (err, response) {
+                                if (err) {
                                     connection_ikon_cms.release();
-                                    res.send({"success" : false,"message" : "Search Criteria Not Added for fieldId "+searchFieldId});
+                                    res.status(500).json(err.message);
                                 }
                                 var data = {
                                     pcr_rec_type: 1,
                                     pcr_pct_id: req.body.pctId,
                                     pcr_metadata_type: searchFieldId,
                                     pcr_metadata_search_criteria: req.body.contentTypeDataDetails[j][searchFieldId],
-                                    pcr_start_date: req.body.releaseDurationStart,
-                                    pcr_end_date: req.body.releaseDurationEnd
+                                    //pcr_start_date: req.body.releaseDurationStart,
+                                    // pcr_end_date: req.body.releaseDurationEnd
                                 }
-                                if(response){
-                                    SearchModel.editSearchCriteriaField(connection_ikon_cms,data,function(err,response) {
-                                        if(err){
+                                if (response) {
+                                    SearchModel.editSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
+                                        if (err) {
                                             connection_ikon_cms.release();
                                             res.status(500).json(err.message);
                                         }
                                         else {
                                             cnt = cnt + 1;
-                                            if(cnt == count){
+                                            if (cnt == count) {
                                                 connection_ikon_cms.release();
-                                                res.send({"success" : true,"status":200, "message":"Search Criteria updated successfully added."});
-                                            }else{
+                                                res.send({
+                                                    "success": true,
+                                                    "status": 200,
+                                                    "message": "Search Criteria updated successfully added.",
+                                                    "SearchCriteriaResult" : results.SearchCriteriaData
+                                                });
+                                            } else {
                                                 addEditSearch(cnt);
                                             }
                                         }
                                     })
                                 }
                                 else {
-                                    getLastSearchCriteriaId( connection_ikon_cms, function( lastInsertedSearchCriteriaId ) {
+                                    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
                                         if (lastInsertedSearchCriteriaId) {
                                             data['pcr_id'] = lastInsertedSearchCriteriaId;
-                                            //console.log(data)
                                             SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
                                                 if (err) {
                                                     connection_ikon_cms.release();
@@ -166,7 +177,8 @@ exports.saveSearchData = function (req, res, next) {
                                                         res.send({
                                                             "success": true,
                                                             "status": 200,
-                                                            "message": "Search Criteria added successfully added."
+                                                            "message": "Search Criteria added successfully added.",
+                                                            "SearchCriteriaResult" : results.SearchCriteriaData
                                                         });
                                                     } else {
                                                         addEditSearch(cnt);
@@ -177,7 +189,7 @@ exports.saveSearchData = function (req, res, next) {
                                     })
                                 }
                             })
-                       }
+                        }
                     }
                 })
             })
@@ -190,6 +202,87 @@ exports.saveSearchData = function (req, res, next) {
     }
 }
 
+exports.getPackSearchResult = function (req, res, next) {
+    try {
+        if (req.session && req.session.pack_UserName) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                console.log(req.params)
+                    async.waterfall([
+                        function (callback) {
+                            SearchModel.getPackSearchDetails( connection_ikon_cms, req.body.pctId, function(err,packSearchDetails){
+                                var contentTypeData = {};
+                                contentTypeData["searchWhereTitle"] = req.body.title;
+                                contentTypeData["searchWherePropertyTitle"] = req.body.property;
+                                packSearchDetails.forEach(function (metadataFields) {
+                                    contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
+                                    contentTypeData["releaseDurationStart"] = metadataFields.pcr_start_date;
+                                    contentTypeData["releaseDurationEnd"] = metadataFields.pcr_end_date;
+
+                                    if (metadataFields.cm_name === "Content Title") {
+                                        contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
+                                    if (metadataFields.cm_name === "Property") {
+                                        contentTypeData["Property"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
+                                    if (metadataFields.cm_name === "Search Keywords") {
+                                        contentTypeData["Keywords"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
+                                    if (metadataFields.cm_name === "Content Ids") {
+                                        contentTypeData["Content_Ids"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
+                                    if (metadataFields.cm_name === "Languages") {
+                                        contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Celebrity") {
+                                        contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Genres") {
+                                        contentTypeData["Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Sub Genres") {
+                                        contentTypeData["Sub_Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Mood") {
+                                        contentTypeData["Mood"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Photographer") {
+                                        contentTypeData["Photographer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Vendor") {
+                                        contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                })
+                                callback(err, contentTypeData);
+                                //console.log(contentTypeData)
+                            });
+                        },
+                        function (data, callback) {
+                            SearchModel.getSearchCriteriaResult(connection_ikon_cms,data,function(err,result){
+                                //console.log(result)
+                                callback(err, {'searchContentList':result});
+                            });
+                        }
+                    ],
+                    function (err, results) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.status(500).json(err.message);
+                            console.log(err.message)
+                        } else {
+                            console.log(results.searchContentList.length)
+                            connection_ikon_cms.release();
+                            res.send(results);
+                        }
+                    })
+            })
+        }else{
+            res.redirect('/accountlogin');
+        }
+    }catch(err){
+        res.status(500).json(err.message);
+    }
+};
+
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
         SearchModel.getLastSearchCriteriaId(connection_ikon_cms,function(err,maxPCRID){
         if(err){
@@ -199,4 +292,14 @@ function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
             return callback( maxPCRID );
         }
     });
+}
+function updatePackData( connection_ikon_cms, data ){
+    SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
+        if(err){
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            return false;
+        }
+    });
+    return true;
 }

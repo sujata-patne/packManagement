@@ -86,91 +86,98 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
     });
 }
 exports.getPackDetails = function(dbConnection,pctId,callback){
-    dbConnection.query("SELECT pk.pk_id AS packId, pk.pk_cnt_display_opt AS display, pct.pct_cnt_type AS contentTypeId FROM icn_packs AS pk " +
+    dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
-        " WHERE pct.pct_id = ? ", [pctId],function (err, result) {
-            if(result.length > 0){
-                callback(err,true);
-            }else{
-                callback(err,false);
-            }
+        " WHERE pct.pct_id = ? ", [pctId],function (err, result) { //pct_is_active = 1 AND
+            callback(err,result);
+        });
+}
+exports.getPackSearchDetails = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId, pcr.*, cm.* FROM icn_packs AS pk " +
+        "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
+        "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id " +
+        "JOIN catalogue_master AS cm ON cm.cm_id = pcr.pcr_metadata_type " +
+        " WHERE pct.pct_id = ? ", [pctId],function (err, result) { //pct_is_active = 1 AND
+            callback(err,result);
         });
 }
 exports.getSearchCriteriaData = function(dbConnection,searchData,callback) {
     var whereStr = '1';
+
     if (searchData.contentTypeId) {
         whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
     }
     if (searchData.releaseDurationStart && searchData.releaseDurationEnd) {
         whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseDurationStart + ' AND ' + searchData.releaseDurationEnd;
     }
-    if(searchData.contentTypeData.data !== undefined) {
-        if (searchData.contentTypeData.data.Content_Title) {
+    if(searchData.contentTypeData !== undefined) {
+        if (searchData.contentTypeData.Content_Title) {
             var searchIn = '';
             if (searchData.searchWhereTitle == 'start') {
-                searchIn = ' LIKE "' + searchData.contentTypeData.data.Content_Title + '%"'
+                searchIn = ' LIKE "' + searchData.contentTypeData.Content_Title + '%"'
             }
             else if (searchData.searchWhereTitle == 'end') {
-                searchIn = ' LIKE "%' + searchData.contentTypeData.data.Content_Title + '"'
+                searchIn = ' LIKE "%' + searchData.contentTypeData.Content_Title + '"'
             }
             else if (searchData.searchWhereTitle == 'anywhere') {
-                searchIn = ' LIKE "%' + searchData.contentTypeData.data.Content_Title + '%"'
+                searchIn = ' LIKE "%' + searchData.contentTypeData.Content_Title + '%"'
             }
             else if (searchData.searchWhereTitle == 'exact') {
-                searchIn = ' LIKE "' + searchData.contentTypeData.data.Content_Title + '"'
+                searchIn = ' LIKE "' + searchData.contentTypeData.Content_Title + '"'
             }
             whereStr += ' AND cmd.cm_title ' + searchIn;
         }
-        if (searchData.contentTypeData.data.Property) {
+        if (searchData.contentTypeData.Property) {
             var searchIn = '';
             if (searchData.searchWherePropertyTitle == 'start') {
-                searchIn = ' AND p.cm_title LIKE "' + searchData.contentTypeData.data.Property + '%"'
+                searchIn = ' AND p.cm_title LIKE "' + searchData.contentTypeData.Property + '%"'
             }
             else if (searchData.searchWherePropertyTitle == 'end') {
-                searchIn = ' AND p.cm_title LIKE "%' + searchData.contentTypeData.data.Property + '"'
+                searchIn = ' AND p.cm_title LIKE "%' + searchData.contentTypeData.Property + '"'
             }
             else if (searchData.searchWherePropertyTitle == 'anywhere') {
-                searchIn = ' AND p.cm_title LIKE "%' + searchData.contentTypeData.data.Property + '%"'
+                searchIn = ' AND p.cm_title LIKE "%' + searchData.contentTypeData.Property + '%"'
             }
             else if (searchData.searchWherePropertyTitle == 'exact') {
-                searchIn = ' AND p.cm_title LIKE "' + searchData.contentTypeData.data.Property + '"'
+                searchIn = ' AND p.cm_title LIKE "' + searchData.contentTypeData.Property + '"'
             }
             whereStr += ' AND cmd.cm_property_id IN ( SELECT p.cm_id FROM content_metadata AS p WHERE ISNULL(p.cm_property_id) ' + searchIn + ' ) ';
         }
-        if (searchData.contentTypeData.data.Content_Ids) {
-            whereStr += ' AND cmd.cm_id IN (' + searchData.contentTypeData.data.Content_Ids + ') ';
+        if (searchData.contentTypeData.Content_Ids) {
+            whereStr += ' AND cmd.cm_id IN (' + searchData.contentTypeData.Content_Ids + ') ';
         }
-        if (searchData.contentTypeData.data.Vendor) {
-            whereStr += ' AND cmd.cm_vendor = ' + searchData.contentTypeData.data.Vendor;
+        if (searchData.contentTypeData.Vendor) {
+            whereStr += ' AND cmd.cm_vendor = ' + searchData.contentTypeData.Vendor;
         }
-        if (searchData.contentTypeData.data.Keywords) {
-            var keywords = searchData.contentTypeData.data.Keywords.split(',')
+        if (searchData.contentTypeData.Keywords) {
+            var keywords = searchData.contentTypeData.Keywords.split(',')
                 .map(function (element) {
                     return "'" + String(element).trim() + "'"
                 }).join(" ,");
-            whereStr += ' AND cmd.cm_key_words IN ( SELECT group_concat(mmd.cmd_group_id) FROM catalogue_detail AS kcd ' +
+
+            whereStr += ' AND cmd.cm_key_words IN ( SELECT group_concat( distinct mmd.cmd_group_id) FROM catalogue_detail AS kcd ' +
                 'JOIN catalogue_master AS kcm ON kcd.cd_cm_id = kcm.cm_id ' +
                 'JOIN multiselect_metadata_detail AS mmd ON mmd.cmd_entity_detail = kcd.cd_id ' +
                 'WHERE kcm.cm_name = "Search Keywords" AND cd_name IN (' + keywords + ') )';
 
         }
-        if (searchData.contentTypeData.data.Language) {
-            whereStr += ' AND cmd.cm_language = ' + searchData.contentTypeData.data.Language;
+        if (searchData.contentTypeData.Language) {
+            whereStr += ' AND cmd.cm_language = ' + searchData.contentTypeData.Language;
         }
-        if (searchData.contentTypeData.data.Actor_Actress) {
-            whereStr += ' AND cmd.cm_celebrity = ' + searchData.contentTypeData.data.Actor_Actress;
+        if (searchData.contentTypeData.Actor_Actress) {
+            whereStr += ' AND cmd.cm_celebrity = ' + searchData.contentTypeData.Actor_Actress;
         }
-        if (searchData.contentTypeData.data.Genres) {
-            whereStr += ' AND cmd.cm_genre = ' + searchData.contentTypeData.data.Genres;
+        if (searchData.contentTypeData.Genres) {
+            whereStr += ' AND cmd.cm_genre = ' + searchData.contentTypeData.Genres;
         }
-        if (searchData.contentTypeData.data.Sub_Genres) {
-            whereStr += ' AND cmd.cm_sub_genre = ' + searchData.contentTypeData.data.Sub_Genres;
+        if (searchData.contentTypeData.Sub_Genres) {
+            whereStr += ' AND cmd.cm_sub_genre = ' + searchData.contentTypeData.Sub_Genres;
         }
-        if (searchData.contentTypeData.data.Mood) {
-            whereStr += ' AND cmd.cm_mood = ' + searchData.contentTypeData.data.Mood;
+        if (searchData.contentTypeData.Mood) {
+            whereStr += ' AND cmd.cm_mood = ' + searchData.contentTypeData.Mood;
         }
-        if (searchData.contentTypeData.data.Photographer) {
-            whereStr += ' AND cmd.cm_protographer = ' + searchData.contentTypeData.data.Photographer;
+        if (searchData.contentTypeData.Photographer) {
+            whereStr += ' AND cmd.cm_protographer = ' + searchData.contentTypeData.Photographer;
         }
     }
     var query = dbConnection.query('select * from content_metadata As cmd where ' + whereStr, function (err, result) {
@@ -178,13 +185,109 @@ exports.getSearchCriteriaData = function(dbConnection,searchData,callback) {
     })
 }
 
+
+exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
+    var whereStr = '1';
+    console.log(searchData)
+
+    if (searchData.contentTypeId) {
+        whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
+    }
+    if (searchData.releaseDurationStart != null && searchData.releaseDurationEnd != null) {
+        whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseDurationStart + ' AND ' + searchData.releaseDurationEnd;
+    }
+    if (searchData.Content_Title && searchData.Content_Title != '') {
+        var searchIn = '';
+        if (searchData.searchWhereTitle == 'start') {
+            searchIn = ' LIKE "' + searchData.Content_Title + '%"'
+        }
+        else if (searchData.searchWhereTitle == 'end') {
+            searchIn = ' LIKE "%' + searchData.Content_Title + '"'
+        }
+        else if (searchData.searchWhereTitle == 'anywhere') {
+            searchIn = ' LIKE "%' + searchData.Content_Title + '%"'
+        }
+        else if (searchData.searchWhereTitle == 'exact') {
+            searchIn = ' LIKE "' + searchData.Content_Title + '"'
+        }
+        whereStr += ' AND cmd.cm_title ' + searchIn;
+    }
+    if (searchData.Property && searchData.Property != '') {
+        var searchIn = '';
+        if (searchData.searchWherePropertyTitle == 'start') {
+            searchIn = ' AND p.cm_title LIKE "' + searchData.Property + '%"'
+        }
+        else if (searchData.searchWherePropertyTitle == 'end') {
+            searchIn = ' AND p.cm_title LIKE "%' + searchData.Property + '"'
+        }
+        else if (searchData.searchWherePropertyTitle == 'anywhere') {
+            searchIn = ' AND p.cm_title LIKE "%' + searchData.Property + '%"'
+        }
+        else if (searchData.searchWherePropertyTitle == 'exact') {
+            searchIn = ' AND p.cm_title LIKE "' + searchData.Property + '"'
+        }
+        whereStr += ' AND cmd.cm_property_id IN ( SELECT p.cm_id FROM content_metadata AS p WHERE ISNULL(p.cm_property_id) ' + searchIn + ' ) ';
+    }
+    if (searchData.Content_Ids && searchData.Content_Ids != '') {
+        whereStr += ' AND cmd.cm_id IN (' + searchData.Content_Ids + ') ';
+    }
+    if (searchData.Vendor && searchData.Vendor != null) {
+        whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;
+    }
+    if (searchData.Keywords  && searchData.Keywords != '' ) {
+        var keywords = searchData.Keywords.split(',')
+            .map(function (element) {
+                return "'" + String(element).trim() + "'"
+            }).join(" ,");
+        whereStr += ' AND cmd.cm_key_words IN ( SELECT group_concat( distinct mmd.cmd_group_id) FROM catalogue_detail AS kcd ' +
+            'JOIN catalogue_master AS kcm ON kcd.cd_cm_id = kcm.cm_id ' +
+            'JOIN multiselect_metadata_detail AS mmd ON mmd.cmd_entity_detail = kcd.cd_id ' +
+            'WHERE kcm.cm_name = "Search Keywords" AND cd_name IN (' + keywords + ') )';
+    }
+    if (searchData.Language && searchData.Language != null) {
+        whereStr += ' AND cmd.cm_language = ' + searchData.Language;
+    }
+    if (searchData.Actor_Actress && searchData.Actor_Actress != null) {
+        whereStr += ' AND cmd.cm_celebrity = ' + searchData.Actor_Actress;
+    }
+    if (searchData.Genres && searchData.Genres != null) {
+        whereStr += ' AND cmd.cm_genre = ' + searchData.Genres;
+    }
+    if (searchData.Sub_Genres && searchData.Sub_Genres != null) {
+        whereStr += ' AND cmd.cm_sub_genre = ' + searchData.Sub_Genres;
+    }
+    if (searchData.Mood && searchData.Mood != null) {
+        whereStr += ' AND cmd.cm_mood = ' + searchData.Mood;
+    }
+    if (searchData.Photographer && searchData.Photographer != null) {
+        whereStr += ' AND cmd.cm_protographer = ' + searchData.Photographer;
+    }
+
+    var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
+        'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
+        'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
+
+    var query = dbConnection.query('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd ' +
+        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr, function (err, result) {
+        callback(err,result);
+    })
+}
+
+exports.getCelebrityById = function(dbConnection, cmdId, callback){
+    dbConnection.query('SELECT * FROM catalogue_detail AS cd ' +
+        'JOIN catalogue_master AS cm ON (cd.cd_cm_id = cm.cm_id) ' +
+        'WHERE cm.cm_name="Celebrity" AND cd.cd_id = ?',[cmdId], function (err, result) {
+        callback(err,result);
+    });
+}
+
 exports.searchCriteriaFieldExist = function(dbConnection,pctId,metaDataTypeId,callback){
-    dbConnection.query("SELECT pk_id as id FROM icn_packs AS pk " +
+    dbConnection.query("SELECT pcr.* FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
         "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id " +
         "WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ",
         [pctId, metaDataTypeId],function (err, result) {
-            console.log(result.length)
+            //console.log(result)
             if(result.length > 0){
                 callback(err,true);
             }else{
@@ -198,7 +301,14 @@ exports.addSearchCriteriaField = function(dbConnection,data,callback){
     });
 }
 exports.editSearchCriteriaField = function(dbConnection,data,callback){
-    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ', [data, data.pctId, data.searchCriteriaId]",data, function (err, response) {
+    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data, data.pcr_pct_id, data.pcr_metadata_type], function (err, response) {
+        callback(err,response);
+    });
+}
+
+exports.updatePackData = function(dbConnection,data,callback){
+
+    var query = dbConnection.query("UPDATE icn_packs SET ? WHERE pk_id = ? ", [data, data.pk_id], function (err, response) {
         callback(err,response);
     });
 }
