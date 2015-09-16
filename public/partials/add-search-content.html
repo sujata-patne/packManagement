@@ -18,7 +18,7 @@
     <div class="content">
         <div class="content-container">
             <div class="content-header">
-                <h2 class="content-header-title">Search Content</h2>
+                <h2 class="content-header-title">{{displayName}} Search Content</h2>
             </div>
             <!-- /.content-header -->
             <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
@@ -70,25 +70,31 @@
                             </div>
                         </fieldset>
                         <div class="form-group">
-                            <label for="title" class="col-md-3 control-label">Release Duration</label>
+                            <label for="title" class="col-md-3 control-label">Release Year</label>
                             <div class="col-md-9">
                                 <label for="title" class="col-md-1 control-label">From</label>
                                 <div class="col-md-3">
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
                                     <label for="title" class="col-md-1 control-label">Days</label>-->
-                                    <select ng-options="year for year in years" name="releaseDurationStart" class="form-control" data-ng-model="releaseDurationStart"  >
+                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['releaseYearStart']"  >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
                                 <label for="title" class="col-md-1 control-label">To</label>
                                 <div class="col-md-3">
-                                    <select ng-options="year for year in years" name="releaseDurationEnd" class="form-control" data-ng-model="releaseDurationEnd" ng-required="releaseDurationStart"  >
+                                    <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" data-ng-model="contentTypeData['releaseYearEnd']" ng-required="releaseYearStart != ''"  >
                                         <option value="">-- Select --</option>
                                     </select>
-                                    <!--<span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseDurationEnd.$touched">-->
-                                        <span ng-show="searchForm.releaseDurationEnd.$error.required">To Release Duration is required.</span>
-                                    <!--</span>-->
                                 </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-9">
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$touched">
+                                    <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
+                                    <span ng-show="contentTypeData['releaseYearStart'] > contentTypeData['releaseYearEnd']">To Release Year should be greater that From Release Year.</span>
+                                </span>
                             </div>
                         </div>
                         <div class="form-group" ng-repeat="value in Wallpaper track by $index">

@@ -16,7 +16,6 @@ myApp.controller('showContentListCtrl', function ($scope, $http, $stateParams,$s
     $scope.selectedContentTypes = [];
     $scope.isAdded = false;
     $scope.action = $stateParams.action;
-    console.log($scope.action)
     Search.getPackSearchContents({pctId:$stateParams.pctId, limitCount:$stateParams.limitCount, action:$stateParams.action, title:$stateParams.title, property:$stateParams.property},function(data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
     },function(error){

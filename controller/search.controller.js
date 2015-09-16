@@ -67,6 +67,16 @@ exports.getContentTypeDetails = function (req, res, next) {
                             callback(err, id);
                         });
                     },
+                    releaseYearStart: function (callback) {
+                        SearchModel.getReleaseYearStart( connection_ikon_cms, function(err,id){
+                            callback(err, id);
+                        });
+                    },
+                    releaseYearEnd: function (callback) {
+                        SearchModel.getReleaseYearEnd( connection_ikon_cms, function(err,id){
+                            callback(err, id);
+                        });
+                    },
                     packDetails: function (callback) {
                         SearchModel.getPackDetails( connection_ikon_cms,req.params.pctId, function(err,packDetails){
                             callback(err, packDetails);
@@ -136,9 +146,10 @@ exports.saveSearchData = function (req, res, next) {
                                     pcr_pct_id: req.body.pctId,
                                     pcr_metadata_type: searchFieldId,
                                     pcr_metadata_search_criteria: req.body.contentTypeDataDetails[j][searchFieldId],
-                                    //pcr_start_date: req.body.releaseDurationStart,
-                                    // pcr_end_date: req.body.releaseDurationEnd
+                                    //pcr_start_date: req.body.releaseYearStart,
+                                   // pcr_end_date: req.body.releaseYearEnd
                                 }
+                                //console.log(searchFieldId +' : '+ req.body.contentTypeDataDetails[j][searchFieldId])
                                 if (response) {
                                     SearchModel.editSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
                                         if (err) {
@@ -152,8 +163,8 @@ exports.saveSearchData = function (req, res, next) {
                                                 res.send({
                                                     "success": true,
                                                     "status": 200,
-                                                    "message": "Search Criteria updated successfully added.",
-                                                    "SearchCriteriaResult" : results.SearchCriteriaData
+                                                    //"message": "Search Criteria updated successfully added.",
+                                                   // "SearchCriteriaResult" : results.SearchCriteriaData
                                                 });
                                             } else {
                                                 addEditSearch(cnt);
@@ -177,8 +188,8 @@ exports.saveSearchData = function (req, res, next) {
                                                         res.send({
                                                             "success": true,
                                                             "status": 200,
-                                                            "message": "Search Criteria added successfully added.",
-                                                            "SearchCriteriaResult" : results.SearchCriteriaData
+                                                            //"message": "Search Criteria added successfully added.",
+                                                            //"SearchCriteriaResult" : results.SearchCriteriaData
                                                         });
                                                     } else {
                                                         addEditSearch(cnt);
@@ -206,18 +217,23 @@ exports.getPackSearchResult = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                console.log(req.params)
                     async.waterfall([
                         function (callback) {
                             SearchModel.getPackSearchDetails( connection_ikon_cms, req.body.pctId, function(err,packSearchDetails){
                                 var contentTypeData = {};
+
+                                contentTypeData["limitCount"] = req.body.limitCount;
                                 contentTypeData["searchWhereTitle"] = req.body.title;
                                 contentTypeData["searchWherePropertyTitle"] = req.body.property;
                                 packSearchDetails.forEach(function (metadataFields) {
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
-                                    contentTypeData["releaseDurationStart"] = metadataFields.pcr_start_date;
-                                    contentTypeData["releaseDurationEnd"] = metadataFields.pcr_end_date;
 
+                                    if (metadataFields.cm_name === "releaseYearStart") {
+                                        contentTypeData["releaseYearStart"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
+                                    if (metadataFields.cm_name === "releaseYearEnd") {
+                                        contentTypeData["releaseYearEnd"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
                                     if (metadataFields.cm_name === "Content Title") {
                                         contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
                                     }
@@ -252,8 +268,9 @@ exports.getPackSearchResult = function (req, res, next) {
                                         contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
                                 })
-                                callback(err, contentTypeData);
                                 //console.log(contentTypeData)
+
+                                callback(err, contentTypeData);
                             });
                         },
                         function (data, callback) {

@@ -24,13 +24,13 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.packSearchDetails = angular.copy(data.packSearchDetails);
         $scope.packId = $scope.packDetails[0].pk_id;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
+        $scope.displayName = $scope.packDetails[0].displayName;
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
         $scope.action = 1;
         $scope.noOfRecords = 1;
         $scope.limitCount = 10;
-
         $scope.Keywords = angular.copy(data.keywords);
         $scope.Language = angular.copy(data.languages);
         $scope.Genres = angular.copy(data.genres);
@@ -52,6 +52,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.Actor_Actress_id = data.actor_actress[0].cm_id;
         $scope.Content_Title_id = data.content_title[0].cm_id;
         $scope.Content_Ids_id = data.content_id[0].cm_id;
+        $scope.releaseYearStart_id = data.releaseYearStart[0].cm_id;
+        $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
 
         /*Form Data*/
         var searchCriteriaData = {};
@@ -89,7 +91,15 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             if(metadataFields.cm_name === "Vendor"){
                 $scope.contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
+            if(metadataFields.cm_name === "releaseYearStart"){
+                $scope.contentTypeData["releaseYearStart"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "releaseYearEnd"){
+                $scope.contentTypeData["releaseYearEnd"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
         })
+        //$scope.releaseYearStart = parseInt(contentTypeData['releaseYearStart'])
+        //$scope.releaseYearEnd = parseInt(contentTypeData['releaseYearEnd'])
         //console.log($scope.contentTypeData)
         $scope.searchWhere = [
             {cd_id:'start',cd_name:'Title starting with'},
@@ -131,12 +141,11 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
                 pctId: $scope.pctId,
                 searchWhereTitle: $scope.searchWhereTitle,
                 searchWherePropertyTitle: $scope.searchWherePropertyTitle,
-                releaseDurationStart: $scope.releaseDurationStart,
-                releaseDurationEnd: $scope.releaseDurationEnd,
+                releaseYearStart: $scope.releaseYearStart,
+                releaseYearEnd: $scope.releaseYearEnd,
                 flagForNoOfRecords: $scope.noOfRecords,
                 limitCount: $scope.limitCount,
                 flagAction: $scope.action,
-
                 ruleType : $scope.ruleType,
                 nextRuleDuration : $scope.nextRuleDuration
             }
@@ -145,13 +154,13 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             Search.saveSearchData(searchData, function (data) {
                 if (data.success) {
                     $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                    toastr.success(data.message)
+                    //toastr.success(data.message)
                     //Search.addPackSearchResult(data.SearchCriteriaResult);
                     //console.log(data.SearchCriteriaResult)
                     $scope.successvisible = true;
                 }
                 else {
-                    toastr.success(data.message)
+                    //toastr.success(data.message)
                     //$scope.error = data.message;
                     $scope.errorvisible = true;
                 }

@@ -74,6 +74,16 @@ exports.getContentId = function(dbConnection, callback){
         callback(err, id)
     });
 }
+exports.getReleaseYearStart = function(dbConnection, callback){
+    dbConnection.query('select cm.* from catalogue_master AS cm WHERE cm.cm_name in ("releaseYearStart") order by cm.cm_id ', function (err, id) {
+        callback(err, id)
+    });
+}
+exports.getReleaseYearEnd = function(dbConnection, callback){
+    dbConnection.query('select cm.* from catalogue_master AS cm WHERE cm.cm_name in ("releaseYearEnd") order by cm.cm_id ', function (err, id) {
+        callback(err, id)
+    });
+}
 exports.getLastSearchCriteriaId = function( dbConnection, callback ) {
     var query = dbConnection.query("SELECT MAX(pcr_id) as pcr_id FROM `icn_pack_content_rule`", function ( err, response ) {
         pcrId = response[0].pcr_id != null ? parseInt(response[0].pcr_id + 1) : 1;
@@ -86,8 +96,9 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
     });
 }
 exports.getPackDetails = function(dbConnection,pctId,callback){
-    dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId FROM icn_packs AS pk " +
+    dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
+        "JOIN catalogue_detail AS cd ON cd.cd_id = pk.pk_cnt_display_opt " +
         " WHERE pct.pct_id = ? ", [pctId],function (err, result) { //pct_is_active = 1 AND
             callback(err,result);
         });
@@ -188,13 +199,15 @@ exports.getSearchCriteriaData = function(dbConnection,searchData,callback) {
 
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = '1';
-    console.log(searchData)
 
+    if (searchData.limitCount) {
+        limitstr = ' LIMIT '+searchData.limitCount;
+    }
     if (searchData.contentTypeId) {
         whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
     }
-    if (searchData.releaseDurationStart != null && searchData.releaseDurationEnd != null) {
-        whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseDurationStart + ' AND ' + searchData.releaseDurationEnd;
+    if (searchData.releaseYearStart != null && searchData.releaseYearEnd != null) {
+        whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseYearStart + ' AND ' + searchData.releaseYearEnd;
     }
     if (searchData.Content_Title && searchData.Content_Title != '') {
         var searchIn = '';
@@ -267,8 +280,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
 
+    console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr)
+
     var query = dbConnection.query('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd ' +
-        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr, function (err, result) {
+        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr , function (err, result) {
         callback(err,result);
     })
 }
@@ -301,9 +316,15 @@ exports.addSearchCriteriaField = function(dbConnection,data,callback){
     });
 }
 exports.editSearchCriteriaField = function(dbConnection,data,callback){
-    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data, data.pcr_pct_id, data.pcr_metadata_type], function (err, response) {
-        callback(err,response);
-    });
+    if(data.pcr_metadata_search_criteria != null){
+        var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data, data.pcr_pct_id, data.pcr_metadata_type], function (err, response) {
+            callback(err,response);
+        });
+    }else{
+        var query = dbConnection.query("DELETE FROM icn_pack_content_rule WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data.pcr_pct_id, data.pcr_metadata_type], function (err, response) {
+            callback(err,response);
+        });
+    }
 }
 
 exports.updatePackData = function(dbConnection,data,callback){
