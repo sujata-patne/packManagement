@@ -15,7 +15,6 @@ exports.getContentTypeDetails = function (req, res, next) {
                         SearchModel.getKeywords( connection_ikon_cms, function(err,keywords){
                             callback(err, keywords);
                         });
-
                     },
                     languages: function (callback) {
                         SearchModel.getLanguages( connection_ikon_cms, function(err,languages){
@@ -109,16 +108,14 @@ exports.saveSearchData = function (req, res, next) {
                         res.send({"success": false, "message": "Pack Name must be unique."});
                     } else {
                         var count = req.body.contentTypeDataDetails.length;
-                        addEditSearch(0)
+                        addEditSearch(0);
                     }
-
-
                     function addEditSearch(cnt) {
                         var j = cnt;
                         console.log("count : "+cnt +" : "+count)
                         for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
                             //var searchFieldId = req.body.contentTypeDataDetails[j];
-                        console.log("param : "+req.body.pctId + " : "+ searchFieldId)
+                        	console.log("param : "+req.body.pctId + " : "+ searchFieldId);
                             SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, req.body.contentTypeDataDetails[j][searchFieldId],function(err,response) {
                                 if(err){
                                     connection_ikon_cms.release();

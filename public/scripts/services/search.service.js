@@ -19,6 +19,7 @@ myApp.service('Search', ['$http', function ($http) {
             error(err);
         });
     }
+    
     return service;
 
 }]);

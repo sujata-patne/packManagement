@@ -198,7 +198,7 @@ exports.addSearchCriteriaField = function(dbConnection,data,callback){
     });
 }
 exports.editSearchCriteriaField = function(dbConnection,data,callback){
-    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ', [data, data.pctId, data.searchCriteriaId]",data, function (err, response) {
+    var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data, data.pctId, data.searchCriteriaId], function (err, response) {
         callback(err,response);
     });
 }

@@ -40,9 +40,15 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.Photographer_id = data.photographer[0].cm_id;
         $scope.Vendor_id = data.vendor[0].cm_id;
         $scope.Property_id = data.property[0].cm_id;
-        $scope.Actor_Actress_id = data.actor_actress[0].cm_id;
-        $scope.Content_Title_id = data.content_title[0].cm_id;
-        $scope.Content_Ids_id = data.content_id[0].cm_id;
+        if( data.actor_actress.length > 0 ) {
+        	$scope.Actor_Actress_id = data.actor_actress[0].cm_id;
+        }
+        if( data.content_title.length > 0 ) {
+        	$scope.Content_Title_id = data.content_title[0].cm_id;
+        }
+        if( data.content_id.length > 0 ) {
+        	$scope.Content_Ids_id = data.content_id[0].cm_id;
+        }
 
         $scope.searchWhere = [
             {cd_id:'start',cd_name:'Title starting with'},
@@ -64,7 +70,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         range.push(year - i);
     }
     $scope.years = range;
-
 
     $scope.submitForm = function (isValid) {
         $scope.contentTypeDataDetails = [];
