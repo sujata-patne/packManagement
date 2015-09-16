@@ -74,13 +74,8 @@ exports.getContentId = function(dbConnection, callback){
         callback(err, id)
     });
 }
-exports.getReleaseYearStart = function(dbConnection, callback){
-    dbConnection.query('select cm.* from catalogue_master AS cm WHERE cm.cm_name in ("releaseYearStart") order by cm.cm_id ', function (err, id) {
-        callback(err, id)
-    });
-}
-exports.getReleaseYearEnd = function(dbConnection, callback){
-    dbConnection.query('select cm.* from catalogue_master AS cm WHERE cm.cm_name in ("releaseYearEnd") order by cm.cm_id ', function (err, id) {
+exports.getReleaseYear = function(dbConnection, callback){
+    dbConnection.query('select cm.* from catalogue_master AS cm WHERE cm.cm_name in ("Property Release Year") order by cm.cm_id ', function (err, id) {
         callback(err, id)
     });
 }
@@ -199,7 +194,6 @@ exports.getSearchCriteriaData = function(dbConnection,searchData,callback) {
 
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = '1';
-
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }

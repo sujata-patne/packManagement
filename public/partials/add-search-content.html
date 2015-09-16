@@ -75,14 +75,14 @@
                                 <label for="title" class="col-md-1 control-label">From</label>
                                 <div class="col-md-3">
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
-                                    <label for="title" class="col-md-1 control-label">Days</label>-->
-                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['releaseYearStart']"  >
+                                    <label for="title" class="col-md-1 control-label">Days</label>--> 
+                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart"  >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
                                 <label for="title" class="col-md-1 control-label">To</label>
                                 <div class="col-md-3">
-                                    <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" data-ng-model="contentTypeData['releaseYearEnd']" ng-required="releaseYearStart != ''"  >
+                                    <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearEnd" ng-required="contentTypeData['property_release_year'].releaseYearStart"  >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -93,7 +93,7 @@
                             <div class="col-md-9">
                                 <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$touched">
                                     <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
-                                    <span ng-show="contentTypeData['releaseYearStart'] > contentTypeData['releaseYearEnd']">To Release Year should be greater that From Release Year.</span>
+                                    <span ng-show="contentTypeData['property_release_year'].releaseYearStart > contentTypeData['property_release_year'].releaseYearEnd">To Release Year should be greater that From Release Year.</span>
                                 </span>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                             <div class="form-group">
                                 <label for="title" class="col-md-2 col-xs-12 control-label" style="padding-top:0px; text-align: left">No. of Records</label>
                                 <div class="col-md-2 col-xs-6">
-                                    <input type="radio" name="noOfRecords" value="1" ng-model="noOfRecords" required>&nbsp;<label>Limited</label>
+                                    <input type="radio" name="noOfRecords" value="1" ng-model="noOfRecords" required data-ng-change="setLimit(noOfRecords)">&nbsp;<label>Limited</label>
                                 </div>
                                 <div class="col-md-2 col-xs-6">
                                     <input type="text" ng-pattern="/^[0-9]*$/" name="limitCount" class="form-control" placeholder="Limit" data-ng-model="limitCount" ng-required="noOfRecords == 1">
@@ -123,13 +123,13 @@
                                 </div>
                                 <div class="col-md-1"><label> / </label></div>
                                 <div class="col-md-3 col-xs-12">
-                                    <input type="radio" name="noOfRecords" value="2" ng-model="noOfRecords" required>&nbsp;<label>Unlimited</label>
+                                    <input type="radio" name="noOfRecords" value="2" ng-model="noOfRecords" required data-ng-change="setLimit(noOfRecords)">&nbsp;<label>Unlimited</label>
                                 </div>
                             </div>
                             <div class="form-group" style="color: red" ng-show="searchForm.$submitted">
                                 <span ng-show="searchForm.noOfRecords.$error.required">Please Select option for No. of Records.</span>
                             </div>
-                            <div class="form-group" ng-show="display != 459">
+                            <div class="form-group" ng-show="displayName != 'Manual'">
                                 <div class="col-md-3 col-xs-12">
                                     <input type="radio" name="ruleType" value="1" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Automic Pack Creation</label>
@@ -142,7 +142,7 @@
                                     <label for="title" class="col-md-1 col-xs-1 control-label">Days</label>
                                 </div>
                             </div>
-                            <div class="form-group" ng-show="display == 459">
+                            <div class="form-group">
                                 <div class="col-md-12 col-xs-12">
                                     <input type="radio" name="ruleType" value="2" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Manual Pack Creation</label>

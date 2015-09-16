@@ -8,6 +8,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.id;
     $scope.success = "";
+    $scope.limitCount = 5;
     $scope.successvisible = false;
     $scope.error = "";
     $scope.errorvisible = false;
@@ -30,7 +31,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
         $scope.action = 1;
         $scope.noOfRecords = 1;
-        $scope.limitCount = 10;
         $scope.Keywords = angular.copy(data.keywords);
         $scope.Language = angular.copy(data.languages);
         $scope.Genres = angular.copy(data.genres);
@@ -52,8 +52,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.Actor_Actress_id = data.actor_actress[0].cm_id;
         $scope.Content_Title_id = data.content_title[0].cm_id;
         $scope.Content_Ids_id = data.content_id[0].cm_id;
-        $scope.releaseYearStart_id = data.releaseYearStart[0].cm_id;
-        $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
+        $scope.property_release_year_id = data.property_release_year[0].cm_id;
+       // $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
 
         /*Form Data*/
         var searchCriteriaData = {};
@@ -91,13 +91,17 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             if(metadataFields.cm_name === "Vendor"){
                 $scope.contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
-            if(metadataFields.cm_name === "releaseYearStart"){
-                $scope.contentTypeData["releaseYearStart"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            if(metadataFields.cm_name === "Property Release Year"){
+                $scope.contentTypeData["property_release_year"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
-            if(metadataFields.cm_name === "releaseYearEnd"){
+            /*if(metadataFields.cm_name === "releaseYearEnd"){
                 $scope.contentTypeData["releaseYearEnd"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
+            }*/
+
+            $scope.contentTypeData['property_release_year'] = {'releaseYearStart':parseInt(metadataFields.pcr_start_date),'releaseYearEnd':parseInt(metadataFields.pcr_end_date)};
+
         })
+        console.log($scope.contentTypeData)
         //$scope.releaseYearStart = parseInt(contentTypeData['releaseYearStart'])
         //$scope.releaseYearEnd = parseInt(contentTypeData['releaseYearEnd'])
         //console.log($scope.contentTypeData)
@@ -123,14 +127,24 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
     }
     $scope.years = range;
 
+    $scope.setLimit = function (option) {
+        $scope.limitCount = (option != 1 )? '':5;
+    }
     $scope.submitForm = function (isValid) {
         if (isValid) {
+            //console.log($scope.contentTypeData)
             $scope.contentTypeDataDetails = [];
             angular.forEach($scope.contentTypeData,function(value,key){
                 var data = {};
-                data[$scope[key+'_id']] = value;
-                $scope.contentTypeDataDetails.push(data);
+                if(key == 'property_release_year'){
+                    data[$scope[key+'_id']] = 1;
+                    $scope.contentTypeDataDetails.push(data);
+                }else{
+                    data[$scope[key+'_id']] = value;
+                    $scope.contentTypeDataDetails.push(data);
+                }
             })
+            //console.log($scope.contentTypeDataDetails)
 
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,
@@ -141,8 +155,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
                 pctId: $scope.pctId,
                 searchWhereTitle: $scope.searchWhereTitle,
                 searchWherePropertyTitle: $scope.searchWherePropertyTitle,
-                releaseYearStart: $scope.releaseYearStart,
-                releaseYearEnd: $scope.releaseYearEnd,
+                releaseYearStart:  $scope.contentTypeData['property_release_year'].releaseYearStart,
+                releaseYearEnd: $scope.contentTypeData['property_release_year'].releaseYearEnd,
                 flagForNoOfRecords: $scope.noOfRecords,
                 limitCount: $scope.limitCount,
                 flagAction: $scope.action,

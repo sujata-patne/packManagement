@@ -67,13 +67,8 @@ exports.getContentTypeDetails = function (req, res, next) {
                             callback(err, id);
                         });
                     },
-                    releaseYearStart: function (callback) {
-                        SearchModel.getReleaseYearStart( connection_ikon_cms, function(err,id){
-                            callback(err, id);
-                        });
-                    },
-                    releaseYearEnd: function (callback) {
-                        SearchModel.getReleaseYearEnd( connection_ikon_cms, function(err,id){
+                    property_release_year: function (callback) {
+                        SearchModel.getReleaseYear( connection_ikon_cms, function(err,id){
                             callback(err, id);
                         });
                     },
@@ -135,21 +130,22 @@ exports.saveSearchData = function (req, res, next) {
                     addEditSearch(0)
                     function addEditSearch(cnt) {
                         var j = cnt;
+                        var data = {
+                            pcr_rec_type: 1,
+                            pcr_pct_id: req.body.pctId,
+                            pcr_start_date: req.body.releaseYearStart,
+                            pcr_end_date: req.body.releaseYearEnd
+                        }
                         for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
                             SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, searchFieldId, function (err, response) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
                                 }
-                                var data = {
-                                    pcr_rec_type: 1,
-                                    pcr_pct_id: req.body.pctId,
-                                    pcr_metadata_type: searchFieldId,
-                                    pcr_metadata_search_criteria: req.body.contentTypeDataDetails[j][searchFieldId],
-                                    //pcr_start_date: req.body.releaseYearStart,
-                                   // pcr_end_date: req.body.releaseYearEnd
-                                }
-                                //console.log(searchFieldId +' : '+ req.body.contentTypeDataDetails[j][searchFieldId])
+                                data['pcr_metadata_type']= searchFieldId;
+                                data['pcr_metadata_search_criteria'] = req.body.contentTypeDataDetails[j][searchFieldId];
+
+                                console.log(searchFieldId +' : '+ req.body.contentTypeDataDetails[j][searchFieldId])
                                 if (response) {
                                     SearchModel.editSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
                                         if (err) {
@@ -226,14 +222,15 @@ exports.getPackSearchResult = function (req, res, next) {
                                 contentTypeData["searchWhereTitle"] = req.body.title;
                                 contentTypeData["searchWherePropertyTitle"] = req.body.property;
                                 packSearchDetails.forEach(function (metadataFields) {
+
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
 
-                                    if (metadataFields.cm_name === "releaseYearStart") {
-                                        contentTypeData["releaseYearStart"] = metadataFields.pcr_metadata_search_criteria;
-                                    }
-                                    if (metadataFields.cm_name === "releaseYearEnd") {
-                                        contentTypeData["releaseYearEnd"] = metadataFields.pcr_metadata_search_criteria;
-                                    }
+                                   // if (metadataFields.cm_name === "releaseYearStart") {
+                                        contentTypeData["releaseYearStart"] = metadataFields.pcr_start_date;
+                                   // }
+                                   // if (metadataFields.cm_name === "releaseYearEnd") {
+                                        contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_date;
+                                   // }
                                     if (metadataFields.cm_name === "Content Title") {
                                         contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
                                     }
@@ -286,7 +283,7 @@ exports.getPackSearchResult = function (req, res, next) {
                             res.status(500).json(err.message);
                             console.log(err.message)
                         } else {
-                            console.log(results.searchContentList.length)
+                           // console.log(results.searchContentList.length)
                             connection_ikon_cms.release();
                             res.send(results);
                         }
