@@ -31,6 +31,16 @@ exports.getPackByName = function(dbConnection,packName,callback){
 	            }
         });
 }
+exports.getPackByNameForUpdate = function( dbConnection,packName,packId,callback ){
+		dbConnection.query("SELECT pk_id as id FROM `icn_packs` WHERE lower(pk_name) = ? AND pk_id != ?",
+			[packName,packId],function (err, result) {
+	            if(result.length > 0){
+	                callback(err,true);
+	            }else{
+	                callback(err,false);
+	            }
+        });
+}
 
 exports.getPacksForStore = function(dbConnection,storeId,callback){
 		dbConnection.query("SELECT * FROM `icn_packs` WHERE pk_st_id = ?",storeId,function (err, response) {
@@ -40,6 +50,18 @@ exports.getPacksForStore = function(dbConnection,storeId,callback){
 
 exports.savePack = function(dbConnection,data,callback){
 	var query = dbConnection.query("INSERT INTO `icn_packs` SET ? ",data, function (err, response) {
+		callback(err,response);
+	});
+}
+
+exports.updatePack = function(dbConnection,data,packId,callback){
+	var query = dbConnection.query("UPDATE `icn_packs` SET ? WHERE pk_id = ?",[data,packId], function (err, response) {
+		callback(err,response);
+	});
+}
+
+exports.deletePackContentTypes = function(dbConnection,packId,callback){
+	var query = dbConnection.query("DELETE FROM `icn_pack_content_type` WHERE pct_pk_id = ?",[packId], function (err, response) {
 		callback(err,response);
 	});
 }
@@ -77,4 +99,14 @@ exports.updateContentTypeStatus = function(dbConnection,packId,contentTypeId,act
 	var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_is_active = ? WHERE pct_pk_id = ? AND  pct_cnt_type = ? ",[active,packId,contentTypeId], function (err, response) {
 		callback(err,response);
 	});
+}
+
+
+exports.getAllPacksForList = function( dbConnection,storeId, callback ) {
+	var query = dbConnection.query("SELECT pk.*, group_concat(cd.cd_name) AS types "+
+	 								"FROM icn_packs AS pk  JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id "+
+									"inner join catalogue_detail cd on (pct.pct_cnt_type = cd.cd_id)"+
+									"WHERE pk.pk_st_id = ?   group by pk.pk_id ORDER BY pk.pk_id desc",storeId, function ( err, response ) {
+        callback( err,response );
+    });
 }

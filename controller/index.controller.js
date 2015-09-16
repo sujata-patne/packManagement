@@ -42,7 +42,7 @@ exports.pages = function (req, res, next) {
     var pagesjson = [
         { 'pagename': 'Add Pack', 'href': 'add-pack', 'id': 'add-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         //{ 'pagename': 'Add Search Content', 'href': 'add-search-content', 'id': 'add-search-content', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-        { 'pagename': 'Add Content List', 'href': 'add-content-list', 'id': 'add-content-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+        { 'pagename': 'Add/Update Content List', 'href': 'add-content-list', 'id': 'add-content-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
         { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
     ];
 
@@ -133,7 +133,7 @@ exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
             userManager.getUserDetails( connection_central, req.body.username, req.body.password, function( err, userDetails ){
-                //console.log( userDetails[0] );
+                console.log( userDetails[0] );
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
                 } else {
@@ -185,8 +185,7 @@ function getPages(role) {
 
         var pagesjson = [
             { 'pagename': 'Add Pack', 'href': 'add-pack', 'id': 'add-pack', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            //{ 'pagename': 'Add Search Content', 'href': 'add-search-content', 'id': 'add-search-content', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
-            { 'pagename': 'Add Content List', 'href': 'add-content-list', 'id': 'add-content-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
+            { 'pagename': 'Add/Update Content List', 'href': 'add-content-list', 'id': 'add-content-list', 'class': 'fa fa-briefcase', 'submenuflag': '0', 'sub': [] },
             { 'pagename': 'Change Password', 'href': 'changepassword', 'id': 'changepassword', 'class': 'fa fa-align-left', 'submenuflag': '0', 'sub': [] }
         ];
         return pagesjson;

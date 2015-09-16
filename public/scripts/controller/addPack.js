@@ -1,6 +1,7 @@
 myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Packs) {
-
-	$scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
+    $('.removeActiveClass').removeClass('active');
+    $('#add-pack').addClass('active');
+	$scope.PageTitle = $state.current.name == "edit-pack" ? "Edit " : "Add ";
 	// $scope.PageTitle = "Add";
 	$scope.success = "";
     $scope.successvisible = false;
@@ -12,14 +13,37 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
     $scope.ContentTypes = [];
     $scope.selectedContentTypes = [];
     $scope.isAdded = false;
+    $scope.edit_mode = false;
+    var preData;
+    //Used for prepopulating add pack page.
+    preData = {
+            state : "add-pack"
+        }
+    if($stateParams.id){
+            //Change predata  for edit mode accordingly.
+            $scope.edit_mode = true;
+            preData.state  = "edit-pack";
+            preData.packId = $stateParams.id;
+    }
+   
 
-    Packs.getData(function(data){
-
+    Packs.getData(preData,function( data ){
+        if($stateParams.id){
+                $scope.packname = data.PackDetails[0].pk_name;
+                $scope.packdesc = data.PackDetails[0].pk_desc;
+                $scope.packtype = data.PackDetails[0].pk_cnt_display_opt;
+                $scope.selectedContentTypes = [];
+                data.PackDetails.forEach(function(el){
+                     $scope.selectedContentTypes.push(el.cd_id);
+                });
+        }
     	$scope.ContentTypes = data.ContentTypes;
     	$scope.PackTypes = data.PackTypes;
+    },function(error){
+        console.log(error);
     });
 
-    $scope.submitForm = function (isValid) {
+    $scope.submitForm = function ( isValid ) {
         $scope.successvisible = false;
         $scope.errorvisible = false;
             var packData = {
@@ -29,29 +53,49 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
                 pack_content_type: $scope.selectedContentTypes
             };
         if (isValid) {
-            Packs.addEditPack(packData,function(data){
-             ngProgress.start();
-                if(data.success){
-                    $scope.isAdded  = true;
-                    $scope.selectedPack = data.pack_grid[0].pk_id;
-                    $scope.pack_added_date = data.pack_grid[0].pk_created_on;
-                    $scope.pack_modified_date = data.pack_grid[0].pk_modified_on;
-                    $scope.pack_added_name = data.pack_grid[0].pk_name;
-                    $scope.type_added_name = data.pack_grid[0].type; 
-                    $scope.pack_grid = data.pack_grid;
-                    $scope.success = data.message;
-                    $scope.successvisible = true;
-                }else{
-                    $scope.error = data.message;
-                    $scope.errorvisible = true;
-                }
-                ngProgress.complete();
-            },function(error){
-                console.log(error)
-                toastr.success(error)
-            });
+            if($stateParams.id){
+                    packData.packId = $stateParams.id;
+                    ngProgress.start();
+                    Packs.editPack(packData,function(data){
+                       $scope.result(data);
+                        
+                    },function(error){
+                        console.log(error);
+                    });
+                    ngProgress.complete();
+            }else{
+                    Packs.addPack(packData,function(data){
+                         ngProgress.start();
+                         $scope.result(data);   
+                         ngProgress.complete();
+                    },function(error){
+                        console.log(error);
+                    });
+            }
         }
     };
+
+    $scope.result = function( data ){
+         if(data.success){
+                $scope.getResultData(data);
+                $scope.success = data.message;
+                $scope.successvisible = true;
+         }else{
+                $scope.error = data.message;
+                $scope.errorvisible = true;
+         }
+    }
+
+    $scope.getResultData = function( data ){
+        $scope.isAdded  = true;
+        $scope.selectedPack = data.pack_grid[0].pk_id;
+        $scope.pack_added_date = data.pack_grid[0].pk_created_on;
+        $scope.pack_modified_date = data.pack_grid[0].pk_modified_on;
+        $scope.pack_added_name = data.pack_grid[0].pk_name;
+        $scope.type_added_name = data.pack_grid[0].type; 
+        $scope.pack_grid = data.pack_grid;
+    }
+
 
     $scope.resetForm = function () {
         $scope.successvisible = false;
@@ -94,7 +138,7 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
 
     }
 
-$scope.getContentTypesByPack = function(){
+    $scope.getContentTypesByPack = function(){
             var grid = {
                             packId : $scope.selectedPack
                        };

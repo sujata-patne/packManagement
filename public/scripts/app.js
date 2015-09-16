@@ -49,7 +49,11 @@ myApp.config(function ($stateProvider) {
             controller: "addPackCtrl",
             url: "/add-pack"
         })
-
+        .state("edit-pack", {
+            templateUrl: "partials/add-pack.html",
+            controller: "addPackCtrl",
+            url: "/edit-pack/:id"
+        })
         .state("search-content", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
@@ -69,6 +73,11 @@ myApp.config(function ($stateProvider) {
             templateUrl: "partials/show-content-list.html",
             controller: "showContentListCtrl",
             url: "/show-content-list/:pctId/:limitCount/:action/:title/:property"
+        })
+        .state("show-packs-list", {
+            templateUrl: "partials/show-packs-list.html",
+            controller: "showPacksListCtrl",
+            url: "/show-packs-list"
         })
         .state('users', {
             templateUrl: 'partials/add-edit-users.html',
