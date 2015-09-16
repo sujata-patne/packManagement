@@ -1,3 +1,4 @@
+
 var mysql = require('../config/db').pool;
 var nodemailer = require('nodemailer');
 var userManager = require('../models/userModel');
@@ -132,7 +133,7 @@ exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_central) {
             userManager.getUserDetails( connection_central, req.body.username, req.body.password, function( err, userDetails ){
-                //console.log( userDetails[0] );
+                console.log( userDetails[0] );
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
                 } else {
