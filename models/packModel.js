@@ -100,3 +100,13 @@ exports.updateContentTypeStatus = function(dbConnection,packId,contentTypeId,act
 		callback(err,response);
 	});
 }
+
+
+exports.getAllPacksForList = function( dbConnection,storeId, callback ) {
+	var query = dbConnection.query("SELECT pk.*, group_concat(cd.cd_name) AS types "+
+	 								"FROM icn_packs AS pk  JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id "+
+									"inner join catalogue_detail cd on (pct.pct_cnt_type = cd.cd_id)"+
+									"WHERE pk.pk_st_id = ?   group by pk.pk_id ORDER BY pk.pk_id desc",storeId, function ( err, response ) {
+        callback( err,response );
+    });
+}

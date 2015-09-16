@@ -5,6 +5,7 @@ module.exports = function(app){
     require('../routes/index')(app);
     require('../routes/pack')(app);
     require('../routes/search')(app);
+    require('../routes/packList')(app);
 
 
     app.use('/*', function(req,res,next){

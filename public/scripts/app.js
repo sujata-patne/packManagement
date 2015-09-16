@@ -58,6 +58,11 @@ myApp.config(function ($stateProvider) {
             controller: "showContentListCtrl",
             url: "/show-content-list"
         })
+        .state("show-packs-list", {
+            templateUrl: "partials/show-packs-list.html",
+            controller: "showPacksListCtrl",
+            url: "/show-packs-list"
+        })
         .state('users', {
             templateUrl: 'partials/add-edit-users.html',
             controller: 'usersCtrl',

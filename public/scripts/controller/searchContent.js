@@ -3,6 +3,8 @@
  */
 
 myApp.controller('searchContentCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search) {
+    $('.removeActiveClass').removeClass('active');
+    $('#add-search-content').addClass('active');
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.id;
     //console.log($scope.pctId)
