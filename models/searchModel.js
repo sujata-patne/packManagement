@@ -105,11 +105,18 @@ exports.saveSearchContents = function(dbConnection, data, callback){
 }
 
 exports.getSavedContents = function(dbConnection, pctId, callback){
-    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? ",
-        [pctId],function (err, result) {
+    var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
+        'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
+        'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
+
+    dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property, "+celebrity+" FROM icn_pack_content AS pc " +
+        "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
+        "INNER JOIN content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id " +
+        "WHERE ISNULL(cmd1.cm_property_id) AND pc_pct_id = ? ", [pctId],function (err, result) {
             callback(err,result);
     });
 }
+
 exports.getPackDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
@@ -118,6 +125,7 @@ exports.getPackDetails = function(dbConnection,pctId,callback){
             callback(err,result);
         });
 }
+
 exports.getPackSearchDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId, pcr.*, cm.* FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
@@ -137,7 +145,6 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     if (searchData.contentTypeId) {
         whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
     }
-
     if (searchData.releaseYearStart != null && searchData.releaseYearEnd != null) {
         whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseYearStart + ' AND ' + searchData.releaseYearEnd;
     }
@@ -218,12 +225,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     })
 }
 
-exports.searchCriteriaFieldExist = function(dbConnection,pctId,metaDataTypeId,callback){
-    dbConnection.query("SELECT pcr.* FROM icn_packs AS pk " +
-        "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
-        "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id " +
-        "WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ",
-        [pctId, metaDataTypeId],function (err, result) {
+exports.searchCriteriaExist = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pcr.* FROM icn_pack_content_rule AS pcr " +
+        "WHERE pcr_pct_id  = ? ",
+        [pctId],function (err, result) {
             //console.log(result)
             if(result.length > 0){
                 callback(err,true);
@@ -237,18 +242,11 @@ exports.addSearchCriteriaField = function(dbConnection,data,callback){
         callback(err,response);
     });
 }
-exports.editSearchCriteriaField = function(dbConnection,data,callback){
-    if(data.pcr_metadata_search_criteria != null){
-        var query = dbConnection.query("UPDATE icn_pack_content_rule SET ? WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data, data.pcr_pct_id, data.pcr_metadata_type], function (err, response) {
-            callback(err,response);
-        });
-    }else{
-        var query = dbConnection.query("DELETE FROM icn_pack_content_rule WHERE pcr_pct_id = ? AND pcr_metadata_type = ? ", [data.pcr_pct_id, data.pcr_metadata_type], function (err, response) {
-            callback(err,response);
-        });
-    }
+exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
+    var query = dbConnection.query("DELETE FROM icn_pack_content_rule WHERE pcr_pct_id = ? ", [pctId], function (err, response) {
+        callback(err,response);
+    });
 }
-
 exports.updatePackData = function(dbConnection,data,callback){
     var query = dbConnection.query("UPDATE icn_packs SET ? WHERE pk_id = ? ", [data, data.pk_id], function (err, response) {
         callback(err,response);

@@ -54,6 +54,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.Content_Ids_id = data.content_id[0].cm_id;
         $scope.property_release_year_id = data.property_release_year[0].cm_id;
        // $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart':'','releaseYearEnd':''};
 
         /*Form Data*/
         var searchCriteriaData = {};
@@ -94,17 +95,11 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             if(metadataFields.cm_name === "Property Release Year"){
                 $scope.contentTypeData["property_release_year"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
-            /*if(metadataFields.cm_name === "releaseYearEnd"){
-                $scope.contentTypeData["releaseYearEnd"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }*/
 
             $scope.contentTypeData['property_release_year'] = {'releaseYearStart':parseInt(metadataFields.pcr_start_date),'releaseYearEnd':parseInt(metadataFields.pcr_end_date)};
 
         })
-        //console.log($scope.contentTypeData)
-        //$scope.releaseYearStart = parseInt(contentTypeData['releaseYearStart'])
-        //$scope.releaseYearEnd = parseInt(contentTypeData['releaseYearEnd'])
-        //console.log($scope.contentTypeData)
+
         $scope.searchWhere = [
             {cd_id:'start',cd_name:'Title starting with'},
             {cd_id:'end',cd_name:'Title ending with'},
@@ -132,20 +127,24 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
     }
     $scope.submitForm = function (isValid) {
         if (isValid) {
-            //console.log($scope.contentTypeData)
+
             $scope.contentTypeDataDetails = [];
             angular.forEach($scope.contentTypeData,function(value,key){
                 var data = {};
-                if(key == 'property_release_year'){
-                    data[$scope[key+'_id']] = 1;
-                    $scope.contentTypeDataDetails.push(data);
+
+                if(key == 'property_release_year' ){
+                   if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
+                       data[$scope[key+'_id']] = 1;
+                       $scope.contentTypeDataDetails.push(data);
+                   }
                 }else{
-                    data[$scope[key+'_id']] = value;
-                    $scope.contentTypeDataDetails.push(data);
+                    if(value){
+                        data[$scope[key+'_id']] = value;
+                        $scope.contentTypeDataDetails.push(data);
+                    }
+
                 }
             })
-            //console.log($scope.contentTypeDataDetails)
-
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,
                 contentTypeData:$scope.contentTypeData,
@@ -163,7 +162,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
                 ruleType : $scope.ruleType,
                 nextRuleDuration : $scope.nextRuleDuration
             }
-           // console.log(searchData)
+            console.log(searchData)
             ngProgress.start();
             Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {

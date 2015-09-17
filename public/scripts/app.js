@@ -11,18 +11,6 @@ var ContentTypeDetails = [
             {'Photographer': 'Photographer'}
         ]
         }
-    ]},
-    {'Auto': [
-        {'Wallpaper': [
-            [{'name': 'Keywords'}, {'type': 'text'}],
-            [{'name': 'Language'}, {'type': 'dropdown'}],
-            [{'name': 'Actor/Actress'}, {'type': 'dropdown'}],
-            [{'name': 'Genres'}, {'type': 'dropdown'}],
-            [{'name': 'Sub Genres'}, {'type': 'dropdown'}],
-            [{'name': 'Mood'}, {'type': 'dropdown'}],
-            [{'name': 'Photographer'}, {'type': 'dropdown'}]
-            ]
-        }
     ]
 }];
 toastr.options = {
@@ -73,6 +61,11 @@ myApp.config(function ($stateProvider) {
             templateUrl: "partials/show-content-list.html",
             controller: "showContentListCtrl",
             url: "/show-content-list/:pctId/:limitCount/:action/:title/:property"
+        })
+        .state("arrange-content-list", {
+            templateUrl: "partials/arrange-content-list.html",
+            controller: "arrangeContentListCtrl",
+            url: "/arrange-content-list/:pctId"
         })
         .state("show-packs-list", {
             templateUrl: "partials/show-packs-list.html",

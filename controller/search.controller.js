@@ -188,8 +188,28 @@ exports.saveSearchCriteria = function (req, res, next) {
                 packUpdateResponse = updatePackData( connection_ikon_cms,packData );
                 /* Add/update pack search criteria fields with values */
                 var count = req.body.contentTypeDataDetails.length;
-                addEditSearch(0);
 
+                SearchModel.searchCriteriaExist(connection_ikon_cms, req.body.pctId, function (err, response) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                    }else{
+                        if(response){
+                            /*delete existing search criteria and then add*/
+                            SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                }else{
+                                    addEditSearch(0);
+                                }
+                            })
+                        }else{
+                            /*Add search criteria first time*/
+                            addEditSearch(0);
+                        }
+                    }
+                });
                 function addEditSearch(cnt) {
                     var j = cnt;
                     var data = {
@@ -199,16 +219,12 @@ exports.saveSearchCriteria = function (req, res, next) {
                         pcr_end_date: req.body.releaseYearEnd
                     }
                     for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
-                        SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, searchFieldId, function (err, response) {
-                            if (err) {
-                                connection_ikon_cms.release();
-                                res.status(500).json(err.message);
-                            }
-                            data['pcr_metadata_type']= searchFieldId;
-                            data['pcr_metadata_search_criteria'] = req.body.contentTypeDataDetails[j][searchFieldId];
-
-                            if (response) {
-                                SearchModel.editSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
+                        data['pcr_metadata_type']= searchFieldId;
+                        data['pcr_metadata_search_criteria'] = req.body.contentTypeDataDetails[j][searchFieldId];
+                        getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
+                            if (lastInsertedSearchCriteriaId) {
+                                data['pcr_id'] = lastInsertedSearchCriteriaId;
+                                SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
                                     if (err) {
                                         connection_ikon_cms.release();
                                         res.status(500).json(err.message);
@@ -220,37 +236,11 @@ exports.saveSearchCriteria = function (req, res, next) {
                                             res.send({
                                                 "success": true,
                                                 "status": 200,
-                                                //"message": "Search Criteria updated successfully added.",
+                                                //"message": "Search Criteria added successfully added.",
                                             });
                                         } else {
                                             addEditSearch(cnt);
                                         }
-                                    }
-                                })
-                            }
-                            else {
-                                getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
-                                    if (lastInsertedSearchCriteriaId) {
-                                        data['pcr_id'] = lastInsertedSearchCriteriaId;
-                                        SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                                            if (err) {
-                                                connection_ikon_cms.release();
-                                                res.status(500).json(err.message);
-                                            }
-                                            else {
-                                                cnt = cnt + 1;
-                                                if (cnt == count) {
-                                                    connection_ikon_cms.release();
-                                                    res.send({
-                                                        "success": true,
-                                                        "status": 200,
-                                                        //"message": "Search Criteria added successfully added.",
-                                                    });
-                                                } else {
-                                                    addEditSearch(cnt);
-                                                }
-                                            }
-                                        })
                                     }
                                 })
                             }

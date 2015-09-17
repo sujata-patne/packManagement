@@ -42,12 +42,11 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
             $scope.contents.push(value.pc_cm_id);
             $scope.selectedContent[value.pc_cm_id] = true;
         })
-        console.log( $scope.contents)
     }, function (error) {
         //console.log(error)
         toastr.success(error)
     });
-    $scope.addContent = function (id) {
+    $scope.addSelectedContents = function (id) {
         if ($scope.selectedContent[id] === true) {
             $scope.contents.push(id);
         }
@@ -58,10 +57,26 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         //console.log($scope.contents);
     }
 
-    $scope.saveSearchContents = function () {
+    $scope.addMoreSearchContents = function () {
         Search.saveSearchContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
-            console.log(data)
             $window.location.href = "/#/search-content/"+$scope.pctId;
+        },function(error){
+            console.log(error)
+            toastr.success(error)
+        })
+    }
+    $scope.arrangeSearchContents = function () {
+        Search.saveSearchContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+            $window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+        },function(error){
+            console.log(error)
+            toastr.success(error)
+        })
+    }
+
+    $scope.addArrangedContents = function () {
+        Search.saveSearchContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+            //$window.location.href = "/#/search-content/"+$scope.pctId;
         },function(error){
             console.log(error)
             toastr.success(error)
