@@ -6,6 +6,76 @@ var SearchModel = require('../models/searchModel');
 
 //console.log(data.ContentTypeDetails[0].Manual[0].Wallpaper);
 
+exports.getSavedContents = function (req, res, next) {
+    try {
+        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                SearchModel.getSavedContents(connection_ikon_cms, req.body.pctId, function (err, results) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                    }
+                    else {
+                        connection_ikon_cms.release();
+                        res.send({
+                            "success": true,
+                            "status": 200,
+                            "contents": results
+                        });
+                    }
+                })
+            })
+        }else {
+            res.redirect('/accountlogin');
+        }
+    }
+    catch (err) {
+        res.status(500).json(err.message);
+    }
+}
+exports.saveSearchContents = function (req, res, next) {
+    try {
+        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
+            console.log(req.body.selectedContentList)
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                var count = req.body.selectedContentList.length;
+                for (var i in req.body.selectedContentList) {
+                    addEditSearchContents(req.body.selectedContentList[i]);
+                    var cnt = 0;
+                    function addEditSearchContents(contentId) {
+                        var data = {
+                            pc_pct_id: req.body.pctId,
+                            pc_cm_id: contentId
+                        }
+                        SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
+                            if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                            }
+                            else {
+                                cnt = cnt + 1;
+                                if (cnt == count) {
+                                    connection_ikon_cms.release();
+                                    res.send({
+                                        "success": true,
+                                        "status": 200,
+                                        "message": "Search Contents added successfully!."
+                                    });
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }else {
+            res.redirect('/accountlogin');
+        }
+    }
+    catch (err) {
+        res.status(500).json(err.message);
+    }
+}
+
 exports.getContentTypeDetails = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName) {
@@ -103,102 +173,90 @@ exports.getContentTypeDetails = function (req, res, next) {
     }
 };
 
-exports.saveSearchData = function (req, res, next) {
+exports.saveSearchCriteria = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                async.parallel({
-                    /*SearchCriteriaData : function(callback){
-                        console.log(req.body)
-                        SearchModel.getSearchCriteriaData(connection_ikon_cms,req.body,function(err,response){
-                            callback(err,response);
-                        });
-                    }*/
-                },function (err, results) {
-                    //console.log(results.SearchCriteriaData)
-                    var packData = {
-                        pk_id : req.body.packId,
-                        pk_rule_type : req.body.ruleType,
-                        pk_nxt_rule_duration : req.body.nextRuleDuration,
-                        pk_modified_on: new Date(),
-                        pk_modified_by: req.session.pack_UserName
+                var packData = {
+                    pk_id : req.body.packId,
+                    pk_rule_type : req.body.ruleType,
+                    pk_nxt_rule_duration : req.body.nextRuleDuration,
+                    pk_modified_on: new Date(),
+                    pk_modified_by: req.session.pack_UserName
+                }
+                /*update pack details*/
+                packUpdateResponse = updatePackData( connection_ikon_cms,packData );
+                /* Add/update pack search criteria fields with values */
+                var count = req.body.contentTypeDataDetails.length;
+                addEditSearch(0);
+
+                function addEditSearch(cnt) {
+                    var j = cnt;
+                    var data = {
+                        pcr_rec_type: 1,
+                        pcr_pct_id: req.body.pctId,
+                        pcr_start_date: req.body.releaseYearStart,
+                        pcr_end_date: req.body.releaseYearEnd
                     }
+                    for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
+                        SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, searchFieldId, function (err, response) {
+                            if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                            }
+                            data['pcr_metadata_type']= searchFieldId;
+                            data['pcr_metadata_search_criteria'] = req.body.contentTypeDataDetails[j][searchFieldId];
 
-                    packUpdateResponse = updatePackData( connection_ikon_cms,packData );
-
-                    var count = req.body.contentTypeDataDetails.length;
-                    addEditSearch(0)
-                    function addEditSearch(cnt) {
-                        var j = cnt;
-                        var data = {
-                            pcr_rec_type: 1,
-                            pcr_pct_id: req.body.pctId,
-                            pcr_start_date: req.body.releaseYearStart,
-                            pcr_end_date: req.body.releaseYearEnd
-                        }
-                        for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
-                            SearchModel.searchCriteriaFieldExist(connection_ikon_cms, req.body.pctId, searchFieldId, function (err, response) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                                data['pcr_metadata_type']= searchFieldId;
-                                data['pcr_metadata_search_criteria'] = req.body.contentTypeDataDetails[j][searchFieldId];
-
-                                console.log(searchFieldId +' : '+ req.body.contentTypeDataDetails[j][searchFieldId])
-                                if (response) {
-                                    SearchModel.editSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                                        if (err) {
+                            if (response) {
+                                SearchModel.editSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                    else {
+                                        cnt = cnt + 1;
+                                        if (cnt == count) {
                                             connection_ikon_cms.release();
-                                            res.status(500).json(err.message);
+                                            res.send({
+                                                "success": true,
+                                                "status": 200,
+                                                //"message": "Search Criteria updated successfully added.",
+                                            });
+                                        } else {
+                                            addEditSearch(cnt);
                                         }
-                                        else {
-                                            cnt = cnt + 1;
-                                            if (cnt == count) {
+                                    }
+                                })
+                            }
+                            else {
+                                getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
+                                    if (lastInsertedSearchCriteriaId) {
+                                        data['pcr_id'] = lastInsertedSearchCriteriaId;
+                                        SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
+                                            if (err) {
                                                 connection_ikon_cms.release();
-                                                res.send({
-                                                    "success": true,
-                                                    "status": 200,
-                                                    //"message": "Search Criteria updated successfully added.",
-                                                   // "SearchCriteriaResult" : results.SearchCriteriaData
-                                                });
-                                            } else {
-                                                addEditSearch(cnt);
+                                                res.status(500).json(err.message);
                                             }
-                                        }
-                                    })
-                                }
-                                else {
-                                    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
-                                        if (lastInsertedSearchCriteriaId) {
-                                            data['pcr_id'] = lastInsertedSearchCriteriaId;
-                                            SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                                                if (err) {
+                                            else {
+                                                cnt = cnt + 1;
+                                                if (cnt == count) {
                                                     connection_ikon_cms.release();
-                                                    res.status(500).json(err.message);
+                                                    res.send({
+                                                        "success": true,
+                                                        "status": 200,
+                                                        //"message": "Search Criteria added successfully added.",
+                                                    });
+                                                } else {
+                                                    addEditSearch(cnt);
                                                 }
-                                                else {
-                                                    cnt = cnt + 1;
-                                                    if (cnt == count) {
-                                                        connection_ikon_cms.release();
-                                                        res.send({
-                                                            "success": true,
-                                                            "status": 200,
-                                                            //"message": "Search Criteria added successfully added.",
-                                                            //"SearchCriteriaResult" : results.SearchCriteriaData
-                                                        });
-                                                    } else {
-                                                        addEditSearch(cnt);
-                                                    }
-                                                }
-                                            })
-                                        }
-                                    })
-                                }
-                            })
-                        }
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                        })
                     }
-                })
+                }
             })
         }else {
             res.redirect('/accountlogin');
@@ -224,13 +282,9 @@ exports.getPackSearchResult = function (req, res, next) {
                                 packSearchDetails.forEach(function (metadataFields) {
 
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
+                                    contentTypeData["releaseYearStart"] = metadataFields.pcr_start_date;
+                                    contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_date;
 
-                                   // if (metadataFields.cm_name === "releaseYearStart") {
-                                        contentTypeData["releaseYearStart"] = metadataFields.pcr_start_date;
-                                   // }
-                                   // if (metadataFields.cm_name === "releaseYearEnd") {
-                                        contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_date;
-                                   // }
                                     if (metadataFields.cm_name === "Content Title") {
                                         contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
                                     }
@@ -265,8 +319,6 @@ exports.getPackSearchResult = function (req, res, next) {
                                         contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
                                 })
-                                //console.log(contentTypeData)
-
                                 callback(err, contentTypeData);
                             });
                         },
@@ -298,7 +350,7 @@ exports.getPackSearchResult = function (req, res, next) {
 };
 
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
-        SearchModel.getLastSearchCriteriaId(connection_ikon_cms,function(err,maxPCRID){
+    SearchModel.getLastSearchCriteriaId(connection_ikon_cms,function(err,maxPCRID){
         if(err){
             connection_ikon_cms.release();
             res.status(500).json(err.message);

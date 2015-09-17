@@ -6,6 +6,10 @@ module.exports = function (app) {
         .get(search.getContentTypeDetails);
     app.route('/showContentList')
         .post(search.getPackSearchResult);
-    app.route('/saveSearchData')
-        .post(search.saveSearchData);
+    app.route('/saveSearchCriteria')
+        .post(search.saveSearchCriteria);
+    app.route('/saveSearchContents')
+        .post(search.saveSearchContents);
+    app.route('/savedContents')
+        .post(search.getSavedContents);
 }

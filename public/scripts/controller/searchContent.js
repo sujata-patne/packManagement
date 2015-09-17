@@ -101,7 +101,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             $scope.contentTypeData['property_release_year'] = {'releaseYearStart':parseInt(metadataFields.pcr_start_date),'releaseYearEnd':parseInt(metadataFields.pcr_end_date)};
 
         })
-        console.log($scope.contentTypeData)
+        //console.log($scope.contentTypeData)
         //$scope.releaseYearStart = parseInt(contentTypeData['releaseYearStart'])
         //$scope.releaseYearEnd = parseInt(contentTypeData['releaseYearEnd'])
         //console.log($scope.contentTypeData)
@@ -165,7 +165,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             }
            // console.log(searchData)
             ngProgress.start();
-            Search.saveSearchData(searchData, function (data) {
+            Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {
                     $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
                     //toastr.success(data.message)

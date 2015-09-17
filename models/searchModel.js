@@ -90,6 +90,26 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
         callback(err,response);
     });
 }
+exports.saveSearchContents = function(dbConnection, data, callback){
+    //console.log(data.pc_pct_id +' : '+ data.pc_cm_id)
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? ",
+        [data.pc_pct_id, data.pc_cm_id],function (err, result) {
+        if(result.length > 0){
+            callback(null,false);
+        }else{
+            var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ",data, function (err, response) {
+                callback(err,response);
+            });
+        }
+    });
+}
+
+exports.getSavedContents = function(dbConnection, pctId, callback){
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? ",
+        [pctId],function (err, result) {
+            callback(err,result);
+    });
+}
 exports.getPackDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
@@ -107,99 +127,17 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
             callback(err,result);
         });
 }
-exports.getSearchCriteriaData = function(dbConnection,searchData,callback) {
-    var whereStr = '1';
-
-    if (searchData.contentTypeId) {
-        whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
-    }
-    if (searchData.releaseDurationStart && searchData.releaseDurationEnd) {
-        whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseDurationStart + ' AND ' + searchData.releaseDurationEnd;
-    }
-    if(searchData.contentTypeData !== undefined) {
-        if (searchData.contentTypeData.Content_Title) {
-            var searchIn = '';
-            if (searchData.searchWhereTitle == 'start') {
-                searchIn = ' LIKE "' + searchData.contentTypeData.Content_Title + '%"'
-            }
-            else if (searchData.searchWhereTitle == 'end') {
-                searchIn = ' LIKE "%' + searchData.contentTypeData.Content_Title + '"'
-            }
-            else if (searchData.searchWhereTitle == 'anywhere') {
-                searchIn = ' LIKE "%' + searchData.contentTypeData.Content_Title + '%"'
-            }
-            else if (searchData.searchWhereTitle == 'exact') {
-                searchIn = ' LIKE "' + searchData.contentTypeData.Content_Title + '"'
-            }
-            whereStr += ' AND cmd.cm_title ' + searchIn;
-        }
-        if (searchData.contentTypeData.Property) {
-            var searchIn = '';
-            if (searchData.searchWherePropertyTitle == 'start') {
-                searchIn = ' AND p.cm_title LIKE "' + searchData.contentTypeData.Property + '%"'
-            }
-            else if (searchData.searchWherePropertyTitle == 'end') {
-                searchIn = ' AND p.cm_title LIKE "%' + searchData.contentTypeData.Property + '"'
-            }
-            else if (searchData.searchWherePropertyTitle == 'anywhere') {
-                searchIn = ' AND p.cm_title LIKE "%' + searchData.contentTypeData.Property + '%"'
-            }
-            else if (searchData.searchWherePropertyTitle == 'exact') {
-                searchIn = ' AND p.cm_title LIKE "' + searchData.contentTypeData.Property + '"'
-            }
-            whereStr += ' AND cmd.cm_property_id IN ( SELECT p.cm_id FROM content_metadata AS p WHERE ISNULL(p.cm_property_id) ' + searchIn + ' ) ';
-        }
-        if (searchData.contentTypeData.Content_Ids) {
-            whereStr += ' AND cmd.cm_id IN (' + searchData.contentTypeData.Content_Ids + ') ';
-        }
-        if (searchData.contentTypeData.Vendor) {
-            whereStr += ' AND cmd.cm_vendor = ' + searchData.contentTypeData.Vendor;
-        }
-        if (searchData.contentTypeData.Keywords) {
-            var keywords = searchData.contentTypeData.Keywords.split(',')
-                .map(function (element) {
-                    return "'" + String(element).trim() + "'"
-                }).join(" ,");
-
-            whereStr += ' AND cmd.cm_key_words IN ( SELECT group_concat( distinct mmd.cmd_group_id) FROM catalogue_detail AS kcd ' +
-                'JOIN catalogue_master AS kcm ON kcd.cd_cm_id = kcm.cm_id ' +
-                'JOIN multiselect_metadata_detail AS mmd ON mmd.cmd_entity_detail = kcd.cd_id ' +
-                'WHERE kcm.cm_name = "Search Keywords" AND cd_name IN (' + keywords + ') )';
-
-        }
-        if (searchData.contentTypeData.Language) {
-            whereStr += ' AND cmd.cm_language = ' + searchData.contentTypeData.Language;
-        }
-        if (searchData.contentTypeData.Actor_Actress) {
-            whereStr += ' AND cmd.cm_celebrity = ' + searchData.contentTypeData.Actor_Actress;
-        }
-        if (searchData.contentTypeData.Genres) {
-            whereStr += ' AND cmd.cm_genre = ' + searchData.contentTypeData.Genres;
-        }
-        if (searchData.contentTypeData.Sub_Genres) {
-            whereStr += ' AND cmd.cm_sub_genre = ' + searchData.contentTypeData.Sub_Genres;
-        }
-        if (searchData.contentTypeData.Mood) {
-            whereStr += ' AND cmd.cm_mood = ' + searchData.contentTypeData.Mood;
-        }
-        if (searchData.contentTypeData.Photographer) {
-            whereStr += ' AND cmd.cm_protographer = ' + searchData.contentTypeData.Photographer;
-        }
-    }
-    var query = dbConnection.query('select * from content_metadata As cmd where ' + whereStr, function (err, result) {
-        callback(err,result);
-    })
-}
-
 
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = '1';
+    var limitstr = '';
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }
     if (searchData.contentTypeId) {
         whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
     }
+
     if (searchData.releaseYearStart != null && searchData.releaseYearEnd != null) {
         whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseYearStart + ' AND ' + searchData.releaseYearEnd;
     }
@@ -274,20 +212,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
 
-    console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr)
-
     var query = dbConnection.query('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr , function (err, result) {
         callback(err,result);
     })
-}
-
-exports.getCelebrityById = function(dbConnection, cmdId, callback){
-    dbConnection.query('SELECT * FROM catalogue_detail AS cd ' +
-        'JOIN catalogue_master AS cm ON (cd.cd_cm_id = cm.cm_id) ' +
-        'WHERE cm.cm_name="Celebrity" AND cd.cd_id = ?',[cmdId], function (err, result) {
-        callback(err,result);
-    });
 }
 
 exports.searchCriteriaFieldExist = function(dbConnection,pctId,metaDataTypeId,callback){
@@ -322,7 +250,6 @@ exports.editSearchCriteriaField = function(dbConnection,data,callback){
 }
 
 exports.updatePackData = function(dbConnection,data,callback){
-
     var query = dbConnection.query("UPDATE icn_packs SET ? WHERE pk_id = ? ", [data, data.pk_id], function (err, response) {
         callback(err,response);
     });

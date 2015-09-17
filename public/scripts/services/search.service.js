@@ -19,23 +19,27 @@ myApp.service('Search', ['$http', function ($http) {
         });
     }
 
-    service.saveSearchData = function (data, success, error) {
-        $http.post(service.baseRestUrl + '/saveSearchData', data).success(function (items) {
+    service.saveSearchCriteria = function (data, success, error) {
+        $http.post(service.baseRestUrl + '/saveSearchCriteria', data).success(function (items) {
             success(items);
         }).error(function (err) {
             error(err);
         });
     }
-
-    service. myList = [];
-
-    service.addPackSearchResult = function(newObj) {
-        service.myList = newObj;
+    service.getSavedContents = function (pctId, success, error) {
+        console.log(pctId)
+        $http.post(service.baseRestUrl + '/savedContents', pctId).success(function (items) {
+            success(items);
+        }).error(function (err) {
+            error(err);
+        });
     }
-
-    service.getPackSearchResult = function(success) {
-        //console.log(service.myList)
-        success(service.myList);
+    service.saveSearchContents = function (data, success, error) {
+        $http.post(service.baseRestUrl + '/saveSearchContents', data).success(function (items) {
+            success(items);
+        }).error(function (err) {
+            error(err);
+        });
     }
 
     return service;
