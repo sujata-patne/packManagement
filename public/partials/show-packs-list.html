@@ -6,7 +6,19 @@
             </div>
             <!-- /.content-header -->
             <div class="row">
-            	<h5 class="text-center"><u>Pack Name Starts with : </u>1 A B C</h5>
+            	<h5 class="text-center"><u>Pack Name Starts with :</u>
+                        <a style="padding-left:7px;cursor:pointer" id="src_{{alpha}}" ng-click="searchStartsWith(alpha)" ng-repeat="alpha in alphabets track by $index">
+                            {{alpha}}
+                        </a>
+                        <br/><br/>
+                        <div ng-show="search_title.length > 0 && btn_clicked">
+                            Showing Results For : "{{tag_search_title}}" <span ng-show="StartDate != '' && EndDate != '' && btn_clicked"> &nbsp; {{tag_StartDate | date:'dd-MMM-yyyy' }} - {{tag_EndDate | date:'dd-MMM-yyyy' }}  
+
+                        </div> 
+                         <div ng-show="StartDate != '' && EndDate.length != '' && search_title.length == 0 && btn_clicked">
+                            Showing Results From : {{tag_StartDate | date:'dd-MMM-yyyy'}} - {{tag_EndDate | date:'dd-MMM-yyyy'}} 
+                        </div> 
+                </h5>
                 <div class="col-md-12 col-xs-12">
                     <div class="table-responsive">
                         <div id="user-exportable">
@@ -29,7 +41,15 @@
                                     <tr>
                                         <td class="col-md-1 col-xs-1 text-center">{{pack.pk_id}}</td>
                                         <td class="col-md-3 col-xs-3">{{pack.pk_name}}</td>
-                                        <td class="col-md-2 col-xs-2">{{pack.types}}</td>
+                                       <!-- <td class="col-md-2 col-xs-2">
+                                            {{pack.types.split(",").sort().reverse().join(",")}}
+                                        </td>  -->
+                                        <td class="col-md-2 col-xs-2">
+                                            <span style="color:blue">{{pack.status1}}</span>
+                                            <span ng-if="pack.status1.length > 0 && pack.status0.length > 0">,</span>
+                                            <span style="color:red">{{pack.status0}}</span>
+                                        </td> 
+                                         
                                         <td class="col-md-3 col-xs-3">{{pack.pk_created_by}}</td>
                                         <td class="col-md-2 col-xs-2">{{pack.pk_modified_on | date:'dd-MMM-yyyy'}}</td>
                                         <td class="col-md-3 col-xs-3">
@@ -65,7 +85,7 @@
                                     <div class="row">
                                         <label for="search_title" class="col-md-3 control-label">Text in Title:</label>
                                         <div class="col-md-4">
-                                            <input type="text" name="search_title" class="form-control" placeholder="Enter text" >
+                                            <input type="text" name="search_title" ng-model="search_title"class="form-control" placeholder="Enter text" >
                                         </div>
                                     </div>
                                     <br/><br/>
@@ -75,7 +95,7 @@
                                         </label>
                                             <div class="col-sm-3">
                                                 <div class="input-group date">
-                                                    <input type="text" name="start_date" class="form-control" bk-auto-focus datepicker-popup="dd-MM-yyyy" data-ng-model="StartDate" placeholder="Start date" data-ng-disabled="IsDisable" data-ng-click="openDatepicker($event)" data-is-open="open1" required />
+                                                    <input type="text" name="start_date" class="form-control" bk-auto-focus datepicker-popup="yyyy-MM-dd" data-ng-model="StartDate" placeholder="Start date" data-ng-disabled="IsDisable" data-ng-click="openDatepicker($event)" data-is-open="open1" required />
                                                     <span class="input-group-btn">
                                                         <button type="button" class="btn btn-default" data-ng-click="openDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                     </span>
@@ -83,7 +103,7 @@
                                         </div>
                                         <div class="col-sm-3">
                                                 <div class="input-group date">
-                                                    <input type="text" class="form-control" bk-auto-focus datepicker-popup="MM-dd-yyyy" data-ng-model="ExpiryDate" placeholder="End date" data-ng-click="openEndDatepicker($event)" data-ng-disabled="IsDisable" data-is-open="open2" required />
+                                                    <input type="text" class="form-control" bk-auto-focus datepicker-popup="yyyy-MM-dd" data-ng-model="EndDate" placeholder="End date" data-ng-click="openEndDatepicker($event)" data-ng-disabled="IsDisable" data-is-open="open2" required />
                                                     <span class="input-group-btn">
                                                         <button type="button" class="btn btn-default" data-ng-click="openEndDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                     </span>
@@ -93,7 +113,7 @@
                         </div>
                         <br/><br/>
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-default btn-w-xs" >Search</button>
+                            <button type="button" ng-click="searchByTitle()" class="btn btn-default btn-w-xs" >Search</button>
                         </div>
                     </div>
 
