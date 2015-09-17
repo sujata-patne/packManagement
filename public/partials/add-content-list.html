@@ -44,7 +44,8 @@
                                 <tbody>
                                 <tr ng-repeat="i in pack_grid">
                                     <td>{{i.cd_name}}</td>
-                                    <td><small><u><i>Content Count :</i></u></small><br/><i class="fa fa-spinner padding-left-25pc"></i></td>
+                                    <td><small><u><i>Content Count :</i></u></small><br/>
+                                        <span ng-if="i.content_count > 0">{{i.content_count}}</span><i ng-if="i.content_count == 0" class="fa fa-spinner padding-left-25pc"></i></td>
                                     <td><small><u><i>List Last updated on :</i></u></small><br/><i class="fa fa-spinner padding-left-25pc"></i></td>
                                     <td>
                                         <div class="row">
