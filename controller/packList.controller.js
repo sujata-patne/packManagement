@@ -78,7 +78,7 @@ exports.getPacksByTitle = function (req, res, next) {
                   console.log("in 1");
                     async.parallel({
                            Packs: function (callback) {
-                              packManager.getAllPacksByTitle( connection_ikon_cms,req.body.term, req.session.pack_StoreId, function(err,Packs){
+                              packManager.getPacksByTitle( connection_ikon_cms,req.body.title_text,req.body.st_date,req.body.end_date, req.session.pack_StoreId, function(err,Packs){
                                   callback(err, Packs);
                               });
                             }

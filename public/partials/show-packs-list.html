@@ -7,9 +7,17 @@
             <!-- /.content-header -->
             <div class="row">
             	<h5 class="text-center"><u>Pack Name Starts with :</u>
-                        <a style="padding-left:4px;cursor:pointer" ng-click="searchStartsWith(alpha)" ng-repeat="alpha in alphabets track by $index">
+                        <a style="padding-left:7px;cursor:pointer" id="src_{{alpha}}" ng-click="searchStartsWith(alpha)" ng-repeat="alpha in alphabets track by $index">
                             {{alpha}}
                         </a>
+                        <br/><br/>
+                        <div ng-show="search_title.length > 0 && btn_clicked">
+                            Showing Results For : "{{tag_search_title}}" <span ng-show="StartDate != '' && EndDate != '' && btn_clicked"> &nbsp; {{tag_StartDate | date:'dd-MMM-yyyy' }} - {{tag_EndDate | date:'dd-MMM-yyyy' }}  
+
+                        </div> 
+                         <div ng-show="StartDate != '' && EndDate.length != '' && search_title.length == 0 && btn_clicked">
+                            Showing Results From : {{tag_StartDate | date:'dd-MMM-yyyy'}} - {{tag_EndDate | date:'dd-MMM-yyyy'}} 
+                        </div> 
                 </h5>
                 <div class="col-md-12 col-xs-12">
                     <div class="table-responsive">
@@ -87,7 +95,7 @@
                                         </label>
                                             <div class="col-sm-3">
                                                 <div class="input-group date">
-                                                    <input type="text" name="start_date" class="form-control" bk-auto-focus datepicker-popup="dd-MM-yyyy" data-ng-model="StartDate" placeholder="Start date" data-ng-disabled="IsDisable" data-ng-click="openDatepicker($event)" data-is-open="open1" required />
+                                                    <input type="text" name="start_date" class="form-control" bk-auto-focus datepicker-popup="yyyy-MM-dd" data-ng-model="StartDate" placeholder="Start date" data-ng-disabled="IsDisable" data-ng-click="openDatepicker($event)" data-is-open="open1" required />
                                                     <span class="input-group-btn">
                                                         <button type="button" class="btn btn-default" data-ng-click="openDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                     </span>
@@ -95,7 +103,7 @@
                                         </div>
                                         <div class="col-sm-3">
                                                 <div class="input-group date">
-                                                    <input type="text" class="form-control" bk-auto-focus datepicker-popup="MM-dd-yyyy" data-ng-model="ExpiryDate" placeholder="End date" data-ng-click="openEndDatepicker($event)" data-ng-disabled="IsDisable" data-is-open="open2" required />
+                                                    <input type="text" class="form-control" bk-auto-focus datepicker-popup="yyyy-MM-dd" data-ng-model="EndDate" placeholder="End date" data-ng-click="openEndDatepicker($event)" data-ng-disabled="IsDisable" data-is-open="open2" required />
                                                     <span class="input-group-btn">
                                                         <button type="button" class="btn btn-default" data-ng-click="openEndDatepicker($event)"><i class="glyphicon glyphicon-calendar"></i></button>
                                                     </span>

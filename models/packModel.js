@@ -122,12 +122,23 @@ exports.getAllPacksForListStartsWith = function( dbConnection,term,storeId, call
     });
 }
 
-exports.getPacksByTitle = function( dbConnection,term,storeId, callback ) {
+exports.getPacksByTitle = function( dbConnection,term,start_date,end_date,storeId, callback ) {
+	if(start_date === undefined || start_date == ""){
+		start_date = '2000-01-01';
+	}
+	if(end_date === undefined || end_date == ""){
+		end_date = "2030-01-01";
+	}
+	if(term === undefined){
+		term = "";
+	}
 	var query = dbConnection.query("SELECT pk.*,pct.pct_id, group_concat(if(pct.pct_is_active = 1,cd.cd_name,null)) as status1, "+
 		"group_concat(if(pct.pct_is_active = 0, cd.cd_name,null)) as status0 "+
 		"FROM icn_packs AS pk JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id "+
 		"inner join catalogue_detail cd on (pct.pct_cnt_type = cd.cd_id) "+
-		"WHERE pk.pk_st_id = ? AND  pk.pk_name LIKE '"+term+"%' group by pk.pk_id ORDER BY pk.pk_id desc",storeId, function ( err, response ) {
+		"WHERE pk.pk_st_id = ? AND  pk.pk_name LIKE '%"+term+"%' AND Date(pk.pk_created_on) BETWEEN "+
+		" '"+start_date+"' AND '"+end_date+"'"+
+		" group by pk.pk_id ORDER BY pk.pk_id desc",storeId, function ( err, response ) {
         callback( err,response );
     });
 }

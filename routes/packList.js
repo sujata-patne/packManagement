@@ -5,4 +5,6 @@ module.exports = function (app) {
         .post(packList.getPacks);
     app.route('/getPacksStartsWith')
         .post(packList.getPacksStartsWith);
+    app.route('/getPacksByTitle')
+        .post(packList.getPacksByTitle);
 }
