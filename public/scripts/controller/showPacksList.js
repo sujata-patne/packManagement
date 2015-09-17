@@ -10,6 +10,7 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.ContentTypes = [];
+    $scope.alphabets = [];
     $scope.selectedContentTypes = [];
     $scope.isAdded = false;
     $scope.listcurrentPage = 0;
@@ -34,11 +35,41 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
 
 
     PacksList.getPacks(function( data ){
-            console.log(data);
+            $scope.packContentTypes = [];
             $scope.packsList = data.Packs;
+            
     },function(error){
         console.log(error);
     });
 
+    // var first = "A", last = "Z";
+    // $scope.alphabets[0] = "1";
+    // for(var i = first.charCodeAt(0); i <= last.charCodeAt(0); i++) {
+    //         $scope.alphabets[j] =  eval("String.fromCharCode(" + i + ")") + " ";        
+    // }
+    $scope.alphabets = "1ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
+    $scope.searchStartsWith = function(alphabet){
+            //TODO : Highlight  selected letter in frontend.
+            var criteria = {
+                term : alphabet
+            }
+            PacksList.getPacksStartsWith(criteria,function( data ){
+                $scope.packsList = data.Packs;
+            },function(error){
+                console.log(error);
+            });
+    }
+
+    $scope.searchByTitle = function(){
+        //TO DO :Validations
+         var criteria = {
+                text : $scope.search_title
+            }
+        PacksList.getPacksByTitle(criteria,function( data ){
+                 $scope.packsList = data.Packs;
+        },function(error){
+                console.log(error);
+        });
+    }
 });

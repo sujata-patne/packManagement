@@ -34,3 +34,74 @@ exports.getPacks = function (req, res, next) {
 
          }
 }         
+
+exports.getPacksStartsWith = function (req, res, next) {
+    try {   
+            if (req.session && req.session.pack_UserName) {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                  console.log("in 1");
+                    async.parallel({
+                           Packs: function (callback) {
+                              packManager.getAllPacksForListStartsWith( connection_ikon_cms,req.body.term, req.session.pack_StoreId, function(err,Packs){
+                                  console.log('in 2');
+                                  console.log(Packs);
+                                  callback(err, Packs);
+                              });
+                            }
+                          },
+                          function (err, results) {
+                              if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                                console.log(err.message)
+                              } else {
+                                connection_ikon_cms.release();
+                                res.send(results);
+                              }
+                          }
+                       )
+
+                });
+
+            }else{
+
+            }
+         }catch(err){
+
+         }
+} 
+
+exports.getPacksByTitle = function (req, res, next) {
+    try {   
+            if (req.session && req.session.pack_UserName) {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                  console.log("in 1");
+                    async.parallel({
+                           Packs: function (callback) {
+                              packManager.getAllPacksByTitle( connection_ikon_cms,req.body.term, req.session.pack_StoreId, function(err,Packs){
+                                  callback(err, Packs);
+                              });
+                            }
+                          },
+                          function (err, results) {
+                              if (err) {
+                                connection_ikon_cms.release();
+                                res.status(500).json(err.message);
+                                console.log(err.message)
+                              } else {
+                                connection_ikon_cms.release();
+                                res.send(results);
+                              }
+                          }
+                       )
+
+                });
+
+            }else{
+
+            }
+         }catch(err){
+
+         }
+}    
+
