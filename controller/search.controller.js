@@ -6,6 +6,50 @@ var SearchModel = require('../models/searchModel');
 
 //console.log(data.ContentTypeDetails[0].Manual[0].Wallpaper);
 
+exports.resetSearchCriteriaContents = function (req, res, next) {
+    try {
+        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                SearchModel.searchCriteriaExist(connection_ikon_cms, req.body.pctId, function (err, response) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                    }else{
+                        if(response){
+                            /*delete existing search criteria and then add*/
+                            SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                }else{
+                                    SearchModel.deleteSearchedContent(connection_ikon_cms, req.body.pctId, function (err, response) {
+                                        if (err) {
+                                            connection_ikon_cms.release();
+                                            res.status(500).json(err.message);
+                                        }else{
+                                            connection_ikon_cms.release();
+                                            res.send({
+                                                "success": true,
+                                                "status": 200,
+                                                "message": "Search Criteria & it's saved content removed successfully.",
+                                            });
+                                        }
+                                    })
+
+                                }
+                            })
+                        }
+                    }
+                });
+            })
+        }else {
+            res.redirect('/accountlogin');
+        }
+    }
+    catch (err) {
+        res.status(500).json(err.message);
+    }
+}
 exports.getSavedContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
@@ -45,8 +89,10 @@ exports.saveSearchContents = function (req, res, next) {
                     function addEditSearchContents(contentId) {
                         var data = {
                             pc_pct_id: req.body.pctId,
-                            pc_cm_id: contentId
+                            pc_cm_id: contentId,
+                            pc_ispublished: 0
                         }
+                        console.log(data)
                         SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
                             if (err) {
                                 connection_ikon_cms.release();
@@ -215,8 +261,8 @@ exports.saveSearchCriteria = function (req, res, next) {
                     var data = {
                         pcr_rec_type: 1,
                         pcr_pct_id: req.body.pctId,
-                        pcr_start_date: req.body.releaseYearStart,
-                        pcr_end_date: req.body.releaseYearEnd
+                        pcr_start_year: req.body.releaseYearStart,
+                        pcr_end_year: req.body.releaseYearEnd
                     }
                     for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
                         data['pcr_metadata_type']= searchFieldId;
@@ -272,8 +318,11 @@ exports.getPackSearchResult = function (req, res, next) {
                                 packSearchDetails.forEach(function (metadataFields) {
 
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
-                                    contentTypeData["releaseYearStart"] = metadataFields.pcr_start_date;
-                                    contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_date;
+
+                                    if(metadataFields.pcr_start_year != '0000' || metadataFields.pcr_end_year != '0000'){
+                                        contentTypeData["releaseYearStart"] = metadataFields.pcr_start_year;
+                                        contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_year;
+                                    }
 
                                     if (metadataFields.cm_name === "Content Title") {
                                         contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;

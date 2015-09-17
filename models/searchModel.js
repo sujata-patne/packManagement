@@ -139,6 +139,7 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = '1';
     var limitstr = '';
+    console.log(searchData)
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }
@@ -218,7 +219,8 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
-
+console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd ' +
+    'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
     var query = dbConnection.query('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr , function (err, result) {
         callback(err,result);
@@ -244,6 +246,11 @@ exports.addSearchCriteriaField = function(dbConnection,data,callback){
 }
 exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
     var query = dbConnection.query("DELETE FROM icn_pack_content_rule WHERE pcr_pct_id = ? ", [pctId], function (err, response) {
+        callback(err,response);
+    });
+}
+exports.deleteSearchedContent = function(dbConnection,pctId,callback){
+    var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
         callback(err,response);
     });
 }

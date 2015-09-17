@@ -72,4 +72,8 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
     $scope.EditPack = function ( pctID ) {
             $window.location.href = "/#/search-content/" + pctID;
     }
+    $scope.showArrangeList = function ( pctID ) {
+        $window.location.href = "/#/arrange-content-list/"+pctID;
+
+    }
 });

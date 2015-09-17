@@ -66,14 +66,28 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         })
     }
     $scope.arrangeSearchContents = function () {
-        Search.saveSearchContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
-            $window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-        },function(error){
-            console.log(error)
-            toastr.success(error)
-        })
+        if($scope.contents.length > 0){
+            Search.saveSearchContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+                $window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+            },function(error){
+                console.log(error)
+                toastr.error(error)
+            })
+        }else{
+            toastr.error('Please select at least one record to arrange!')
+        }
+
     }
 
+    $scope.resetRules = function () {
+        Search.resetSearchCriteriaContents({pctId:$scope.pctId}, function (data) {
+            $window.location.href = "/#/search-content/"+$scope.pctId;
+        },function(error){
+            console.log(error)
+            toastr.error(error)
+        })
+
+    }
     $scope.addArrangedContents = function () {
         Search.saveSearchContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;

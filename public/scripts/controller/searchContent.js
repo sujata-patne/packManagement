@@ -1,7 +1,6 @@
 /**
  * Created by sujata.patne on 11-09-2015.
  */
-
 myApp.controller('searchContentCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search) {
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
@@ -26,6 +25,21 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
         $scope.packId = $scope.packDetails[0].pk_id;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
+
+       /* angular.forEach($scope.ContentTypeDetails, function(value){
+            angular.forEach(value, function(displayType, key){
+                if(key == 'Manual'){
+                    angular.forEach(displayType, function(contentType, key1){
+                        if(key1 == 'Wallpaper'){
+
+                        }
+                        console.log(contentType)
+                    })
+                }
+            })
+
+        })*/
+
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
@@ -96,7 +110,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
                 $scope.contentTypeData["property_release_year"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
 
-            $scope.contentTypeData['property_release_year'] = {'releaseYearStart':parseInt(metadataFields.pcr_start_date),'releaseYearEnd':parseInt(metadataFields.pcr_end_date)};
+            $scope.contentTypeData['property_release_year'] = {'releaseYearStart':parseInt(metadataFields.pcr_start_year),'releaseYearEnd':parseInt(metadataFields.pcr_end_year)};
 
         })
 

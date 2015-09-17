@@ -12,4 +12,6 @@ module.exports = function (app) {
         .post(search.saveSearchContents);
     app.route('/savedContents')
         .post(search.getSavedContents);
+    app.route('/resetSearchCriteriaContents')
+        .post(search.resetSearchCriteriaContents);
 }
