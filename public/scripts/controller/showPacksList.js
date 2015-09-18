@@ -77,10 +77,10 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
         $scope.btn_clicked = true;
 
         if($scope.search_title == "" && $scope.StartDate == "" && $scope.EndDate == ""){
-            alert('Please fill atleast one filed to search');
+            toastr.error('Please fill atleast one field to search.');
         }else{ 
             if($scope.StartDate > $scope.EndDate){
-                alert('Start Date should be smaller than End date');
+                toastr.error('Start Date should be smaller than End date.');
             }else{
                      $scope.tag_search_title = $scope.search_title;
                      $scope.tag_StartDate = $scope.StartDate;
