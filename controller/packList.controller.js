@@ -75,7 +75,6 @@ exports.getPacksByTitle = function (req, res, next) {
     try {   
             if (req.session && req.session.pack_UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                  console.log("in 1");
                     async.parallel({
                            Packs: function (callback) {
                               packManager.getPacksByTitle( connection_ikon_cms,req.body.title_text,req.body.st_date,req.body.end_date, req.session.pack_StoreId, function(err,Packs){
