@@ -10,8 +10,12 @@ module.exports = function (app) {
         .post(search.saveSearchCriteria);
     app.route('/saveSearchContents')
         .post(search.saveSearchContents);
+    app.route('/publishContents')
+        .post(search.publishContents);
     app.route('/savedContents')
         .post(search.getSavedContents);
+    app.route('/arrangeContents')
+        .post(search.saveArrangedContents);
     app.route('/resetSearchCriteriaContents')
         .post(search.resetSearchCriteriaContents);
 }

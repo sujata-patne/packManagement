@@ -41,6 +41,20 @@ myApp.service('Search', ['$http', function ($http) {
             error(err);
         });
     }
+    service.publishContents = function (data, success, error) {
+        $http.post(service.baseRestUrl + '/publishContents', data).success(function (items) {
+            success(items);
+        }).error(function (err) {
+            error(err);
+        });
+    }
+    service.arrangeContents = function (data, success, error) {
+        $http.post(service.baseRestUrl + '/arrangeContents', data).success(function (items) {
+            success(items);
+        }).error(function (err) {
+            error(err);
+        });
+    }
     service.resetSearchCriteriaContents = function (data, success, error) {
         $http.post(service.baseRestUrl + '/resetSearchCriteriaContents', data).success(function (items) {
             success(items);

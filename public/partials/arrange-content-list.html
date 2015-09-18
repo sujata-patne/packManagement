@@ -28,13 +28,13 @@
                                 </thead>
                                 <tbody>
                                     <tr data-ng-repeat="content in searchContentList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
-                                        <td class="col-md-1 col-xs-1 text-center">{{$index+1}}</td>
+                                        <td class="col-md-1 col-xs-1 text-center">{{$index+1}}&nbsp;&nbsp;<span class="text-center" ng-show="published[content.cm_id]"><i class="fa fa-flag" style="color:red"></i></span></td>
                                         <td class="col-md-2 col-xs-2">{{content.cm_title}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.property}}</td>
                                         <td class="col-md-1 col-xs-1">{{content.cm_release_year}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
                                         <td class="col-md-1 col-xs-1">
-                                            <input type="text" class="form-control" name="sequence[]" ng-model="sequence" >
+                                            <input type="text" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" >
                                         </td>
                                         <td class="col-md-1 col-xs-1 text-center"><a href="" data-ng-click="uploadPreviewImages()" title="Upload"><i class="fa fa-upload" style="color:green" title="Upload"></i></a></td>
                                     </tr>
@@ -67,9 +67,9 @@
                 <div class="col-md-12 col-xs-12">
                 	<div class="col-xs-4 col-md-4"></div>
                     <div class="col-xs-4 col-md-4">
-                        <button type="button" class="btn btn-default btn-w-xs " >Save</button>
-                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="saveSearchContents()" >Add more content</button>
-                        <button type="button" class="btn btn-default btn-w-xs " >Publish current List</button>
+                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="saveSearchContents()" >Save</button>
+                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="addMoreSearchContents()" >Add more content</button>
+                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="publishContents()" >Publish current List</button>
                     </div>
                     <div class="col-xs-4 col-md-4"></div>
                 </div>

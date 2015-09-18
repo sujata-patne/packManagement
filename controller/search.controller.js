@@ -50,22 +50,46 @@ exports.resetSearchCriteriaContents = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
+
 exports.getSavedContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                SearchModel.getSavedContents(connection_ikon_cms, req.body.pctId, function (err, results) {
+                async.parallel({
+                    packContentsSequence: function (callback) {
+                        SearchModel.getPackContents(connection_ikon_cms, req.body.pctId, function (err, packContents) {
+                            var data = {};
+                            packContents.forEach(function(value,key){
+                                data[value.pc_cm_id] = value.pc_arrange_seq;
+                            })
+                            //console.log(data)
+                            callback(err, data);
+                        })
+                    },
+                    packContentsPublished: function (callback) {
+                        SearchModel.getPackContents(connection_ikon_cms, req.body.pctId, function (err, packContents) {
+                            var data = {};
+                            packContents.forEach(function(value,key){
+                                data[value.pc_cm_id] = value.pc_ispublished;
+                            })
+                            //console.log(data)
+                            callback(err, data);
+                        })
+                    },
+                    contents: function (callback) {
+                        SearchModel.getSavedContents(connection_ikon_cms, req.body.pctId, function (err, savedContents) {
+                            callback(err, savedContents);
+                        });
+                    }
+                },
+                function (err, results) {
                     if (err) {
                         connection_ikon_cms.release();
                         res.status(500).json(err.message);
-                    }
-                    else {
+                        console.log(err.message)
+                    } else {
                         connection_ikon_cms.release();
-                        res.send({
-                            "success": true,
-                            "status": 200,
-                            "contents": results
-                        });
+                        res.send(results);
                     }
                 })
             })
@@ -77,6 +101,76 @@ exports.getSavedContents = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
+
+exports.saveArrangedContents = function (req, res, next) {
+    try {
+        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
+            //console.log(req.body.arrangedContentList)
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                for (var contentId in req.body.arrangedContentList) {
+                    var data = {
+                        pc_pct_id: parseInt(req.body.pctId),
+                        pc_cm_id: parseInt(contentId),
+                        pc_arrange_seq: req.body.arrangedContentList[contentId]
+                    }
+                    SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.status(500).json(err.message);
+                        }
+                    })
+                }
+                connection_ikon_cms.release();
+                res.send({
+                    "success": true,
+                    "status": 200,
+                    "message": "Search Contents arranged successfully!."
+                })
+            })
+        }else {
+            res.redirect('/accountlogin');
+        }
+    }
+    catch (err) {
+        res.status(500).json(err.message);
+    }
+}
+
+
+exports.publishContents = function (req, res, next) {
+    try {
+        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                for (var contentId in req.body.publishedContentList) {
+                    var data = {
+                        pc_pct_id: parseInt(req.body.pctId),
+                        pc_cm_id: parseInt(contentId),
+                        pc_arrange_seq: req.body.publishedContentList[contentId],
+                        pc_ispublished: 1
+                    }
+                    SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.status(500).json(err.message);
+                        }
+                    })
+                }
+                connection_ikon_cms.release();
+                res.send({
+                    "success": true,
+                    "status": 200,
+                    "message": "Search Contents published successfully!."
+                })
+            })
+        }else {
+            res.redirect('/accountlogin');
+        }
+    }
+    catch (err) {
+        res.status(500).json(err.message);
+    }
+}
+
 exports.saveSearchContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
@@ -92,7 +186,7 @@ exports.saveSearchContents = function (req, res, next) {
                             pc_cm_id: contentId,
                             pc_ispublished: 0
                         }
-                        console.log(data)
+                        //console.log(data)
                         SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
                             if (err) {
                                 connection_ikon_cms.release();

@@ -103,7 +103,12 @@ exports.saveSearchContents = function(dbConnection, data, callback){
         }
     });
 }
+exports.updateSearchContents = function(dbConnection, data, callback){
+    var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
+        callback(err,response);
+    });
 
+}
 exports.getSavedContents = function(dbConnection, pctId, callback){
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
@@ -251,6 +256,11 @@ exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
 }
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
     var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
+        callback(err,response);
+    });
+}
+exports.getPackContents = function(dbConnection,pctId,callback){
+    var query = dbConnection.query("select * FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
         callback(err,response);
     });
 }

@@ -7,7 +7,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.id;
     $scope.success = "";
-    $scope.limitCount = 5;
+    $scope.limitCount = 10;
     $scope.successvisible = false;
     $scope.error = "";
     $scope.errorvisible = false;
@@ -139,6 +139,11 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
     $scope.setLimit = function (option) {
         $scope.limitCount = (option != 1 )? '':5;
     }
+    $scope.resetForm = function () {
+        $scope.noOfRecords = 2;
+        $scope.limitCount = '';
+    }
+
     $scope.submitForm = function (isValid) {
         if (isValid) {
 

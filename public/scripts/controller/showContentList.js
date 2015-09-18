@@ -14,7 +14,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.errorvisible = false;
     $scope.CurrentPage = $state.current.name;
     $scope.listcurrentPage = 0;
-    $scope.listpageSize = 5;
+    $scope.listpageSize = 10;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.ContentTypes = [];
@@ -23,6 +23,8 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.action = $stateParams.action;
     $scope.selectedContent = [];
     $scope.contents = [];
+
+
 
     Search.getPackSearchContents({
         pctId: $scope.pctId,
