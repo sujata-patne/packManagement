@@ -90,6 +90,24 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
         callback(err,response);
     });
 }
+exports.searchContentsExist = function(dbConnection, data, callback){
+    console.log(data.pc_pct_id +" : "+ data.pc_cm_id)
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc " +
+        "WHERE pc_pct_id = ? AND pc_cm_id = ? ",
+        [data.pc_pct_id, data.pc_cm_id],function (err, result) {
+            console.log(result)
+            if(result.length > 0){
+                callback(err,result);
+            }else{
+                callback(err,false);
+            }
+        });
+}
+exports.insertSearchContents = function(dbConnection, data, callback){
+    var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ",data, function (err, response) {
+        callback(err,response);
+    });
+}
 exports.saveSearchContents = function(dbConnection, data, callback){
     //console.log(data.pc_pct_id +' : '+ data.pc_cm_id)
     dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? ",
@@ -104,6 +122,7 @@ exports.saveSearchContents = function(dbConnection, data, callback){
     });
 }
 exports.updateSearchContents = function(dbConnection, data, callback){
+    //console.log('UPDATE icn_pack_content SET '+data+' WHERE pc_pct_id = '+ data.pc_pct_id+' AND pc_cm_id = ' + data.pc_cm_id)
     var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
         callback(err,response);
     });
@@ -114,6 +133,11 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
 
+    console.log("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+celebrity+" FROM icn_pack_content AS pc " +
+    "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
+    "INNER JOIN content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id " +
+    "WHERE ISNULL(cmd1.cm_property_id) AND pc_pct_id = " + pctId)
+
     dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+celebrity+" FROM icn_pack_content AS pc " +
         "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
         "INNER JOIN content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id " +
@@ -123,7 +147,8 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
 }
 
 exports.getPackDetails = function(dbConnection,pctId,callback){
-    dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName FROM icn_packs AS pk " +
+    dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName," +
+        " (select cd1.cd_name from catalogue_detail cd1 where cd1.cd_id = pct.pct_cnt_type Limit 1 ) as type FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
         "JOIN catalogue_detail AS cd ON cd.cd_id = pk.pk_cnt_display_opt " +
         " WHERE pct.pct_id = ? ", [pctId],function (err, result) { //pct_is_active = 1 AND
@@ -144,16 +169,14 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = '1';
     var limitstr = '';
-    console.log(searchData)
+    //console.log(searchData)
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }
     if (searchData.contentTypeId) {
         whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
     }
-    if (searchData.releaseYearStart != null && searchData.releaseYearEnd != null) {
-        whereStr += ' AND cmd.cm_release_year BETWEEN ' + searchData.releaseYearStart + ' AND ' + searchData.releaseYearEnd;
-    }
+
     if (searchData.Content_Title && searchData.Content_Title != '') {
         var searchIn = '';
         if (searchData.searchWhereTitle == 'start') {
@@ -169,6 +192,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
             searchIn = ' LIKE "' + searchData.Content_Title + '"'
         }
         whereStr += ' AND cmd.cm_title ' + searchIn;
+    }
+    if (searchData.releaseYearStart != null && searchData.releaseYearEnd != null) {
+        //whereStr += ' SELECT cmd2.cm_release_year FROM content_metadata AS cmd2 WHERE ISNULL(cmd2.cm_property_id) AND cmd.cm_property_id = cmd2.cm_id
+        whereStr += ' AND cmd1.cm_release_year BETWEEN ' + searchData.releaseYearStart + ' AND ' + searchData.releaseYearEnd;
     }
     if (searchData.Property && searchData.Property != '') {
         var searchIn = '';
@@ -187,7 +214,9 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         whereStr += ' AND cmd.cm_property_id IN ( SELECT p.cm_id FROM content_metadata AS p WHERE ISNULL(p.cm_property_id) ' + searchIn + ' ) ';
     }
     if (searchData.Content_Ids && searchData.Content_Ids != '') {
-        whereStr += ' AND cmd.cm_id IN (' + searchData.Content_Ids + ') ';
+        var Content_Ids = searchData.Content_Ids.replace(/(^[,\s]+)|([,\s]+$)/g, '');
+
+        whereStr += ' AND cmd.cm_id IN (' + Content_Ids + ') ';
     }
     if (searchData.Vendor && searchData.Vendor != null) {
         whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;
@@ -224,8 +253,9 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
-console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd ' +
-    'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
+
+//console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
+
     var query = dbConnection.query('select cmd.*, cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' from content_metadata As cmd ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr , function (err, result) {
         callback(err,result);
@@ -254,6 +284,7 @@ exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
         callback(err,response);
     });
 }
+
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
     var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
         callback(err,response);

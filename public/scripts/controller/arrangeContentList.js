@@ -1,4 +1,4 @@
-myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search) {
+myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search, showContents) {
 
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
@@ -18,10 +18,17 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
     $scope.published = [];
     $scope.sequence = [];
 
+
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.searchContentList = angular.copy(data.contents);
         $scope.sequence = angular.copy(data.packContentsSequence);
         $scope.published = angular.copy(data.packContentsPublished);
+        $scope.packDetails = angular.copy(data.packDetails);
+
+        $scope.contentType = $scope.packDetails[0].type;
+        $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
+        $scope.displayName = $scope.packDetails[0].displayName;
+        $scope.packName = $scope.packDetails[0].pk_name;
 
        // console.log($scope.searchContentList)
     }, function (error) {
@@ -36,7 +43,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
             $scope.arrangedContentList[key] = value;
 
         })
-        console.log($scope.arrangedContentList)
+        //console.log($scope.arrangedContentList)
         Search.arrangeContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             $window.location.href = "/#/search-content/"+$scope.pctId;
             toastr.success(data.message)
@@ -49,18 +56,13 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
     $scope.publishContents = function () {
         $scope.publishedContentList = {};
 
-        /*angular.forEach($scope.searchContentList,function(value,key) {
-            $scope.publishedContentList[key] = value.cm_id;
-        })*/
         angular.forEach($scope.sequence,function(value,key) {
             var data = {};
             data[key] = value;
             $scope.publishedContentList[key] = value;
 
         })
-        //console.log($scope.publishedContentList)
         Search.publishContents({pctId:$scope.pctId, publishedContentList:$scope.publishedContentList}, function (data) {
-            //$window.location.href = "/#/search-content/"+$scope.pctId;
             toastr.success(data.message)
         },function(error){
             console.log(error)
@@ -69,16 +71,13 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
     }
     $scope.saveSearchContents = function(){
         $scope.arrangedContentList = {};
-
         angular.forEach($scope.sequence,function(value,key) {
             var data = {};
             data[key] = value;
             $scope.arrangedContentList[key] = value;
-
         })
-        //console.log($scope.arrangedContentList)
+        console.log($scope.arrangedContentList)
         Search.arrangeContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
-            //$window.location.href = "/#/search-content/"+$scope.pctId;
             toastr.success(data.message)
         },function(error){
             console.log(error)

@@ -6,6 +6,7 @@ module.exports = function(app){
     require('../routes/pack')(app);
     require('../routes/search')(app);
     require('../routes/packList')(app);
+    require('../routes/showContents')(app);
 
 
     app.use('/*', function(req,res,next){

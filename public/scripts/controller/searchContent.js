@@ -181,26 +181,32 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
                 ruleType : $scope.ruleType,
                 nextRuleDuration : $scope.nextRuleDuration
             }
-            console.log(searchData)
+
             ngProgress.start();
-            Search.saveSearchCriteria(searchData, function (data) {
-                if (data.success) {
-                    $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                    //toastr.success(data.message)
-                    //Search.addPackSearchResult(data.SearchCriteriaResult);
-                    //console.log(data.SearchCriteriaResult)
-                    $scope.successvisible = true;
-                }
-                else {
-                    //toastr.success(data.message)
-                    //$scope.error = data.message;
-                    $scope.errorvisible = true;
-                }
-                ngProgress.complete();
-            },function(error){
-                console.log(error)
-                toastr.success(error)
-            });
+            if($scope.contentTypeDataDetails.length > 0){
+                Search.saveSearchCriteria(searchData, function (data) {
+                    if (data.success) {
+                        $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+                        //toastr.success(data.message)
+                        //Search.addPackSearchResult(data.SearchCriteriaResult);
+                        //console.log(data.SearchCriteriaResult)
+                        $scope.successvisible = true;
+                    }
+                    else {
+                        //toastr.success(data.message)
+                        //$scope.error = data.message;
+                        $scope.errorvisible = true;
+                    }
+                    ngProgress.complete();
+                },function(error){
+                    console.log(error)
+                    toastr.error(error)
+                });
+            }else{
+                toastr.error('Please add Search criteria')
+
+            }
+
         }
     }
 });

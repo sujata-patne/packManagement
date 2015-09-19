@@ -16,7 +16,7 @@ exports.resetSearchCriteriaContents = function (req, res, next) {
                         res.status(500).json(err.message);
                     }else{
                         if(response){
-                            /*delete existing search criteria and then add*/
+                            /*delete existing search criteria and contents*/
                             SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
                                 if (err) {
                                     connection_ikon_cms.release();
@@ -56,7 +56,17 @@ exports.getSavedContents = function (req, res, next) {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
-                    packContentsSequence: function (callback) {
+                        packDetails: function (callback) {
+                            SearchModel.getPackDetails( connection_ikon_cms,req.body.pctId, function(err,packDetails){
+                                callback(err, packDetails);
+                            });
+                        },
+                        packSearchDetails: function (callback) {
+                            SearchModel.getPackSearchDetails( connection_ikon_cms,req.body.pctId, function(err,packSearchDetails){
+                                callback(err, packSearchDetails);
+                            });
+                        },
+                        packContentsSequence: function (callback) {
                         SearchModel.getPackContents(connection_ikon_cms, req.body.pctId, function (err, packContents) {
                             var data = {};
                             packContents.forEach(function(value,key){
@@ -83,6 +93,7 @@ exports.getSavedContents = function (req, res, next) {
                     }
                 },
                 function (err, results) {
+                    //console.log(results)
                     if (err) {
                         connection_ikon_cms.release();
                         res.status(500).json(err.message);
@@ -105,7 +116,6 @@ exports.getSavedContents = function (req, res, next) {
 exports.saveArrangedContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            //console.log(req.body.arrangedContentList)
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 for (var contentId in req.body.arrangedContentList) {
                     var data = {
@@ -142,16 +152,42 @@ exports.publishContents = function (req, res, next) {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 for (var contentId in req.body.publishedContentList) {
+                    //console.log(req.body.publishedContentList[contentId])
+                    if(req.body.publishedContentList[contentId] == null || req.body.publishedContentList[contentId] == undefined || req.body.publishedContentList[contentId] == ''){
+                        sequence = 0;
+                    }else{
+                        sequence = req.body.publishedContentList[contentId];
+                    }
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: req.body.publishedContentList[contentId],
+                        pc_arrange_seq: sequence,
                         pc_ispublished: 1
                     }
-                    SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
+                    SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
+                        }else {
+                           // console.log(response)
+                            if (response) {
+                                console.log('edit');
+                                SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                })
+                            } else {
+                                console.log('add');
+
+                                SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                })
+                            }
                         }
                     })
                 }
@@ -174,38 +210,48 @@ exports.publishContents = function (req, res, next) {
 exports.saveSearchContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            console.log(req.body.selectedContentList)
+            //console.log(req.body.selectedContentList)
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 var count = req.body.selectedContentList.length;
-                for (var i in req.body.selectedContentList) {
-                    addEditSearchContents(req.body.selectedContentList[i]);
-                    var cnt = 0;
-                    function addEditSearchContents(contentId) {
-                        var data = {
-                            pc_pct_id: req.body.pctId,
-                            pc_cm_id: contentId,
-                            pc_ispublished: 0
-                        }
-                        //console.log(data)
-                        SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
-                            if (err) {
-                                connection_ikon_cms.release();
-                                res.status(500).json(err.message);
-                            }
-                            else {
-                                cnt = cnt + 1;
-                                if (cnt == count) {
-                                    connection_ikon_cms.release();
-                                    res.send({
-                                        "success": true,
-                                        "status": 200,
-                                        "message": "Search Contents added successfully!."
-                                    });
+
+                SearchModel.deleteSearchedContent(connection_ikon_cms, req.body.pctId, function (err, response) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                    }else{
+//console.log(req.body.selectedContentList)
+                        for (var i in req.body.selectedContentList) {
+                            addEditSearchContents(req.body.selectedContentList[i]);
+                            var cnt = 0;
+                            function addEditSearchContents(contentId) {
+                                var data = {
+                                    pc_pct_id: req.body.pctId,
+                                    pc_cm_id: contentId,
+                                    pc_ispublished: 0,
+                                    pc_arrange_seq: 0
                                 }
+                                //console.log(data)
+                                SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                    else {
+                                        cnt = cnt + 1;
+                                        if (cnt == count) {
+                                            connection_ikon_cms.release();
+                                            res.send({
+                                                "success": true,
+                                                "status": 200,
+                                                "message": "Search Contents added successfully!."
+                                            });
+                                        }
+                                    }
+                                })
                             }
-                        })
+                        }
                     }
-                }
+                })
             })
         }else {
             res.redirect('/accountlogin');
@@ -458,11 +504,23 @@ exports.getPackSearchResult = function (req, res, next) {
                         function (data, callback) {
                             SearchModel.getSearchCriteriaResult(connection_ikon_cms,data,function(err,result){
                                 //console.log(result)
-                                callback(err, {'searchContentList':result});
+                                callback(err, result);
+                            });
+                        },
+                        function (searchContentList, callback) {
+                          //  console.log(req.body.pctId)
+                            SearchModel.getPackDetails( connection_ikon_cms,req.body.pctId, function(err,packDetails){
+                                callback(err, searchContentList, packDetails);
+                            });
+                        },
+                        function (searchContentList, packDetails, callback) {
+                            SearchModel.getPackSearchDetails( connection_ikon_cms,req.body.pctId, function(err,packSearchDetails){
+                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails});
                             });
                         }
                     ],
                     function (err, results) {
+                        //console.log(" test "+results.packDetails)
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
