@@ -34,9 +34,13 @@
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
                                         <td class="col-md-1 col-xs-1">
                                             <div class="row">
-                                                <div class="col-md-12 col-xs-12" style="text-align: center">
+                                                <div class="col-md-6 col-xs-6" style="text-align: center">
                                                     <a ng-if="parentType != 'Audio' && parentType != 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-picture-o" style="color:green" title="View"></i></a>
                                                     <a ng-if="parentType == 'Audio' || parentType == 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-play" style="color:green" title="View"></i></a>
+                                                </div>
+                                                <div class="col-md-6 col-xs-6" style="text-align: center" >
+                                                    <span ng-show="action != 1"><a href="" data-ng-click="removeContent(content.cm_id)"><i class="glyphicon glyphicon-remove" title="Remove" style="color:red"></i></a></span>
+                                                    <span ng-hide="action != 1"><input type="checkbox" name="selectedContent" ng-model="selectedContent[content.cm_id]" data-ng-change="addSelectedContents(content.cm_id)"/></span>
                                                 </div>
                                             </div>
                                         </td>
@@ -68,14 +72,16 @@
 			<br/><br/>
 			 <div class="row" ng-show="searchContentList.length  > 0">
                 <div class="col-md-12 col-xs-12">
-                	 <div class="col-xs-4 col-md-4">
+                	 <div class="col-xs-3 col-md-3">
                 	 </div>
-                    <div class="col-xs-4 col-md-4">
+                    <div class="col-xs-6 col-md-6">
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="showArrangeContents()" >Arrange</button>
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="showResetRules()" >Reset Rules</button>
+                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="addMoreSearchContents()" >Add more content</button>
+
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="showPublishContents()" >Publish current List</button>
                     </div>
-                    <div class="col-xs-4 col-md-4">
+                    <div class="col-xs-3 col-md-3">
                 	 </div>
                 </div>
             </div>

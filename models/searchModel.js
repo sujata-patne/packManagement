@@ -135,7 +135,7 @@ exports.saveSearchContents = function(dbConnection, data, callback){
     });
 }
 exports.updateSearchContents = function(dbConnection, data, callback){
-    /*dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
      [data.pc_pct_id, data.pc_cm_id], function (err, result) {
         if(result && result.length > 0){
             data['pc_crud_isactive'] = data.pc_pct_id;
@@ -157,15 +157,15 @@ exports.updateSearchContents = function(dbConnection, data, callback){
                 }
             })
         }else{
-            console.log('update')*/
+            console.log('update')
             var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
                 if (err) {
                     dbConnection.release();
                     res.status(500).json(err.message);
                 }
             })
-        /*}
-    });*/
+        }
+    });
 }
 exports.getSavedContents = function(dbConnection, pctId, callback){
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
