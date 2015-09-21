@@ -35,7 +35,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         $scope.packName = $scope.packDetails[0].pk_name;
         $scope.searchContentList.forEach(function(value){
             $scope.removedContent.push(value.cm_id);
-        })
+        });
  
     }, function (error) {
         //console.log(error)
