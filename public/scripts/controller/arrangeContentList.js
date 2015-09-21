@@ -1,8 +1,5 @@
-<<<<<<< 41ad3f5cd8fa501260049cdc1c8bebd24c27d811
-myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search, arrangeContents) {
-=======
-myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress,Upload, Search) {
->>>>>>> Upload file and auto form
+myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress,Upload, Search,arrangeContents) {
+
 
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
