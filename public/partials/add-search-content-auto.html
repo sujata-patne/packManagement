@@ -98,7 +98,7 @@
                             <div class="form-group" style="color: red" ng-show="searchForm.$submitted">
                                 <span ng-show="searchForm.noOfRecords.$error.required">Please Select option for No. of Records.</span>
                             </div>
-                            <div class="form-group" ng-show="displayName != 'Manual'">
+                            <div class="form-group" >
                                 <div class="col-md-3 col-xs-12">
                                     <input type="radio" name="ruleType" value="1" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Automic Pack Creation</label>
@@ -111,13 +111,13 @@
                                     <label for="title" class="col-md-1 col-xs-1 control-label">Days</label>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" >
                                 <div class="col-md-12 col-xs-12">
                                     <input type="radio" name="ruleType" value="2" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Manual Pack Creation</label>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" ng-show="displayName == 'Manual'">
                                 <label for="title" class="col-md-1 control-label">Action</label>
                                 <div class="col-md-10">
                                     <input type="radio" name="action" value="1" ng-model="action" required>&nbsp;<label class="control-label">Add Selected Content</label>

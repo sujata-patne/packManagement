@@ -192,6 +192,12 @@ exports.getPackDetails = function(dbConnection,pctId,callback){
         });
 }
 
+exports.getPackContentSequence = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc " +
+        "WHERE pc.pc_pct_id = ? AND ISNULL(pc.pc_crud_isactive) ", [pctId],function (err, result) {
+        callback(err,result);
+    });
+}
 exports.getPackSearchDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId, pcr.*, cm.* FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +

@@ -2,7 +2,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
-    $scope.pctId = $stateParams.id;
+    $scope.pctId = $stateParams.pctId;
     $scope.success = "";
     $scope.limitCount = 5;
     $scope.successvisible = false;
@@ -25,7 +25,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
 
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
-        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
+        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //auto
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
         $scope.action = 1;
         $scope.noOfRecords = 1;
@@ -168,9 +168,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
             Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {
                     $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                    //toastr.success(data.message)
-                    //Search.addPackSearchResult(data.SearchCriteriaResult);
-                    //console.log(data.SearchCriteriaResult)
+
                     $scope.successvisible = true;
                 }
                 else {

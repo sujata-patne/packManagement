@@ -410,12 +410,17 @@ exports.getPackSearchResult = function (req, res, next) {
                         },
                         function (searchContentList, packDetails, callback) {
                             SearchModel.getPackSearchDetails( connection_ikon_cms,req.body.pctId, function(err,packSearchDetails){
-                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails});
+                                callback(err,searchContentList,packDetails,packSearchDetails);
+                            });
+                        },
+                        function (searchContentList,packDetails,packSearchDetails,callback) {
+                            SearchModel.getPackContentSequence( connection_ikon_cms,req.body.pctId, function(err,packContentSequence){
+                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails, 'packContentSequence':packContentSequence});
                             });
                         }
                     ],
                     function (err, results) {
-                        //console.log(" test "+results.packDetails)
+                        //console.log(results.packContentSequence)
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);

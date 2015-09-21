@@ -65,7 +65,7 @@ myApp.config(function ($stateProvider) {
         .state("search-content-auto", {
             templateUrl: "partials/add-search-content-auto.html",
             controller: "searchContentAutoCtrl",
-            url: "/search-content-auto/:id"
+            url: "/search-content-auto/:pctId"
         })
         
         .state("add-content-list", {
