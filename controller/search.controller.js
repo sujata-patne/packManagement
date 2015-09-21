@@ -10,51 +10,6 @@ var inspect = require('util-inspect');
 
 //console.log(data.ContentTypeDetails[0].Manual[0].Wallpaper);
 
-exports.resetSearchCriteriaContents = function (req, res, next) {
-    try {
-        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                SearchModel.searchCriteriaExist(connection_ikon_cms, req.body.pctId, function (err, response) {
-                    if (err) {
-                        connection_ikon_cms.release();
-                        res.status(500).json(err.message);
-                    }else{
-                        if(response){
-                            /*delete existing search criteria and contents*/
-                            SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }else{
-                                    SearchModel.deleteSearchedContent(connection_ikon_cms, req.body.pctId, function (err, response) {
-                                        if (err) {
-                                            connection_ikon_cms.release();
-                                            res.status(500).json(err.message);
-                                        }else{
-                                            connection_ikon_cms.release();
-                                            res.send({
-                                                "success": true,
-                                                "status": 200,
-                                                "message": "Search Criteria & it's saved content removed successfully.",
-                                            });
-                                        }
-                                    })
-
-                                }
-                            })
-                        }
-                    }
-                });
-            })
-        }else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        res.status(500).json(err.message);
-    }
-}
-
 exports.getSavedContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
@@ -106,100 +61,6 @@ exports.getSavedContents = function (req, res, next) {
                         connection_ikon_cms.release();
                         res.send(results);
                     }
-                })
-            })
-        }else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        res.status(500).json(err.message);
-    }
-}
-
-exports.saveArrangedContents = function (req, res, next) {
-    try {
-        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                for (var contentId in req.body.arrangedContentList) {
-                    var data = {
-                        pc_pct_id: parseInt(req.body.pctId),
-                        pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: req.body.arrangedContentList[contentId]
-                    }
-                    SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                        if (err) {
-                            connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }
-                    })
-                }
-                connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200,
-                    "message": "Search Contents arranged successfully!."
-                })
-            })
-        }else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        res.status(500).json(err.message);
-    }
-}
-
-
-exports.publishContents = function (req, res, next) {
-    try {
-        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                for (var contentId in req.body.publishedContentList) {
-                    //console.log(req.body.publishedContentList[contentId])
-                    if(req.body.publishedContentList[contentId] == null || req.body.publishedContentList[contentId] == undefined || req.body.publishedContentList[contentId] == ''){
-                        sequence = 0;
-                    }else{
-                        sequence = req.body.publishedContentList[contentId];
-                    }
-                    var data = {
-                        pc_pct_id: parseInt(req.body.pctId),
-                        pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: sequence,
-                        pc_ispublished: 1
-                    }
-                    SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
-                        if (err) {
-                            connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }else {
-                           // console.log(response)
-                            if (response) {
-                                console.log('edit');
-                                SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                                    if (err) {
-                                        connection_ikon_cms.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                })
-                            } else {
-                                console.log('add');
-
-                                SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
-                                    if (err) {
-                                        connection_ikon_cms.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                })
-                            }
-                        }
-                    })
-                }
-                connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200,
-                    "message": "Search Contents published successfully!."
                 })
             })
         }else {
@@ -398,7 +259,6 @@ exports.saveSearchCriteria = function (req, res, next) {
                             pcr_metadata_type: searchFieldId,
                             pcr_metadata_search_criteria: req.body.contentTypeDataDetails[searchFieldId]
                         }
-                                console.log("$$ "+data)
                     SearchModel.deleteSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
                         if (err) {
                             connection_ikon_cms.release();
@@ -476,20 +336,6 @@ exports.saveSearchCriteria = function (req, res, next) {
     catch (err) {
         res.status(500).json(err.message);
     }
-}
-
-function addSearchCriteriaField(connection_ikon_cms,data){    
-    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
-        if (lastInsertedSearchCriteriaId) {
-            data['pcr_id'] = lastInsertedSearchCriteriaId;
-            SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                if (err) {
-                    connection_ikon_cms.release();
-                    res.status(500).json(err.message);
-                }
-            })
-        }
-    })
 }
 
 exports.getPackSearchResult = function (req, res, next) {
@@ -589,7 +435,6 @@ exports.getPackSearchResult = function (req, res, next) {
     }
 };
 
-
 exports.UploadFile =  function (req, res, next) {
             var form = new formidable.IncomingForm();
             form.parse(req, function (err, fields, files) {
@@ -669,7 +514,6 @@ function saveContentFiles( connection_ikon_cms, data ){
     return true;
 }
 
-
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
     SearchModel.getLastSearchCriteriaId(connection_ikon_cms,function(err,maxPCRID){
         if(err){
@@ -680,6 +524,7 @@ function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
         }
     });
 }
+
 function updatePackData( connection_ikon_cms, data ){
     SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
         if(err){
@@ -689,4 +534,18 @@ function updatePackData( connection_ikon_cms, data ){
         }
     });
     return true;
+}
+
+function addSearchCriteriaField(connection_ikon_cms,data){
+    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
+        if (lastInsertedSearchCriteriaId) {
+            data['pcr_id'] = lastInsertedSearchCriteriaId;
+            SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
+                if (err) {
+                    connection_ikon_cms.release();
+                    res.status(500).json(err.message);
+                }
+            })
+        }
+    })
 }

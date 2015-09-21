@@ -5,7 +5,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
 
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
-    $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
+    $scope.PageTitle = $state.current.name == "search-content-manual" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.pctId;
     $scope.success = "";
     $scope.limitCount = 10;
@@ -213,9 +213,7 @@ console.log(params)
                 });
             }else{
                 toastr.error('Please add Search criteria')
-
             }
-
         }
     }
 });
