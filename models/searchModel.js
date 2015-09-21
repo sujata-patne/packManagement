@@ -135,67 +135,36 @@ exports.saveSearchContents = function(dbConnection, data, callback){
     });
 }
 exports.updateSearchContents = function(dbConnection, data, callback){
-    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
+    /*dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
      [data.pc_pct_id, data.pc_cm_id], function (err, result) {
         if(result && result.length > 0){
-            callback(err,false);
-        }else{ 
-            
-            if(result && result.length > 0){
-                data['pc_crud_isactive'] = data.pc_pct_id;
-                console.log("update : "+data)
-                var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
-                    if (err) {
-                        dbConnection.release();
-                        res.status(500).json(err.message);
-                    }else{
-                        var newdata = {
-                            pc_pct_id: data.pc_pct_id,
-                            pc_cm_id: data.pc_cm_id,
-                            pc_arrange_seq: data.pc_arrange_seq,
-                            pc_ispublished: data.pc_ispublished,
-
-                        }
-                        var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ",newdata, function (err, response) {
-                            callback(err,response);
-                        })
+            data['pc_crud_isactive'] = data.pc_pct_id;
+            console.log("update : "+data)
+            var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
+                if (err) {
+                    dbConnection.release();
+                    res.status(500).json(err.message);
+                }else{
+                    var newdata = {
+                        pc_pct_id: data.pc_pct_id,
+                        pc_cm_id: data.pc_cm_id,
+                        pc_arrange_seq: data.pc_arrange_seq,
+                        pc_ispublished: data.pc_ispublished
                     }
-                })
-            }else{
-                console.log('update')
-                var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
-                    if (err) {
-                        dbConnection.release();
-                        res.status(500).json(err.message);
-                    }
-                })
-            }            
-        }
-    });
-
-
-
-   /*if(data.pc_ispublished != undefined || data.pc_ispublished != null){
-        data['pc_crud_isactive'] = data.pc_pct_id;
-    }
-   var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
-         if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        }else{
-            if(data.pc_ispublished != undefined || data.pc_ispublished != null){
-                var newdata = {
-                    pc_pct_id: data.pc_pct_id,
-                    pc_cm_id: data.pc_cm_id,
-                    pc_arrange_seq: data.pc_arrange_seq,
-                    pc_ispublished: data.pc_ispublished,
-
+                    var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ", newdata, function (err, response) {
+                        callback(err,response);
+                    })
                 }
-                var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ",newdata, function (err, response) {
-                    callback(err,response);
-                })
-            }
-        }        
+            })
+        }else{
+            console.log('update')*/
+            var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
+                if (err) {
+                    dbConnection.release();
+                    res.status(500).json(err.message);
+                }
+            })
+        /*}
     });*/
 }
 exports.getSavedContents = function(dbConnection, pctId, callback){
@@ -366,6 +335,7 @@ exports.deleteSearchCriteriaField = function(dbConnection,data,callback){
 }
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
+
     var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
 
     //var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {

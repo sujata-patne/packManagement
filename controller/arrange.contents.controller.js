@@ -16,6 +16,7 @@ exports.saveArrangedContents = function (req, res, next) {
                         pc_cm_id: parseInt(contentId),
                         pc_arrange_seq: req.body.arrangedContentList[contentId]
                     }
+                    console.log(data)
                     addEditContents(connection_ikon_cms,data);
                 }
                 connection_ikon_cms.release();
@@ -48,6 +49,7 @@ exports.savePublishedContents = function (req, res, next) {
                         pc_arrange_seq: req.body.arrangedContentList[contentId],
                         pc_ispublished: 1
                     }
+                    console.log(data)
                     addEditContents(connection_ikon_cms,data);
                 }
                 connection_ikon_cms.release();
