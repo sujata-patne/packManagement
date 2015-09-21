@@ -78,8 +78,8 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.addMoreSearchContents = function () {
         showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
-            console.log('$$$'+$scope.pctId)
-            $state.go('search-content', {pctId:$scope.pctId})
+            var filename = 'search-content-'+$scope.displayName.toLowerCase()
+            $state.go(filename, {pctId:$scope.pctId}) 
         },function(error){
             console.log(error)
             toastr.error(error)

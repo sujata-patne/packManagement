@@ -57,21 +57,17 @@ myApp.config(function ($stateProvider) {
             controller: "addPackCtrl",
             url: "/edit-pack/:id"
         })
-        .state("search-content", {
+        .state("search-content-manual", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
-            url: "/search-content/:pctId"
+            url: "/search-content-manual/:pctId"
         })
         .state("search-content-auto", {
             templateUrl: "partials/add-search-content-auto.html",
             controller: "searchContentAutoCtrl",
             url: "/search-content-auto/:id"
         })
-        /*.state("edit-search-content", {
-            templateUrl: "partials/add-search-content.html",
-            controller: "searchContentCtrl",
-            url: "/edit-search-content/:id"
-        })*/
+        
         .state("add-content-list", {
             templateUrl: "partials/add-content-list.html",
             controller: "contentListCtrl",

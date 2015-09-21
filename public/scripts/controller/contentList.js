@@ -70,9 +70,11 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
          });
     }
 
-    $scope.EditPack = function ( pctID ) {
-            $window.location.href = "/#/search-content/" + pctID;
+    $scope.EditPack = function ( pctID,type_added_name ) {
+        
+            $window.location.href = "/#/search-content-"+type_added_name.toLowerCase()+"/" + pctID;
     }
+
     $scope.showArrangeList = function ( pctID ) {
         $window.location.href = "/#/arrange-content-list/"+pctID;
 
