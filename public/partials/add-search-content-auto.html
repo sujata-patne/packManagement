@@ -51,7 +51,7 @@
                                 <div class="col-md-3">
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
                                     <label for="title" class="col-md-1 control-label">Days</label>-->
-                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart"  >
+                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart" ng-required="contentTypeData['property_release_year'].releaseYearEnd" >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -66,6 +66,9 @@
                         <div class="form-group">
                             <div class="col-md-3"></div>
                             <div class="col-md-9">
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearStart.$touched">
+                                    <span ng-show="searchForm.releaseYearStart.$error.required">From Release Year is required.</span>
+                                </span>
                                 <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$touched">
                                     <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
                                     <span ng-show="contentTypeData['property_release_year'].releaseYearStart > contentTypeData['property_release_year'].releaseYearEnd">To Release Year should be greater that From Release Year.</span>

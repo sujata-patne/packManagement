@@ -79,7 +79,7 @@
                                 <div class="col-md-3">
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
                                     <label for="title" class="col-md-1 control-label">Days</label>-->
-                                    <select ng-options="year for year in years" id="releaseYearStart" name="releaseYearStart"  class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart" data-ng-required="contentTypeData['property_release_year'].releaseYearEnd" >
+                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart" ng-required="contentTypeData['property_release_year'].releaseYearEnd" >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -103,7 +103,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="form-group" ng-repeat="value in Wallpaper track by $index">
+                        <div class="form-group" ng-repeat="value in contentType track by $index">
                             <div ng-repeat="(key,element) in value">
                                 <label class="col-sm-3 control-label">{{key}}</label>
                                 <div class="col-sm-6">

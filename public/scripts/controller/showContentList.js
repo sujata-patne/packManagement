@@ -30,13 +30,13 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         $scope.packDetails = angular.copy(data.packDetails);
 
         $scope.contentType = $scope.packDetails[0].type;
+        $scope.parentType = $scope.packDetails[0].parent_type;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
         $scope.searchContentList.forEach(function(value){
             $scope.removedContent.push(value.cm_id);
-        })
- 
+        });
     }, function (error) {
         //console.log(error)
         toastr.success(error)

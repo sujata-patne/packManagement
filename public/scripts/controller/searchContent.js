@@ -16,7 +16,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.ContentTypeDetails = angular.copy(ContentTypeDetails);
-    $scope.Wallpaper = $scope.ContentTypeDetails[0].Manual[0].Wallpaper;
+    //$scope.Wallpaper = $scope.ContentTypeDetails[0].Manual[0].Wallpaper;
+    //console.log( $scope.Wallpaper );
     $scope.contentTypeData = {};
 
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
@@ -26,20 +27,23 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.packId = $scope.packDetails[0].pk_id;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
-
-       /* angular.forEach($scope.ContentTypeDetails, function(value){
-            angular.forEach(value, function(displayType, key){
-                if(key == 'Manual'){
-                    angular.forEach(displayType, function(contentType, key1){
-                        if(key1 == 'Wallpaper'){
-
-                        }
-                        console.log(contentType)
-                    })
+        $scope.packType = $scope.packDetails[0].type;
+        console.log($scope.displayName);
+        $scope.contentType = {};
+        angular.forEach($scope.ContentTypeDetails, function( value, key ){	   
+           angular.forEach(value, function( displayType, displayKey ){
+                if( displayKey == $scope.displayName ){
+                    angular.forEach(displayType, function(manualContentType, manualIndex ){
+                    	angular.forEach(manualContentType, function(contentType, contentIndex ){
+	                        if( contentIndex == $scope.packType ){
+	                           $scope.contentType = manualContentType[contentIndex];
+	                        }
+                    	});
+                    });
                 }
-            })
-
-        })*/
+            });
+        });
+        //console.log($scope.contentType);
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual

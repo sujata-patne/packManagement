@@ -6,7 +6,7 @@
             </div>
             <!-- /.content-header -->
             <div class="row">
-            	<h5 class="text-center"><u>Add Content >> {{packName}} >> {{contentType}} >> {{displayName}} Add >> List </u></h5>
+            	<h5 class="text-center"><u>Add Content >> {{packName}} >> {{contentType}} >> Manual  >> List </u></h5> 
                 <div class="col-md-12 col-xs-12">
                     <div class="table-responsive">
                         <div id="user-exportable">
@@ -35,7 +35,8 @@
                                         <td class="col-md-1 col-xs-1">
                                             <div class="row">
                                                 <div class="col-md-6 col-xs-6" style="text-align: center">
-                                                    <a href="" data-ng-click="playContent()" title="Play"><i class="fa fa-picture-o" style="color:green" title="View"></i></a>
+                                                    <a ng-if="parentType != 'Audio' && parentType != 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-picture-o" style="color:green" title="View"></i></a>
+                                                    <a ng-if="parentType == 'Audio' || parentType == 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-play" style="color:green" title="View"></i></a>
                                                 </div>
                                                 <div class="col-md-6 col-xs-6" style="text-align: center" >
                                                     <span ng-show="action != 1"><a href="" data-ng-click="removeContent(content.cm_id)"><i class="glyphicon glyphicon-remove" title="Remove" style="color:red"></i></a></span>
