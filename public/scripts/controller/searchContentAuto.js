@@ -12,7 +12,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.ContentTypeDetails = angular.copy(ContentTypeDetails); //Read config file.
-    $scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
+    // $scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
     $scope.contentTypeData = {};
 
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
@@ -21,8 +21,22 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         $scope.packSearchDetails = angular.copy(data.packSearchDetails);
         $scope.packId = $scope.packDetails[0].pk_id;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt; //463 id of Auto
-        $scope.displayName = $scope.packDetails[0].displayName; //Auto
-
+        $scope.displayName = $scope.packDetails[0].displayName;
+        $scope.packType = $scope.packDetails[0].type;
+        $scope.contentType = {};
+        angular.forEach($scope.ContentTypeDetails, function( value, key ){     
+           angular.forEach(value, function( displayType, displayKey ){
+                if( displayKey == $scope.displayName ){
+                    angular.forEach(displayType, function(autoContentType, manualIndex ){
+                        angular.forEach(autoContentType, function(contentType, contentIndex ){
+                            if( contentIndex == $scope.packType ){
+                               $scope.contentType = autoContentType[contentIndex];
+                            }
+                        });
+                    });
+                }
+            });
+        });
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //auto

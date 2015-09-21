@@ -10,11 +10,22 @@ var ContentTypeDetails = [
                                 {'Vendor': 'Vendor'},
                                 {'Photographer': 'Photographer'}
                             ]
+                    },
+                    {'Full Track': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
                     }
               ]
     },
     {'Auto': [
-                    {'FullTrack': [
+                    {'Full Track': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Singer':'Singer'},

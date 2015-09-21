@@ -28,11 +28,11 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packType = $scope.packDetails[0].type;
-        console.log($scope.displayName);
         $scope.contentType = {};
         angular.forEach($scope.ContentTypeDetails, function( value, key ){	   
            angular.forEach(value, function( displayType, displayKey ){
                 if( displayKey == $scope.displayName ){
+
                     angular.forEach(displayType, function(manualContentType, manualIndex ){
                     	angular.forEach(manualContentType, function(contentType, contentIndex ){
 	                        if( contentIndex == $scope.packType ){
@@ -43,7 +43,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                 }
             });
         });
-        //console.log($scope.contentType);
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual

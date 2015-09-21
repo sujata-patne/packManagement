@@ -34,7 +34,7 @@
                         <input type="hidden" name="pctId" class="form-control" data-ng-model="pctId">
                     </div>
                     <div class="col-md-8">
-                        <div class="form-group" ng-repeat="value in ContentRender track by $index">
+                        <div class="form-group" ng-repeat="value in contentType track by $index">
                             <div ng-repeat="(key,element) in value">
                                 <label class="col-sm-3 control-label">{{key}}</label>
                                 <div class="col-sm-6">
