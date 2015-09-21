@@ -1,7 +1,8 @@
 /**
  * Created by sujata.patne on 11-09-2015.
  */
-myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $stateParams,$state, ngProgress, Search) {
+myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $stateParams, ngProgress, Search) {
+
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";

@@ -24,7 +24,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.selectedContent = [];
     $scope.removedContent = [];
     $scope.contents = [];
-
+ 
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
@@ -36,6 +36,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         $scope.searchContentList.forEach(function(value){
             $scope.removedContent.push(value.cm_id);
         })
+ 
     }, function (error) {
         //console.log(error)
         toastr.success(error)

@@ -18,4 +18,6 @@ module.exports = function (app) {
         .post(search.saveArrangedContents);
     app.route('/resetSearchCriteriaContents')
         .post(search.resetSearchCriteriaContents);
+    app.route('/UploadFile')
+        .post(search.UploadFile);
 }

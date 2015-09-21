@@ -1,6 +1,10 @@
 var mysql = require('../config/db').pool;
 var async = require("async");
 var SearchModel = require('../models/searchModel');
+var ContentModel = require('../models/contentModel');
+var formidable = require('formidable');
+var fs = require('fs');
+var inspect = require('util-inspect');
 
 //var data = require('../config/config');
 
@@ -313,6 +317,16 @@ exports.getContentTypeDetails = function (req, res, next) {
                             callback(err, property);
                         });
                     },
+                    singers: function (callback) {
+                        SearchModel.getSinger( connection_ikon_cms, function(err,singers){
+                            callback(err, singers);
+                        });
+                    },
+                    music_directors: function (callback) {
+                        SearchModel.getMusicDirectors( connection_ikon_cms, function(err,music_directors){
+                            callback(err, music_directors);
+                        });
+                    },
                     content_title: function (callback) {
                         SearchModel.getContentTitle( connection_ikon_cms, function(err,title){
                             callback(err, title);
@@ -574,6 +588,87 @@ exports.getPackSearchResult = function (req, res, next) {
         res.status(500).json(err.message);
     }
 };
+
+
+exports.UploadFile =  function (req, res, next) {
+            var form = new formidable.IncomingForm();
+            form.parse(req, function (err, fields, files) {
+                console.log(fields);
+                fs.readFile(files.file.path, function (err, data) {
+                      var newPath = __dirname + "/../ContentFiles/"+files.file.name;
+                      fs.writeFile(newPath, data, function (err) {
+                            if (err) return console.log(err);
+                            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                                async.parallel({
+                                    MaxTemplateId : function(callback){
+                                        ContentModel.getLastInsertedTemplateId(connection_ikon_cms,function(err,MaxTemplateId){
+                                                callback(err,MaxTemplateId);
+                                        }); 
+                                    },
+                                    MaxTemplateGroupId : function(callback){
+                                        ContentModel.getLastInsertedTemplateId(connection_ikon_cms,function(err,MaxTemplateGroupId){
+                                                callback(err,MaxTemplateGroupId);
+                                        }); 
+                                    },
+                                    MaxContentFilesId : function(callback){
+                                        ContentModel.getLastInsertedContentFilesId(connection_ikon_cms,function(err,MaxContentFilesId){
+                                                callback(err,MaxContentFilesId);
+                                        }); 
+                                    }
+                                },function(err,results){
+                                    var template_data = {
+                                        ct_id : results.MaxTemplateId,
+                                        ct_group_id : results.MaxTemplateGroupId,
+                                        ct_param : 0,
+                                        ct_param_value : 'ANY'
+                                    }
+
+                                    var template_inserted = saveTemplateForUpload( connection_ikon_cms,template_data );
+                                    if(template_inserted == true){
+                                             var data = {
+                                                cf_id: results.MaxContentFilesId,
+                                                cf_cm_id : fields.cm_id,
+                                                cf_url_base : newPath,
+                                                cf_url : newPath,
+                                                cf_absolute_url : newPath,
+                                                cf_template_id : results.MaxTemplateId
+                                             }
+
+                                       var content_files_inserted = saveContentFiles( connection_ikon_cms, data );      
+
+                                       if(content_files_inserted == true){
+                                            console.log("File uploaded!");
+                                       }
+                                    }
+                                });
+                            });
+                      });
+                });
+        });
+};
+
+function saveTemplateForUpload( connection_ikon_cms, data ){
+    ContentModel.saveTemplateForUpload( connection_ikon_cms, data, function(err,response ){
+        if(err){
+            connection_ikon_cms.release();
+            // res.status(500).json(err.message);
+            return false;
+        }
+    });
+    return true;
+}
+
+function saveContentFiles( connection_ikon_cms, data ){
+    ContentModel.saveContentFiles( connection_ikon_cms, data, function(err,response ){
+        if(err){
+            connection_ikon_cms.release();
+            // res.status(500).json(err.message);
+            return false;
+        }
+    });
+    return true;
+}
+
 
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
     SearchModel.getLastSearchCriteriaId(connection_ikon_cms,function(err,maxPCRID){

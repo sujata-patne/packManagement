@@ -1,18 +1,33 @@
-var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress']);
+var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','angularUtils.directives.dirPagination','ngFileUpload']);
 var ContentTypeDetails = [
     {'Manual': [
-        {'Wallpaper': [
-            {'Language': 'Language'},
-            {'Actor/Actress': 'Actor_Actress'},
-            {'Genres': 'Genres'},
-            {'Sub Genres': 'Sub_Genres'},
-            {'Mood': 'Mood'},
-            {'Vendor': 'Vendor'},
-            {'Photographer': 'Photographer'}
-        ]
-        }
-    ]
-}];
+                    {'Wallpaper': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Vendor': 'Vendor'},
+                                {'Photographer': 'Photographer'}
+                            ]
+                    }
+              ]
+    },
+    {'Auto': [
+                    {'FullTrack': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
+                    }
+              ]
+    }
+];
 toastr.options = {
     "closeButton": false,
     "debug": false,
@@ -46,6 +61,11 @@ myApp.config(function ($stateProvider) {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
             url: "/search-content/:pctId"
+        })
+        .state("search-content-auto", {
+            templateUrl: "partials/add-search-content-auto.html",
+            controller: "searchContentAutoCtrl",
+            url: "/search-content-auto/:id"
         })
         /*.state("edit-search-content", {
             templateUrl: "partials/add-search-content.html",

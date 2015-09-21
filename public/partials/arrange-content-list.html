@@ -1,3 +1,29 @@
+<style>
+.thumb {
+    width: 24px;
+    height: 24px;
+    float: none;
+    position: relative;
+    top: 7px;
+}
+
+form .progress {
+    line-height: 15px;
+}
+}
+
+.progress {
+    display: inline-block;
+    width: 100px;
+    border: 3px groove #CCC;
+}
+
+.progress div {
+    font-size: smaller;
+    background: orange;
+    width: 0;
+}
+</style>
 <div class="container">
     <div class="content">
         <div class="content-container">
@@ -23,7 +49,7 @@
                                         <th class="text-center">Release Year</th>
                                         <th class="text-center">Actor/Actress</th>
                                         <th class="text-center">Arrange</th>
-                                        <th class="text-center">Upload</th>
+                                        <th class="text-center">Upload <br/> [Max 2 images per content]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -36,7 +62,29 @@
                                         <td class="col-md-1 col-xs-1">
                                             <input type="text" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" >
                                         </td>
-                                        <td class="col-md-1 col-xs-1 text-center"><a href="" data-ng-click="uploadPreviewImages()" title="Upload"><i class="fa fa-upload" style="color:green" title="Upload"></i></a></td>
+                                        <td class="col-md-1 col-xs-1 text-center"><!-- <i class="fa fa-upload" style="color:green" title="Upload"> -->
+                                            <form name="form">
+                                                 <button  ngf-select ng-model="fileUploads[$index]" ngf-multiple="true"
+                                                 accept="image/*" ngf-pattern="'.jpg,.png'" ngf-max-height="1000" ngf-max-size="1MB">
+                                                     <i class="fa fa-upload" style="color:green" title="Select Files"></i>
+                                                </button>
+                                                  <button type="submit" ng-click="uploadSubmit($index,content.pc_cm_id)">
+                                                       Upload
+                                                  </button>
+                                            </form>
+                                                <!-- Files: {{$index}} -->
+                                                <ul>
+                                                    <li ng-repeat="f in fileUploads[$index]" style="font:smaller">
+                                                        {{f.name}} <span style="color:red">
+                                                                     {{f.$error}}  {{f.$errorParam}}
+                                                                  </span>
+                                                    </li>  
+                                                </ul>  
+                                                  <span class="progress" style="color:green" id="{{$index}}">
+                                                        
+                                                  </span>
+
+                                        </td>
                                     </tr>
                                     <tr ng-hide="searchContentList.length > 0">
                                         <td colspan="7">

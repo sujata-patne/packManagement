@@ -1,4 +1,8 @@
+<<<<<<< 41ad3f5cd8fa501260049cdc1c8bebd24c27d811
 myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search, arrangeContents) {
+=======
+myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress,Upload, Search) {
+>>>>>>> Upload file and auto form
 
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
@@ -34,6 +38,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         toastr.success(error)
     });
 
+<<<<<<< 41ad3f5cd8fa501260049cdc1c8bebd24c27d811
     $scope.arrangeContent = function () {
         $scope.arrangedContentList = {};
         angular.forEach($scope.sequence,function(value,key) {
@@ -75,5 +80,51 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
             toastr.error(error)
         })
     }
+=======
+    $(".progress").hide();
+>>>>>>> Upload file and auto form
 
+    $scope.fileUploads = [];
+    $scope.uploadSubmit = function(index,cm_id){
+             $scope.files = $scope.fileUploads;
+             var valid = true;
+             if($scope.files.length == 0){
+                valid = false;
+                toastr.error("Please select images to upload.");
+             }
+             if($scope.files[index].length > 2){
+                valid = false;
+                toastr.error("Max 2 files allowed per content type");
+             }
+
+             if(valid){
+                      angular.forEach($scope.files[index], function(file) {
+                        if (file && !file.$error) {
+                            file.upload = Upload.upload({
+                              url: '/UploadFile',
+                              fields: {'cm_id': cm_id},
+                              file: file
+                            });
+
+                            file.upload.then(function (response) {
+                              $timeout(function () {
+                                file.result = response.data;
+                              });
+                            }, function (response) {
+                              if (response.status > 0)
+                                $scope.errorMsg = response.status + ': ' + response.data;
+                            });
+
+                            file.upload.progress(function (evt) {
+                                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                                // console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                                $("#"+index).html("Uploaded: "+progressPercentage+"%");
+                              $scope.fileUploads[index].progress = Math.min(100, parseInt(100.0 * 
+                                                       evt.loaded / evt.total));
+                            });
+                        }   
+                     }); 
+             }
+           
+    }
 })
