@@ -182,7 +182,9 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
 
 exports.getPackDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName," +
-        " (select cd1.cd_name from catalogue_detail cd1 where cd1.cd_id = pct.pct_cnt_type Limit 1 ) as type FROM icn_packs AS pk " +
+        "(select cd.cd_name from catalogue_detail as cd "+
+        " WHERE cd.cd_id = (select mct_parent_cnt_type_id from icn_manage_content_type where mct_cnt_type_id = contentTypeId Limit 1) ) "+
+        " as parent_type, (select cd1.cd_name from catalogue_detail cd1 where cd1.cd_id = pct.pct_cnt_type Limit 1 ) as type FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
         "JOIN catalogue_detail AS cd ON cd.cd_id = pk.pk_cnt_display_opt " +
         " WHERE pct.pct_id = ? ", [pctId],function (err, result) { //pct_is_active = 1 AND
