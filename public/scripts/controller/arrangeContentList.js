@@ -35,7 +35,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         toastr.success(error)
     });
 
-<<<<<<< 41ad3f5cd8fa501260049cdc1c8bebd24c27d811
+
     $scope.arrangeContent = function () {
         $scope.arrangedContentList = {};
         angular.forEach($scope.sequence,function(value,key) {
@@ -77,9 +77,9 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
             toastr.error(error)
         })
     }
-=======
+
     $(".progress").hide();
->>>>>>> Upload file and auto form
+
 
     $scope.fileUploads = [];
     $scope.uploadSubmit = function(index,cm_id){
