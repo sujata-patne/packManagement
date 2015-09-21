@@ -45,6 +45,9 @@ myApp.service('Packs', ['$http', function ($http) {
         });
     }
 
+
+    
+
     return service;
 
 }]);

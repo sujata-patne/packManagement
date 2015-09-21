@@ -35,6 +35,20 @@ exports.getMood = function(dbConnection, callback){
     });
 }
 
+exports.getSinger = function(dbConnection, callback){
+    dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
+        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Singers") order by cm.cm_id ', function (err, mood) {
+        callback(err, mood)
+    });
+}
+
+exports.getMusicDirectors = function(dbConnection, callback){
+    dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
+        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Music Directors") order by cm.cm_id ', function (err, mood) {
+        callback(err, mood)
+    });
+}
+
 exports.getPhotographer = function(dbConnection, callback){
     dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
         'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Photographer") order by cm.cm_id ', function (err, photographer) {

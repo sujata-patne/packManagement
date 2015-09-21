@@ -15,7 +15,7 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
     $scope.selectedContentTypes = [];
     $scope.isAdded = false;
     $scope.listcurrentPage = 0;
-    $scope.listpageSize = 10;
+    $scope.listpageSize = 2;
     //Date Picker :::
     $scope.open1 = false;
     $scope.open2 = false;

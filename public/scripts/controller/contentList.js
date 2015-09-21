@@ -64,14 +64,17 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
             $scope.pack_added_date = data.PackContentTypes[0].pk_created_on;
             $scope.pack_modified_date = data.PackContentTypes[0].pk_modified_on;
             $scope.pack_added_name = data.PackContentTypes[0].pk_name;
+            debugger;
             $scope.type_added_name = data.PackContentTypes[0].type; 
             $scope.pack_grid = data.PackContentTypes;
          });
     }
 
-    $scope.EditPack = function ( pctID ) {
-            $window.location.href = "/#/search-content/" + pctID;
+    $scope.EditPack = function ( pctID,type_added_name ) {
+        
+            $window.location.href = "/#/search-content-"+type_added_name.toLowerCase()+"/" + pctID;
     }
+
     $scope.showArrangeList = function ( pctID ) {
         $window.location.href = "/#/arrange-content-list/"+pctID;
 
