@@ -132,8 +132,8 @@ exports.logout = function (req, res, next) {
  */
 exports.authenticate = function (req, res, next) {
     try {
-        mysql.getConnection('CMS', function (err, connection_central) {
-            userManager.getUserDetails( connection_central, req.body.username, req.body.password, function( err, userDetails ){
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+            userManager.getUserDetails( connection_ikon_cms, req.body.username, req.body.password, function( err, userDetails ){
                 console.log( userDetails[0] );
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
@@ -152,19 +152,19 @@ exports.authenticate = function (req, res, next) {
                                 session.pack_lastlogin = userDetails[0].ld_last_login;
                                 session.pack_UserType = userDetails[0].ld_user_type;
                                 session.pack_StoreId = userDetails[0].su_st_id;//coming from new store's user table.
-                                connection_central.release();
+                                connection_ikon_cms.release();
                                 res.redirect('/');
                             } else {
-                                connection_central.release();
+                                connection_ikon_cms.release();
                                 res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login.' });
                             }
                         }
                         else {
-                            connection_central.release();
+                            connection_ikon_cms.release();
                             res.render('account-login', { error: 'Your account has been disable.' });
                         }
                     } else {
-                        connection_central.release();
+                        connection_ikon_cms.release();
                         res.render('account-login', { error: 'Invalid Username / Password.' });
                     }
                 }
@@ -213,9 +213,9 @@ exports.viewForgotPassword = function (req, res, next) {
  */
 exports.forgotPassword = function (req, res, next) {
     try {
-        mysql.getConnection('CMS', function (err, connection_central) {
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
 
-            userManager.getUserByUserIdByEmail( connection_central, req.body.userid, req.body.emailid, function( err, userDetails ){
+            userManager.getUserByUserIdByEmail( connection_ikon_cms, req.body.userid, req.body.emailid, function( err, userDetails ){
                 console.log( userDetails[0] );
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection.' });
@@ -239,14 +239,14 @@ exports.forgotPassword = function (req, res, next) {
                                 console.log(error);
                                 res.end("error");
                             } else {
-                                connection_central.release();
+                                connection_ikon_cms.release();
                                 res.render('account-forgot', { error: '', msg: 'Please check your mail. Password successfully sent to your email' });
                                 res.end("sent");
                             }
                         });
                     }
                     else {
-                        connection_central.release();
+                        connection_ikon_cms.release();
                         res.render('account-forgot', { error: 'Invalid UserId / EmailId.', msg: '' });
                     }
                 }
@@ -254,7 +254,7 @@ exports.forgotPassword = function (req, res, next) {
         });
     }
     catch (err) {
-        connection_central.end();
+        connection_ikon_cms.end();
         res.render('account-forgot', { error: 'Error in database connection.' });
     }
 }
@@ -281,11 +281,11 @@ exports.changePassword = function (req, res) {
             if (req.session.pack_UserName) {
                 var session = req.session;
                 console.log( req.session.pack_Email );
-                mysql.getConnection('CMS', function (err, connection_central) {
+                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     if(req.body.oldpassword == session.pack_Password) {
-                        userManager.updateUser( connection_central, req.body.newpassword, new Date(), session.pack_UserId, function( err, response ) {
+                        userManager.updateUser( connection_ikon_cms, req.body.newpassword, new Date(), session.pack_UserId, function( err, response ) {
                             if (err) {
-                                connection_central.release();
+                                connection_ikon_cms.release();
                                 res.status(500).json(err.message);
                             }else {
                                 session.pack_Password = req.body.newpassword;
@@ -303,17 +303,17 @@ exports.changePassword = function (req, res) {
                                 }
                                 smtpTransport.sendMail(mailOptions, function (error, response) {
                                     if (error) {
-                                        connection_central.release();
+                                        connection_ikon_cms.release();
                                         res.end("error");
                                     } else {
-                                        connection_central.release();
+                                        connection_ikon_cms.release();
                                         res.send({ success: true, message: 'Password updated successfully. Please check your mail.' });
                                     }
                                 });
                             }
                         }); 
                     }else {
-                        connection_central.release();
+                        connection_ikon_cms.release();
                         res.send({ success: false, message: 'Old Password does not match.' });
                     }
                 })

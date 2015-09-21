@@ -45,7 +45,7 @@ myApp.config(function ($stateProvider) {
         .state("search-content", {
             templateUrl: "partials/add-search-content.html",
             controller: "searchContentCtrl",
-            url: "/search-content/:id"
+            url: "/search-content/:pctId"
         })
         /*.state("edit-search-content", {
             templateUrl: "partials/add-search-content.html",

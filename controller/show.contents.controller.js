@@ -2,16 +2,12 @@
  * Created by sujata.patne on 18-09-2015.
  */
 var mysql = require('../config/db').pool;
-var async = require("async");
 var SearchModel = require('../models/searchModel');
 
 exports.showArrangeContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                console.log(req.body.selectedContentList)
-                var count = req.body.selectedContentList[contentId];
-
                 for (var contentId in req.body.selectedContentList) {
                     var cnt = 0;
                     var data = {
@@ -36,15 +32,13 @@ exports.showArrangeContents = function (req, res, next) {
     }
 }
 
+
 exports.showPublishContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                console.log(req.body.selectedContentList)
-                var count = req.body.selectedContentList[contentId];
-
+                
                 for (var contentId in req.body.selectedContentList) {
-                    var cnt = 0;
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: req.body.selectedContentList[contentId],
@@ -121,7 +115,6 @@ function addEditContents(connection_ikon_cms,data){
             res.status(500).json(err.message);
         }else {
             if (response) {
-                console.log(data)
                 SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();
@@ -129,7 +122,6 @@ function addEditContents(connection_ikon_cms,data){
                     }
                 })
             } else {
-                console.log(data)
                 SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();

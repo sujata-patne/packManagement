@@ -25,14 +25,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.removedContent = [];
     $scope.contents = [];
 
-
-    Search.getPackSearchContents({
-        pctId: $scope.pctId,
-        limitCount: $scope.limitCount,
-        action: $scope.action,
-        title: $scope.title,
-        property: $scope.property
-    }, function (data) {
+    Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
 
@@ -41,7 +34,6 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
         $scope.searchContentList.forEach(function(value){
-            //console.log(value.cm_id)
             $scope.removedContent.push(value.cm_id);
         })
     }, function (error) {
@@ -51,14 +43,11 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
 
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.contents = [];
-
         data.contents.forEach(function(value){
             $scope.contents.push(value.pc_cm_id);
             $scope.selectedContent[value.pc_cm_id] = true;
-        })
-        console.log($scope.contents)
-    }, function (error) {
-        //console.log(error)
+        }) 
+    }, function (error) { 
         toastr.success(error)
     });
 
@@ -87,36 +76,37 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
 
     $scope.addMoreSearchContents = function () {
         showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
-            $window.location.href = "/#/search-content/"+$scope.pctId;
-        },function(error){
-            console.log(error)
-            toastr.success(error)
-        })
-    }
-    $scope.showPublishContents = function () {
-        $scope.publishedContentList = {};
-
-        angular.forEach($scope.contents,function(value,key) {
-            var data = {};
-            data[key] = value;
-            $scope.publishedContentList[value] = 0;
-        })
-
-        showContents.showPublishContents({pctId:$scope.pctId, publishedContentList:$scope.publishedContentList}, function (data) {
-            $window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-            toastr.success(data.message)
+            //$window.location.href = "/#/search-content/"+$scope.pctId;
+            console.log('$$$'+$scope.pctId)
+            $state.go('search-content', {pctId:$scope.pctId})
         },function(error){
             console.log(error)
             toastr.error(error)
         })
+    }
 
+    $scope.showPublishContents = function () {
+       console.log($scope.contents)
+        if($scope.contents.length > 0){
+            showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+                //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                $state.go('arrange-content-list', {pctId:$scope.pctId})
+                toastr.success(data.message)
+            },function(error){
+                console.log(error)
+                toastr.error(error)
+            })
+        }else{
+            toastr.error('Please select at least one record to publish!')
+        }
     }
 
 
     $scope.showArrangeContents = function () {
         if($scope.contents.length > 0){
             showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
-                $window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                $state.go('arrange-content-list', {pctId:$scope.pctId})
                 toastr.success(data.message)
 
             },function(error){
@@ -126,13 +116,13 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         }else{
             toastr.error('Please select at least one record to arrange!')
         }
-
     }
-
 
     $scope.showResetRules = function () {
         showContents.showResetRules({pctId:$scope.pctId}, function (data) {
-            $window.location.href = "/#/search-content/"+$scope.pctId;
+            //$window.location.href = "/#/search-content/"+$scope.pctId;
+            $state.go('arrange-content-list', {pctId:$scope.pctId})
+                toastr.success(data.message)
         },function(error){
             console.log(error)
             toastr.error(error)

@@ -1,11 +1,11 @@
 /**
  * Created by sujata.patne on 11-09-2015.
  */
-myApp.controller('searchContentCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search) {
+myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $stateParams,$state, ngProgress, Search) {
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
-    $scope.pctId = $stateParams.id;
+    $scope.pctId = $stateParams.pctId;
     $scope.success = "";
     $scope.limitCount = 10;
     $scope.successvisible = false;
@@ -147,19 +147,20 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
     $scope.submitForm = function (isValid) {
         if (isValid) {
 
-            $scope.contentTypeDataDetails = [];
+            $scope.contentTypeDataDetails = {};
             angular.forEach($scope.contentTypeData,function(value,key){
                 var data = {};
 
                 if(key == 'property_release_year' ){
                    if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
-                       data[$scope[key+'_id']] = 1;
-                       $scope.contentTypeDataDetails.push(data);
-                   }
+                       //data[$scope[key+'_id']] = 1;
+                       //$scope.contentTypeDataDetails.push(data
+                       $scope.contentTypeDataDetails[$scope[key+'_id']] = 1;                   }
                 }else{
                     if(value){
-                        data[$scope[key+'_id']] = value;
-                        $scope.contentTypeDataDetails.push(data);
+                        //data[$scope[key+'_id']] = value;
+                        //$scope.contentTypeDataDetails.push(data);
+                        $scope.contentTypeDataDetails[$scope[key+'_id']] = value;
                     }
 
                 }
@@ -183,13 +184,20 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $http, $statePa
             }
 
             ngProgress.start();
-            if($scope.contentTypeDataDetails.length > 0){
+            //console.log(Object.keys($scope.contentTypeDataDetails).length)
+            if(Object.keys($scope.contentTypeDataDetails).length > 0){
                 Search.saveSearchCriteria(searchData, function (data) {
                     if (data.success) {
-                        $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                        //toastr.success(data.message)
-                        //Search.addPackSearchResult(data.SearchCriteriaResult);
-                        //console.log(data.SearchCriteriaResult)
+                        //$window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+                        
+                        var params = {pctId:$scope.pctId,
+                            limitCount:$scope.limitCount,
+                            action:$scope.action,
+                            title:$scope.searchWhereTitle,
+                            property:$scope.searchWherePropertyTitle
+                        }
+console.log(params)
+                        $state.go('show-content-list', params)
                         $scope.successvisible = true;
                     }
                     else {

@@ -1,4 +1,4 @@
-myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search, showContents) {
+myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search, arrangeContents) {
 
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
@@ -18,7 +18,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
     $scope.published = [];
     $scope.sequence = [];
 
-
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.searchContentList = angular.copy(data.contents);
         $scope.sequence = angular.copy(data.packContentsSequence);
@@ -30,58 +29,50 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
 
-       // console.log($scope.searchContentList)
     }, function (error) {
         //console.log(error)
         toastr.success(error)
     });
+
+    $scope.arrangeContent = function () {
+        $scope.arrangedContentList = {};
+        angular.forEach($scope.sequence,function(value,key) {
+            var data = {};
+            data[key] = value;
+            $scope.arrangedContentList[key] = value;
+        })
+    }
     $scope.addMoreSearchContents = function () {
-        $scope.arrangedContentList = {};
-        angular.forEach($scope.sequence,function(value,key) {
-            var data = {};
-            data[key] = value;
-            $scope.arrangedContentList[key] = value;
-
-        })
-        //console.log($scope.arrangedContentList)
-        Search.arrangeContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
-            $window.location.href = "/#/search-content/"+$scope.pctId;
+        $scope.arrangeContent();
+        console.log('test '+$scope.pctId)
+        arrangeContents.saveArrangedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
+            //$window.location.href = "/#/search-content/"+$scope.pctId;
+            $state.go('search-content', {pctId:$scope.pctId})
+                toastr.success(data.message)
             toastr.success(data.message)
         },function(error){
             console.log(error)
-            toastr.success(error)
+            toastr.error(error)
         })
     }
 
-    $scope.publishContents = function () {
-        $scope.publishedContentList = {};
-
-        angular.forEach($scope.sequence,function(value,key) {
-            var data = {};
-            data[key] = value;
-            $scope.publishedContentList[key] = value;
-
-        })
-        Search.publishContents({pctId:$scope.pctId, publishedContentList:$scope.publishedContentList}, function (data) {
+    $scope.savePublishedContents = function () {
+        $scope.arrangeContent(); 
+        arrangeContents.savePublishedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             toastr.success(data.message)
         },function(error){
             console.log(error)
-            toastr.success(error)
+            toastr.error(error)
         })
     }
-    $scope.saveSearchContents = function(){
-        $scope.arrangedContentList = {};
-        angular.forEach($scope.sequence,function(value,key) {
-            var data = {};
-            data[key] = value;
-            $scope.arrangedContentList[key] = value;
-        })
-        console.log($scope.arrangedContentList)
-        Search.arrangeContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
+
+    $scope.saveArrangedContents = function(){
+        $scope.arrangeContent();
+        arrangeContents.saveArrangedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             toastr.success(data.message)
         },function(error){
             console.log(error)
-            toastr.success(error)
+            toastr.error(error)
         })
     }
 
