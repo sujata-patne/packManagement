@@ -138,6 +138,11 @@ exports.getContentTypeDetails = function (req, res, next) {
                         });
 
                     },
+					  rules: function (callback) {
+                        SearchModel.getRules(connection_ikon_cms, function (err, rules) {
+                            callback(err, rules);
+                        });
+                    },
                     languages: function (callback) {
                         SearchModel.getLanguages( connection_ikon_cms, function(err,languages){
                             callback(err, languages);

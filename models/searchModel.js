@@ -7,6 +7,13 @@ exports.getKeywords = function(dbConnection, callback){
     });
 }
 
+exports.getRules = function(dbConnection, callback){
+    dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
+        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Rules") order by cm.cm_id ', function (err, rules) {
+        callback(err, rules)
+    });
+}
+
 exports.getLanguages = function(dbConnection, callback){
     dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
         'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Languages") order by cm.cm_id ', function (err, languages) {
