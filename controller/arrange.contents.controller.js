@@ -67,7 +67,7 @@ exports.savePublishedContents = function (req, res, next) {
         res.status(500).json(err.message);
     }
 }
- 
+
 
 function addEditContents(connection_ikon_cms,data){
 
@@ -77,34 +77,12 @@ function addEditContents(connection_ikon_cms,data){
             res.status(500).json(err.message);
         }else {
             if (response) {
-                SearchModel.isPublishedContents(connection_ikon_cms, data, function (err, response) {
+                SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();
                         res.status(500).json(err.message);
-                    } else {
-                        if (response) {
-                            SearchModel.updateInsertSearchContents(connection_ikon_cms, data, function (err, result) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                            })
-                        } else {
-                            SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                            })
-                        }
                     }
                 })
-                /*SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                    if (err) {
-                        connection_ikon_cms.release();
-                        res.status(500).json(err.message);
-                    }
-                })*/
             } else {
                 SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {

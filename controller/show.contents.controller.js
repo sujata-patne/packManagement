@@ -8,7 +8,8 @@ exports.showArrangeContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                console.log(req.body.selectedContentList)
+
+                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList);
                 for (var contentId in req.body.selectedContentList) {
                     var cnt = 0;
                     var data = {
@@ -38,7 +39,7 @@ exports.showPublishContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                
+                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList)
                 for (var contentId in req.body.selectedContentList) {
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
@@ -107,6 +108,60 @@ exports.showResetRules = function (req, res, next) {
     }
 }
 
+function deleteUnwantedContents(connection_ikon_cms,pctId,data){
+    SearchModel.getUnwantedPackContents(connection_ikon_cms, pctId, data, function (err, result) {
+        if (err) {
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+        }else {
+            if(result[0].contents != null ) {
+                var contentList = result[0].contents.split(',')
+                    .map(function (element) {
+                        return element
+                    })
+                console.log(contentList)
+                var count = contentList.length;
+                deleteContent(0);
+                function deleteContent(cnt) {
+                    var j = cnt;
+                        var data = {
+                            pc_pct_id: pctId,
+                            pc_cm_id: contentList[j]
+                        };
+                    console.log(contentList[j])
+                    SearchModel.isPublishedContents(connection_ikon_cms, data, function (err, response) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.status(500).json(err.message);
+                        } else {
+                            if (response) {
+                                SearchModel.deletePackContents(connection_ikon_cms, data, function (err, result) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                })
+                            } else {
+                                SearchModel.deleteUnwantedPackContents(connection_ikon_cms, data, function (err, response) {
+                                    if (err) {
+                                        connection_ikon_cms.release();
+                                        res.status(500).json(err.message);
+                                    }
+                                })
+                            }
+                            cnt = cnt + 1;
+                            if (cnt < count) {
+                                deleteContent(cnt);
+                            }
+                        }
+                    })
+
+                }
+            }
+        }
+    })
+}
+
 function addEditContents(connection_ikon_cms,data){
     SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
         if (err) {
@@ -114,29 +169,14 @@ function addEditContents(connection_ikon_cms,data){
             res.status(500).json(err.message);
         }else {
             if (response) {
-                SearchModel.isPublishedContents(connection_ikon_cms, data, function (err, response) {
+                SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();
                         res.status(500).json(err.message);
-                    } else {
-                        if (response) {
-                            SearchModel.updateInsertSearchContents(connection_ikon_cms, data, function (err, result) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                            })
-                        } else {
-                            SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }
-                            })
-                        }
                     }
                 })
             } else {
+                console.log(data)
                 SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();

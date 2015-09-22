@@ -27,7 +27,6 @@ myApp.service('Search', ['$http', function ($http) {
         });
     }
     service.getSavedContents = function (pctId, success, error) {
-        console.log(pctId)
         $http.post(service.baseRestUrl + '/savedContents', pctId).success(function (items) {
             success(items);
         }).error(function (err) {

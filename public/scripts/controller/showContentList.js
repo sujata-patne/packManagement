@@ -43,6 +43,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
 
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.contents = [];
+        //console.log(data.contents)
         data.contents.forEach(function(value){
             $scope.contents.push(value.pc_cm_id);
             $scope.selectedContent[value.pc_cm_id] = true;

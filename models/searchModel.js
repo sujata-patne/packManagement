@@ -114,7 +114,7 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
 }
 exports.searchContentsExist = function(dbConnection, data, callback){
     //console.log(data.pc_pct_id +" : "+ data.pc_cm_id)
-    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? ",
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND ISNULL(pc_crud_isactive)  ",
         [data.pc_pct_id, data.pc_cm_id],function (err, result) {
             if(result.length > 0){
                 callback(err,result);
@@ -158,6 +158,7 @@ exports.isDeletedContents = function(dbConnection, data, callback) {
     })
 }
 exports.isPublishedContents = function(dbConnection, data, callback) {
+    //console.log("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = "+data.pc_pct_id+" AND pc_cm_id IN ("+data.pc_cm_id+") AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ")
     dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
     [data.pc_pct_id, data.pc_cm_id], function (err, result) {
         if (err) {
@@ -233,6 +234,7 @@ exports.getPackContentSequence = function(dbConnection,pctId,callback){
         callback(err,result);
     });
 }
+
 exports.getPackSearchDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId, pcr.*, cm.* FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
@@ -334,7 +336,7 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
 console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
 
     var query = dbConnection.query('SELECT cmd.*, cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' from content_metadata As cmd ' +
-        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr , function (err, result) {
+        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) ' + whereStr + limitstr , function (err, result) {
         callback(err,result);
     })
 }
@@ -403,6 +405,27 @@ exports.deleteSearchedContent = function(dbConnection,pctId,callback){
         }
     })
 }
+exports.deletePackContents = function(dbConnection, data, callback){
+    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data.pc_pct_id,data.pc_pct_id, data.pc_cm_id], function (err, result) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        } else {
+            callback(err,result);
+        }
+    })
+}
+exports.deleteUnwantedPackContents = function(dbConnection,data,callback){
+    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? " +
+        "AND pc_cm_id = ? ", [data.pc_pct_id,data.pc_pct_id, data.pc_cm_id], function (err, response) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            callback(err,response);
+        }
+    })
+}
 
 exports.deleteSearchedContent123 = function(dbConnection,pctId,callback){
     console.log('Delete delete  1')
@@ -445,6 +468,16 @@ exports.deleteSearchedContent123 = function(dbConnection,pctId,callback){
 }
 exports.getPackContents = function(dbConnection,pctId,callback){
     var query = dbConnection.query("SELECT * FROM icn_pack_content WHERE pc_pct_id = ? AND ISNULL(pc_crud_isactive) ", [pctId], function (err, response) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            callback(err,response);
+        }
+    });
+}
+exports.getUnwantedPackContents = function(dbConnection,pctId, data,callback){
+    var query = dbConnection.query("SELECT group_concat(pc_cm_id) as contents FROM icn_pack_content WHERE pc_pct_id = ? AND pc_cm_id NOT IN ("+data+") AND ISNULL(pc_crud_isactive) ", [pctId], function (err, response) {
         callback(err,response);
     });
 }
