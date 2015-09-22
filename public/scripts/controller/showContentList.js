@@ -51,6 +51,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     });
 
     $scope.addSelectedContents = function (id) {
+        
         if ($scope.selectedContent[id] === true) {
             $scope.contents.push(id);
         }
@@ -59,6 +60,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
             $scope.contents.splice(idx, 1);
         }
     }
+
 
     $scope.removeContent = function (id) {
         $scope.contents = [];
@@ -88,22 +90,24 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
                 angular.forEach($scope.searchContentList,function(value){
                     console.log(value);
                     // $scope.contents.push(value);
-                    $scope.addSelectedContents(value.cm_id);
-
+                    //$scope.addSelectedContents(value.cm_id);
+                    $scope.contents.push(value.cm_id);
                 });
-
-                console.log("ssss1"+$scope.contents);
-                // if($scope.contents.length > 0){
-                //         showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
-                //             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-                //             $state.go('arrange-content-list', {pctId:$scope.pctId})
-                //             toastr.success(data.message)
-                //         },function(error){
-                //             console.log(error)
-                //             toastr.error(error)
-                // })
+                if($scope.contents.length > 0){
+                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+                            //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                            $state.go('arrange-content-list', {pctId:$scope.pctId})
+                            toastr.success(data.message)
+                        },function(error){
+                            console.log(error)
+                            toastr.error(error)
+                        });
+                    }
        }else{
-                    console.log("sss"+$scope.contents);
+                    console.log("MAnual :");
+                    console.log($scope.pctId);
+                    console.log($scope.contents);
+
                     if($scope.contents.length > 0){
                         showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
                             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
