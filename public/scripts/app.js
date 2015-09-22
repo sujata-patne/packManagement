@@ -45,7 +45,7 @@ var ContentTypeDetails = [
                                 {'Photographer': 'Photographer'}
                             ]
                     },
-                    {'Full Track': [
+                    {'FullTrack': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Singer':'Singer'},
@@ -59,7 +59,7 @@ var ContentTypeDetails = [
               ]
     },
     {'Auto': [
-                    {'Full Track': [
+                    {'FullTrack': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Singer':'Singer'},
@@ -70,6 +70,20 @@ var ContentTypeDetails = [
                                 {'Mood': 'Mood'}
                             ]
                     }
+              ]
+    },
+	{ 'Rule Based': [
+                     { 'FullTrack': [
+                                { 'Language': 'Language' },
+                                { 'Actor/Actress': 'Actor_Actress' },
+                                { 'Singer': 'Singer' },
+                                { 'Music Director': 'Music_Director' },
+                                { 'Vendor': 'Vendor' },
+                                { 'Genres': 'Genres' },
+                                { 'Sub Genres': 'Sub_Genres' },
+                                { 'Mood': 'Mood' }
+                            ]
+                     }
               ]
     }
 ];
@@ -112,7 +126,11 @@ myApp.config(function ($stateProvider) {
             controller: "searchContentAutoCtrl",
             url: "/search-content-auto/:pctId"
         })
-        
+        .state("search-content-rule", {
+            templateUrl: "partials/add-search-content-rule.html",
+            controller: "searchContentRuleCtrl",
+            url: "/search-content-rule/:id"
+        })
         .state("add-content-list", {
             templateUrl: "partials/add-content-list.html",
             controller: "contentListCtrl",
