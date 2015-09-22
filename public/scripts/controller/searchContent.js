@@ -205,7 +205,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                         $state.go('show-content-list', params)
                         $scope.successvisible = true;
                     }
-                    else {
+                    else {searchContentCtrl
                         //toastr.success(data.message)
                         //$scope.error = data.message;
                         $scope.errorvisible = true;
