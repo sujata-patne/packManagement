@@ -8,6 +8,7 @@ exports.showArrangeContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                console.log(req.body.selectedContentList)
                 for (var contentId in req.body.selectedContentList) {
                     var cnt = 0;
                     var data = {
@@ -107,17 +108,32 @@ exports.showResetRules = function (req, res, next) {
 }
 
 function addEditContents(connection_ikon_cms,data){
-
     SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
         if (err) {
             connection_ikon_cms.release();
             res.status(500).json(err.message);
         }else {
             if (response) {
-                SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
+                SearchModel.isPublishedContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();
                         res.status(500).json(err.message);
+                    } else {
+                        if (response) {
+                            SearchModel.updateInsertSearchContents(connection_ikon_cms, data, function (err, result) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                }
+                            })
+                        } else {
+                            SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
+                                if (err) {
+                                    connection_ikon_cms.release();
+                                    res.status(500).json(err.message);
+                                }
+                            })
+                        }
                     }
                 })
             } else {

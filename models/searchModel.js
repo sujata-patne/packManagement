@@ -107,8 +107,7 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
 }
 exports.searchContentsExist = function(dbConnection, data, callback){
     //console.log(data.pc_pct_id +" : "+ data.pc_cm_id)
-    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc " +
-        "WHERE pc_pct_id = ? AND pc_cm_id = ? ",
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? ",
         [data.pc_pct_id, data.pc_cm_id],function (err, result) {
             if(result.length > 0){
                 callback(err,result);
@@ -135,38 +134,66 @@ exports.saveSearchContents = function(dbConnection, data, callback){
         }
     });
 }
-exports.updateSearchContents = function(dbConnection, data, callback){
-    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
-     [data.pc_pct_id, data.pc_cm_id], function (err, result) {
-        if(result && result.length > 0){
-            data['pc_crud_isactive'] = data.pc_pct_id;
-            console.log("update : "+data)
-            var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
-                if (err) {
-                    dbConnection.release();
-                    res.status(500).json(err.message);
-                }else{
-                    var newdata = {
-                        pc_pct_id: data.pc_pct_id,
-                        pc_cm_id: data.pc_cm_id,
-                        pc_arrange_seq: data.pc_arrange_seq,
-                        pc_ispublished: data.pc_ispublished
-                    }
-                    var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ", newdata, function (err, response) {
-                        callback(err,response);
-                    })
-                }
-            })
+
+exports.isDeletedContents = function(dbConnection, data, callback) {
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_crud_isactive IS NOT NULL ",
+    [data.pc_pct_id, data.pc_cm_id], function (err, result) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
         }else{
-            console.log('update')
-            var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
-                if (err) {
-                    dbConnection.release();
-                    res.status(500).json(err.message);
-                }
+            if(result && result.length > 0){
+                callback(err,true);
+            }else{
+                callback(err,false);
+            }
+        }
+    })
+}
+exports.isPublishedContents = function(dbConnection, data, callback) {
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
+    [data.pc_pct_id, data.pc_cm_id], function (err, result) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            if(result && result.length > 0){
+                callback(err,true);
+            }else{
+                callback(err,false);
+            }
+        }
+    })
+}
+
+exports.updateInsertSearchContents = function(dbConnection, data, callback){
+    var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            var newdata = {
+                pc_pct_id: data.pc_pct_id,
+                pc_cm_id: data.pc_cm_id,
+                pc_arrange_seq: data.pc_arrange_seq,
+                pc_ispublished: data.pc_ispublished
+            }
+            var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ", newdata, function (err, response) {
+                callback(err,response);
             })
         }
-    });
+    })
+}
+
+exports.updateSearchContents = function(dbConnection, data, callback){
+    var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, result) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        } else {
+            callback(err,result);
+        }
+    })
 }
 exports.getSavedContents = function(dbConnection, pctId, callback){
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
@@ -318,12 +345,23 @@ exports.searchCriteriaExist = function(dbConnection,pctId,callback){
 }
 exports.addSearchCriteriaField = function(dbConnection,data,callback){
     var query = dbConnection.query("INSERT INTO icn_pack_content_rule SET ? ",data, function (err, response) {
-        callback(err,response);
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            callback(err,response);
+        }
     });
 }
 exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
+
     var query = dbConnection.query("UPDATE icn_pack_content_rule SET pcr_crud_isactive = ? WHERE pcr_pct_id = ? ", [pctId, pctId], function (err, response) {
-        callback(err,response);
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            callback(err,response);
+        }
     });
 }
 exports.existSearchCriteriaField = function(dbConnection,pctId,callback){
@@ -349,6 +387,17 @@ exports.deleteSearchCriteriaField = function(dbConnection,pctId,callback){
 }
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
+    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        }else{
+            callback(err,response);
+        }
+    })
+}
+
+exports.deleteSearchedContent123 = function(dbConnection,pctId,callback){
     console.log('Delete delete  1')
     dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
         [pctId], function (err, result) {

@@ -24,11 +24,10 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.selectedContent = [];
     $scope.removedContent = [];
     $scope.contents = [];
-    debugger;
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
-        debugger;
+
         $scope.contentType = $scope.packDetails[0].type;
         $scope.parentType = $scope.packDetails[0].parent_type;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
@@ -126,6 +125,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
 
 
     $scope.showArrangeContents = function () {
+        console.log($scope.contents)
         if($scope.contents.length > 0){
             showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
                 //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
