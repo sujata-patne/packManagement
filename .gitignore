@@ -4,4 +4,4 @@
 .project
 /npm-debug.log
 /env.json
-
+/bin/www

@@ -179,23 +179,27 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
                 nextRuleDuration : $scope.nextRuleDuration
             }
             console.log(searchData)
-            ngProgress.start();
-            Search.saveSearchCriteria(searchData, function (data) {
-                if (data.success) {
-                    $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+            if(Object.keys($scope.contentTypeDataDetails).length > 0){
+                    ngProgress.start();
+                    Search.saveSearchCriteria(searchData, function (data) {
+                        if (data.success) {
+                            $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
 
-                    $scope.successvisible = true;
-                }
-                else {
-                    //toastr.success(data.message)
-                    //$scope.error = data.message;
-                    $scope.errorvisible = true;
-                }
-                ngProgress.complete();
-            },function(error){
-                console.log(error)
-                toastr.success(error)
-            });
+                            $scope.successvisible = true;
+                        }
+                        else {
+                            //toastr.success(data.message)
+                            //$scope.error = data.message;
+                            $scope.errorvisible = true;
+                        }
+                        ngProgress.complete();
+                    },function(error){
+                        console.log(error)
+                        toastr.success(error)
+                    });
+            }else{
+                toastr.error('Please add Search criteria')
+            }
         }
     }
 });
