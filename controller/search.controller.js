@@ -529,18 +529,3 @@ function updatePackData( connection_ikon_cms, data ){
     return true;
 }
 
-function addSearchCriteriaField(connection_ikon_cms,data){
-
-    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
-        if (lastInsertedSearchCriteriaId) {
-            data['pcr_id'] = lastInsertedSearchCriteriaId;
-            SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                if (err) {
-                    connection_ikon_cms.release();
-                    res.status(500).json(err.message);
-                }
-            })
-        }
-    })
-
-}

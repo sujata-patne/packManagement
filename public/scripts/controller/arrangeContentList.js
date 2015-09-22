@@ -51,7 +51,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
             //$window.location.href = "/#/search-content/"+$scope.pctId;
             var filename = 'search-content-'+$scope.displayName.toLowerCase()
             $state.go(filename, {pctId:$scope.pctId})
-                toastr.success(data.message)
             toastr.success(data.message)
         },function(error){
             console.log(error)

@@ -122,8 +122,10 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.showResetRules = function () {
         showContents.showResetRules({pctId:$scope.pctId}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
-            $state.go('arrange-content-list', {pctId:$scope.pctId})
-                toastr.success(data.message)
+            var filename = 'search-content-'+$scope.displayName.toLowerCase()
+            console.log(filename)
+            $state.go(filename, {pctId:$scope.pctId})
+            toastr.success(data.message)
         },function(error){
             console.log(error)
             toastr.error(error)

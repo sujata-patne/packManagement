@@ -83,18 +83,17 @@ exports.showResetRules = function (req, res, next) {
                                         if (err) {
                                             connection_ikon_cms.release();
                                             res.status(500).json(err.message);
-                                        }else{
-                                            connection_ikon_cms.release();
-                                            res.send({
-                                                "success": true,
-                                                "status": 200,
-                                                "message": "Reset Rules successfully.",
-                                            });
                                         }
                                     })
                                 }
                             })
                         }
+                        connection_ikon_cms.release();
+                        res.send({
+                            "success": true,
+                            "status": 200,
+                            "message": "Reset Rules successfully."
+                        });
                     }
                 });
             })

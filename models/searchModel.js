@@ -94,7 +94,7 @@ exports.getReleaseYear = function(dbConnection, callback){
     });
 }
 exports.getLastSearchCriteriaId = function( dbConnection, callback ) {
-    var query = dbConnection.query("SELECT MAX(pcr_id) as pcr_id FROM `icn_pack_content_rule` WHERE ISNULL(pcr_crud_isactive) ", function ( err, response ) {
+    var query = dbConnection.query("SELECT MAX(pcr_id) as pcr_id FROM `icn_pack_content_rule` ", function ( err, response ) {
         var pcrId = response[0].pcr_id != null ? parseInt(response[0].pcr_id + 1) : 1;
 
         callback( err,pcrId );
@@ -349,24 +349,35 @@ exports.deleteSearchCriteriaField = function(dbConnection,pctId,callback){
 }
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
+    console.log('Delete delete  1')
     dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
         [pctId], function (err, result) {
             if(result && result.length > 0){
+                console.log('Delete delete 2')
                 console.log("Delete update ")
                 var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
                     if (err) {
                         dbConnection.release();
                         res.status(500).json(err.message);
                     }
+
+                    callback(err,true);
                 })
-            }else{
-                console.log('Delete delete')
-                var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
-                    if (err) {
-                        dbConnection.release();
-                        res.status(500).json(err.message);
+            }else {
+                console.log('Delete delete 3')
+                dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? ",
+                [pctId], function (err, result) {
+                    if(result && result.length > 0){
+                        var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
+                            if (err) {
+                                dbConnection.release();
+                                res.status(500).json(err.message);
+                            }
+
+                        })
                     }
                 })
+                callback(err,true);
             }
         })
 
