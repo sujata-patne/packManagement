@@ -19,6 +19,13 @@ exports.getLastInsertedTemplateGroupId = function( dbConnection, callback ) {
     });
 }
 
+exports.getTemplateGroupIdForAny = function( dbConnection, callback ) {
+	var query = dbConnection.query("SELECT MAX(ct_group_id) as id FROM `content_template` WHERE ct_param_value = 'ANY'", function ( err, response ) {
+        templateId = response[0].id;
+        callback( err,templateId );
+    });
+}
+
 exports.saveTemplateForUpload = function(dbConnection,data,callback){
 	var query = dbConnection.query("INSERT INTO `content_template` SET ? ",data, function (err, response) {
 		callback(err,response);

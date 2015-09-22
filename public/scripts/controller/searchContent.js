@@ -28,6 +28,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packType = $scope.packDetails[0].type;
+
         $scope.contentType = {};
         angular.forEach($scope.ContentTypeDetails, function( value, key ){	   
            angular.forEach(value, function( displayType, displayKey ){
@@ -148,7 +149,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.limitCount = '';
     }
 
-    $scope.submitForm = function (isValid) {
+    $scope.submitForm = function (isValid) { 
         if (isValid) {
 
             $scope.contentTypeDataDetails = [];
@@ -168,7 +169,9 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                         //$scope.contentTypeDataDetails[$scope[key+'_id']] = value;
                     }
                 }
-            })
+            });
+                                   
+            console.log($scope.contentTypeDataDetails);
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,
                 contentTypeData:$scope.contentTypeData,
@@ -187,9 +190,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                 nextRuleDuration : $scope.nextRuleDuration
             }
 
-            ngProgress.start();
-            //console.log(Object.keys($scope.contentTypeDataDetails).length)
             if(Object.keys($scope.contentTypeDataDetails).length > 0){
+            	ngProgress.start();
                 Search.saveSearchCriteria(searchData, function (data) {
                     if (data.success) {
                         //$window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
@@ -200,7 +202,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                             title:$scope.searchWhereTitle,
                             property:$scope.searchWherePropertyTitle
                         }
-console.log(params)
                         $state.go('show-content-list', params)
                         $scope.successvisible = true;
                     }

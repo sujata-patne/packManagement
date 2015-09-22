@@ -57,7 +57,7 @@
                                 </div>
                                 <label for="title" class="col-md-1 control-label">To</label>
                                 <div class="col-md-3">
-                                    <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearEnd" ng-required="contentTypeData['property_release_year'].releaseYearStart"  >
+                                    <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" ng-model="contentTypeData['property_release_year'].releaseYearEnd"  ng-required="contentTypeData['property_release_year'].releaseYearStart"  start-date="{{contentTypeData['property_release_year'].releaseYearStart}}" compare-with-start-date  >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -68,14 +68,18 @@
                             <div class="col-md-9">
                                 <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearStart.$touched">
                                     <span ng-show="searchForm.releaseYearStart.$error.required">From Release Year is required.</span>
+                                    <span ng-messages="searchForm.releaseYearStart.$error" ng-messages-include="errors-template.html"> </span>
                                 </span>
-                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$touched">
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$dirty && searchForm.releaseYearEnd.$invalid && searchForm.releaseYearEnd.$touched">
                                     <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
-                                    <span ng-show="contentTypeData['property_release_year'].releaseYearStart > contentTypeData['property_release_year'].releaseYearEnd">To Release Year should be greater that From Release Year.</span>
+                                    <span ng-messages="searchForm.releaseYearEnd.$error" ng-messages-include="errors-template.html"></span>
                                 </span>
+                                <!-- error messages template -->
+							    <script id="errors-template.html" type="text/ng-template">
+        							<span class="form-error" style="color: red" ng-message="checkEndDate">To Release Year should be greater that From Release Year.</span>
+    							</script>
                             </div>
                         </div>
-
                         <fieldset class="searchGroup">
                             <label>Create Pack : </label>
                             <div class="form-group">
@@ -111,7 +115,7 @@
                                     <label for="title" class="col-md-1 col-xs-1 control-label">Days</label>
                                 </div>
                             </div>
-                            <div class="form-group" >
+                            <!-- <div class="form-group" >
                                 <div class="col-md-12 col-xs-12">
                                     <input type="radio" name="ruleType" value="2" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Manual Pack Creation</label>
@@ -127,7 +131,7 @@
                             </div>
                             <div class="form-group" style="color: red" ng-show="searchForm.$submitted">
                                 <span ng-show="searchForm.action.$error.required">Please Select option for Action.</span>
-                            </div>
+                            </div> -->
                         </fieldset>
                         <div class="form-group">
                             <div class="col-sm-offset-5 col-sm-7">
