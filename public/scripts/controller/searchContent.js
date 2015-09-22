@@ -186,7 +186,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                 ruleType : $scope.ruleType,
                 nextRuleDuration : $scope.nextRuleDuration
             }
-
             ngProgress.start();
             //console.log(Object.keys($scope.contentTypeDataDetails).length)
             if(Object.keys($scope.contentTypeDataDetails).length > 0){
