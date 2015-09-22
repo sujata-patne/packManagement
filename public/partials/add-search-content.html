@@ -26,7 +26,7 @@
             </span>
             <span class="col-sm-offset-3 col-sm-9" data-ng-show="successvisible" style="color: green;">{{success}}
             </span>
-            <form method="post" class="form-horizontal" role="form" name="searchForm" data-ng-submit="submitForm(searchForm.$valid)" novalidate>
+            <form method="post" class="form-horizontal" role="form" id="searchForm" name="searchForm" data-ng-submit="submitForm(searchForm.$valid)" novalidate>
                 <div class="row">
                     <div class="col-md-2">
                         <input type="hidden" name="packId" class="form-control" data-ng-model="packId">
@@ -84,11 +84,11 @@
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
                                     <label for="title" class="col-md-1 control-label">Days</label>-->
                                     <select ng-options="year for year in years" name="releaseYearStart" class="form-control" ng-model="contentTypeData['property_release_year'].releaseYearStart" ng-required="contentTypeData['property_release_year'].releaseYearEnd"  >
-                                        <option value="">-- Select --</option>
+                                         <option value="">-- Select --</option>
                                     </select>
                                     
                                 </div>
-                                <label for="title" class="col-md-1 control-label">To</label>
+                                <label class="col-md-1 control-label">To</label>
                                 <div class="col-md-3">
                                     <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" ng-model="contentTypeData['property_release_year'].releaseYearEnd"  ng-required="contentTypeData['property_release_year'].releaseYearStart"  start-date="{{contentTypeData['property_release_year'].releaseYearStart}}" compare-with-start-date  >
                                         <option value="">-- Select --</option>
@@ -186,7 +186,7 @@
                         </fieldset>
                         <div class="form-group">
                             <div class="col-sm-offset-5 col-sm-7">
-                                <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
+                                <button type="submit" ng-click="submitted=true" class="btn btn-primary btn-w-md" title="Save">Submit</button>
                                 <button type="reset" class="btn btn-default btn-w-md" title="Reset" data-ng-click="resetForm()">Reset</button>
                             </div>
                         </div>

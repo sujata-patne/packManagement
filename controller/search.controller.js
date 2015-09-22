@@ -10,51 +10,6 @@ var inspect = require('util-inspect');
 
 //console.log(data.ContentTypeDetails[0].Manual[0].Wallpaper);
 
-exports.resetSearchCriteriaContents = function (req, res, next) {
-    try {
-        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                SearchModel.searchCriteriaExist(connection_ikon_cms, req.body.pctId, function (err, response) {
-                    if (err) {
-                        connection_ikon_cms.release();
-                        res.status(500).json(err.message);
-                    }else{
-                        if(response){
-                            /*delete existing search criteria and contents*/
-                            SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
-                                if (err) {
-                                    connection_ikon_cms.release();
-                                    res.status(500).json(err.message);
-                                }else{
-                                    SearchModel.deleteSearchedContent(connection_ikon_cms, req.body.pctId, function (err, response) {
-                                        if (err) {
-                                            connection_ikon_cms.release();
-                                            res.status(500).json(err.message);
-                                        }else{
-                                            connection_ikon_cms.release();
-                                            res.send({
-                                                "success": true,
-                                                "status": 200,
-                                                "message": "Search Criteria & it's saved content removed successfully.",
-                                            });
-                                        }
-                                    })
-
-                                }
-                            })
-                        }
-                    }
-                });
-            })
-        }else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        res.status(500).json(err.message);
-    }
-}
-
 exports.getSavedContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
@@ -106,100 +61,6 @@ exports.getSavedContents = function (req, res, next) {
                         connection_ikon_cms.release();
                         res.send(results);
                     }
-                })
-            })
-        }else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        res.status(500).json(err.message);
-    }
-}
-
-exports.saveArrangedContents = function (req, res, next) {
-    try {
-        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                for (var contentId in req.body.arrangedContentList) {
-                    var data = {
-                        pc_pct_id: parseInt(req.body.pctId),
-                        pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: req.body.arrangedContentList[contentId]
-                    }
-                    SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                        if (err) {
-                            connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }
-                    })
-                }
-                connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200,
-                    "message": "Search Contents arranged successfully!."
-                })
-            })
-        }else {
-            res.redirect('/accountlogin');
-        }
-    }
-    catch (err) {
-        res.status(500).json(err.message);
-    }
-}
-
-
-exports.publishContents = function (req, res, next) {
-    try {
-        if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
-            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                for (var contentId in req.body.publishedContentList) {
-                    //console.log(req.body.publishedContentList[contentId])
-                    if(req.body.publishedContentList[contentId] == null || req.body.publishedContentList[contentId] == undefined || req.body.publishedContentList[contentId] == ''){
-                        sequence = 0;
-                    }else{
-                        sequence = req.body.publishedContentList[contentId];
-                    }
-                    var data = {
-                        pc_pct_id: parseInt(req.body.pctId),
-                        pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: sequence,
-                        pc_ispublished: 1
-                    }
-                    SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
-                        if (err) {
-                            connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }else {
-                           // console.log(response)
-                            if (response) {
-                                console.log('edit');
-                                SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
-                                    if (err) {
-                                        connection_ikon_cms.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                })
-                            } else {
-                                console.log('add');
-
-                                SearchModel.saveSearchContents(connection_ikon_cms, data, function (err, response) {
-                                    if (err) {
-                                        connection_ikon_cms.release();
-                                        res.status(500).json(err.message);
-                                    }
-                                })
-                            }
-                        }
-                    })
-                }
-                connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200,
-                    "message": "Search Contents published successfully!."
                 })
             })
         }else {
@@ -388,49 +249,36 @@ exports.saveSearchCriteria = function (req, res, next) {
                 packUpdateResponse = updatePackData( connection_ikon_cms,packData );
                 /* Add/update pack search criteria fields with values */
                 var count = req.body.contentTypeDataDetails.length;
-                
-                for (var searchFieldId in req.body.contentTypeDataDetails) {
-                    var data = {
-                            pcr_rec_type: 1,
-                            pcr_pct_id: req.body.pctId,
-                            pcr_start_year: req.body.releaseYearStart,
-                            pcr_end_year: req.body.releaseYearEnd,
-                            pcr_metadata_type: searchFieldId,
-                            pcr_metadata_search_criteria: req.body.contentTypeDataDetails[searchFieldId]
-                        }
-                                console.log("$$ "+data)
-                    SearchModel.deleteSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                        if (err) {
-                            connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }else{                                        
-                            if(response){                                
-                                addSearchCriteriaField(connection_ikon_cms,data);
-                            }                            
-                        }
-                    })
-                }
-                        
-                connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200
-                })
-                        /*if(response){
-                            //delete existing search criteria and then add
-                            SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
+                console.log(count)
+                SearchModel.existSearchCriteriaField(connection_ikon_cms, req.body.pctId, function (err, response) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                    } else {
+                        if (response) {
+                            SearchModel.deleteSearchCriteriaField(connection_ikon_cms, req.body.pctId, function (err, response) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
-                                }else{
-                                    addEditSearch(0);
                                 }
                             })
-                        }else{
-                            //Add search criteria first time
-                            addEditSearch(0);
-                        }*/
-                    
+                        }
+                    }
+                })
+                addEditSearch(0);
+                /*for (var searchFieldId in req.body.contentTypeDataDetails) {
+                    var data = {
+                        pcr_rec_type: 1,
+                        pcr_pct_id: req.body.pctId,
+                        pcr_start_year: req.body.releaseYearStart,
+                        pcr_end_year: req.body.releaseYearEnd,
+                        pcr_metadata_type: searchFieldId,
+                        pcr_metadata_search_criteria: req.body.contentTypeDataDetails[searchFieldId]
+                    }
+
+                    addSearchCriteriaField(connection_ikon_cms,data);
+
+                }*/
                 function addEditSearch(cnt) {
                     var j = cnt;
                     var data = {
@@ -453,7 +301,6 @@ exports.saveSearchCriteria = function (req, res, next) {
                                     else {
                                         cnt = cnt + 1;
                                         if (cnt == count) {
-                                            connection_ikon_cms.release();
                                             res.send({
                                                 "success": true,
                                                 "status": 200,
@@ -468,6 +315,7 @@ exports.saveSearchCriteria = function (req, res, next) {
                         })
                     }
                 }
+                connection_ikon_cms.release();
             })
         }else {
             res.redirect('/accountlogin');
@@ -476,20 +324,6 @@ exports.saveSearchCriteria = function (req, res, next) {
     catch (err) {
         res.status(500).json(err.message);
     }
-}
-
-function addSearchCriteriaField(connection_ikon_cms,data){    
-    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
-        if (lastInsertedSearchCriteriaId) {
-            data['pcr_id'] = lastInsertedSearchCriteriaId;
-            SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                if (err) {
-                    connection_ikon_cms.release();
-                    res.status(500).json(err.message);
-                }
-            })
-        }
-    })
 }
 
 exports.getPackSearchResult = function (req, res, next) {
@@ -564,12 +398,17 @@ exports.getPackSearchResult = function (req, res, next) {
                         },
                         function (searchContentList, packDetails, callback) {
                             SearchModel.getPackSearchDetails( connection_ikon_cms,req.body.pctId, function(err,packSearchDetails){
-                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails});
+                                callback(err,searchContentList,packDetails,packSearchDetails);
+                            });
+                        },
+                        function (searchContentList,packDetails,packSearchDetails,callback) {
+                            SearchModel.getPackContentSequence( connection_ikon_cms,req.body.pctId, function(err,packContentSequence){
+                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails, 'packContentSequence':packContentSequence});
                             });
                         }
                     ],
                     function (err, results) {
-                        //console.log(" test "+results.packDetails)
+                        //console.log(results.packContentSequence)
                         if (err) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
@@ -588,7 +427,6 @@ exports.getPackSearchResult = function (req, res, next) {
         res.status(500).json(err.message);
     }
 };
-
 
 exports.UploadFile =  function (req, res, next) {
             var form = new formidable.IncomingForm();
@@ -669,7 +507,6 @@ function saveContentFiles( connection_ikon_cms, data ){
     return true;
 }
 
-
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
     SearchModel.getLastSearchCriteriaId(connection_ikon_cms,function(err,maxPCRID){
         if(err){
@@ -680,6 +517,7 @@ function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
         }
     });
 }
+
 function updatePackData( connection_ikon_cms, data ){
     SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
         if(err){
@@ -689,4 +527,20 @@ function updatePackData( connection_ikon_cms, data ){
         }
     });
     return true;
+}
+
+function addSearchCriteriaField(connection_ikon_cms,data){
+
+    getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
+        if (lastInsertedSearchCriteriaId) {
+            data['pcr_id'] = lastInsertedSearchCriteriaId;
+            SearchModel.addSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
+                if (err) {
+                    connection_ikon_cms.release();
+                    res.status(500).json(err.message);
+                }
+            })
+        }
+    })
+
 }

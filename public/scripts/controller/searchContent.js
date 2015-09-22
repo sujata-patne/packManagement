@@ -5,7 +5,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
 
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
-    $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
+    $scope.PageTitle = $state.current.name == "search-content-manual" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.pctId;
     $scope.success = "";
     $scope.limitCount = 10;
@@ -28,11 +28,12 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packType = $scope.packDetails[0].type;
-        //console.log($scope.displayName);
+
         $scope.contentType = {};
         angular.forEach($scope.ContentTypeDetails, function( value, key ){	   
            angular.forEach(value, function( displayType, displayKey ){
                 if( displayKey == $scope.displayName ){
+
                     angular.forEach(displayType, function(manualContentType, manualIndex ){
                     	angular.forEach(manualContentType, function(contentType, contentIndex ){
 	                        if( contentIndex == $scope.packType ){
@@ -43,7 +44,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                 }
             });
         });
-        //console.log($scope.contentType);
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
@@ -152,22 +152,22 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
     $scope.submitForm = function (isValid) { 
         if (isValid) {
 
-            $scope.contentTypeDataDetails = {};
+            $scope.contentTypeDataDetails = [];
             angular.forEach($scope.contentTypeData,function(value,key){
                 var data = {};
 
                 if(key == 'property_release_year' ){
                    if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
-                       //data[$scope[key+'_id']] = 1;
-                       //$scope.contentTypeDataDetails.push(data
-                       $scope.contentTypeDataDetails[$scope[key+'_id']] = 1;                   }
+                       data[$scope[key+'_id']] = 1;
+                       $scope.contentTypeDataDetails.push(data)
+                       //$scope.contentTypeDataDetails[$scope[key+'_id']] = 1;
+                   }
                 }else{
                     if(value){
-                        //data[$scope[key+'_id']] = value;
-                        //$scope.contentTypeDataDetails.push(data);
-                        $scope.contentTypeDataDetails[$scope[key+'_id']] = value;
+                        data[$scope[key+'_id']] = value;
+                        $scope.contentTypeDataDetails.push(data);
+                        //$scope.contentTypeDataDetails[$scope[key+'_id']] = value;
                     }
-
                 }
             });
                                    
@@ -217,9 +217,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                 });
             }else{
                 toastr.error('Please add Search criteria')
-
             }
-
         }
     }
 });

@@ -95,7 +95,8 @@ exports.getReleaseYear = function(dbConnection, callback){
 }
 exports.getLastSearchCriteriaId = function( dbConnection, callback ) {
     var query = dbConnection.query("SELECT MAX(pcr_id) as pcr_id FROM `icn_pack_content_rule` WHERE ISNULL(pcr_crud_isactive) ", function ( err, response ) {
-        pcrId = response[0].pcr_id != null ? parseInt(response[0].pcr_id + 1) : 1;
+        var pcrId = response[0].pcr_id != null ? parseInt(response[0].pcr_id + 1) : 1;
+
         callback( err,pcrId );
     });
 }
@@ -135,7 +136,7 @@ exports.saveSearchContents = function(dbConnection, data, callback){
     });
 }
 exports.updateSearchContents = function(dbConnection, data, callback){
-    /*dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
      [data.pc_pct_id, data.pc_cm_id], function (err, result) {
         if(result && result.length > 0){
             data['pc_crud_isactive'] = data.pc_pct_id;
@@ -157,15 +158,15 @@ exports.updateSearchContents = function(dbConnection, data, callback){
                 }
             })
         }else{
-            console.log('update')*/
+            console.log('update')
             var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, response) {
                 if (err) {
                     dbConnection.release();
                     res.status(500).json(err.message);
                 }
             })
-        /*}
-    });*/
+        }
+    });
 }
 exports.getSavedContents = function(dbConnection, pctId, callback){
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
@@ -182,7 +183,9 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
 
 exports.getPackDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pk.*, pct.pct_cnt_type AS contentTypeId, cd.cd_name as displayName," +
-        " (select cd1.cd_name from catalogue_detail cd1 where cd1.cd_id = pct.pct_cnt_type Limit 1 ) as type FROM icn_packs AS pk " +
+        "(select cd.cd_name from catalogue_detail as cd "+
+        " WHERE cd.cd_id = (select mct_parent_cnt_type_id from icn_manage_content_type where mct_cnt_type_id = contentTypeId Limit 1) ) "+
+        " as parent_type, (select cd1.cd_name from catalogue_detail cd1 where cd1.cd_id = pct.pct_cnt_type Limit 1 ) as type FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
         "JOIN catalogue_detail AS cd ON cd.cd_id = pk.pk_cnt_display_opt " +
         " WHERE pct.pct_id = ? ", [pctId],function (err, result) { //pct_is_active = 1 AND
@@ -190,6 +193,12 @@ exports.getPackDetails = function(dbConnection,pctId,callback){
         });
 }
 
+exports.getPackContentSequence = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc " +
+        "WHERE pc.pc_pct_id = ? AND ISNULL(pc.pc_crud_isactive) ", [pctId],function (err, result) {
+        callback(err,result);
+    });
+}
 exports.getPackSearchDetails = function(dbConnection,pctId,callback){
     dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId, pcr.*, cm.* FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
@@ -317,17 +326,22 @@ exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
         callback(err,response);
     });
 }
-exports.deleteSearchCriteriaField = function(dbConnection,data,callback){
-    dbConnection.query("SELECT pcr.* FROM icn_pack_content_rule AS pcr WHERE pcr_pct_id  = ? AND pcr_metadata_type = ? AND pcr_metadata_search_criteria = ? AND ISNULL(pcr_crud_isactive) ",
-     [data.pcr_pct_id, data.pcr_metadata_type, data.pcr_metadata_search_criteria], function (err, result) {
-        if(result && result.length > 0){
-            callback(err,false);
-        }else{
-            var query = dbConnection.query("UPDATE icn_pack_content_rule SET pcr_crud_isactive = ? WHERE pcr_pct_id = ? ", [data.pcr_pct_id, data.pcr_pct_id], function (err, response) {
-                //console.log("delete : "+response)
+exports.existSearchCriteriaField = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pcr.* FROM icn_pack_content_rule AS pcr " +
+        "WHERE pcr_pct_id  = ? AND ISNULL(pcr_crud_isactive) ",
+        [pctId], function (err, result) {
+            if(result && result.length > 0){
                 callback(err,true);
-            });
-        }
+            }else{
+                callback(err,false);
+            }
+        });
+}
+exports.deleteSearchCriteriaField = function(dbConnection,pctId,callback){
+
+    var query = dbConnection.query("UPDATE icn_pack_content_rule SET pcr_crud_isactive = ? WHERE pcr_pct_id = ?  AND ISNULL(pcr_crud_isactive) ", [pctId,pctId], function (err, response) {
+        //console.log("delete : "+response)
+        callback(err,true);
     });
 
 //dbConnection.query("SELECT pcr.* FROM icn_pack_content_rule AS pcr WHERE pcr_pct_id  = ? AND pcr_metadata_type = ? AND pcr_metadata_search_criteria = ? AND ISNULL(pcr_crud_isactive) ",
@@ -335,12 +349,32 @@ exports.deleteSearchCriteriaField = function(dbConnection,data,callback){
 }
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
+        [pctId], function (err, result) {
+            if(result && result.length > 0){
+                console.log("Delete update ")
+                var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
+                    if (err) {
+                        dbConnection.release();
+                        res.status(500).json(err.message);
+                    }
+                })
+            }else{
+                console.log('Delete delete')
+                var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
+                    if (err) {
+                        dbConnection.release();
+                        res.status(500).json(err.message);
+                    }
+                })
+            }
+        })
 
-    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
+    /*var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
 
     //var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, response) {
         callback(err,response);
-    });
+    });*/
 }
 exports.getPackContents = function(dbConnection,pctId,callback){
     var query = dbConnection.query("SELECT * FROM icn_pack_content WHERE pc_pct_id = ? AND ISNULL(pc_crud_isactive) ", [pctId], function (err, response) {

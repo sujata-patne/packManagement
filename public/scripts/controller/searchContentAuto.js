@@ -2,7 +2,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
-    $scope.pctId = $stateParams.id;
+    $scope.pctId = $stateParams.pctId;
     $scope.success = "";
     $scope.limitCount = 5;
     $scope.successvisible = false;
@@ -12,7 +12,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
     $scope.ContentTypeDetails = angular.copy(ContentTypeDetails); //Read config file.
-    $scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
+    // $scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
     $scope.contentTypeData = {};
 
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
@@ -21,11 +21,25 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         $scope.packSearchDetails = angular.copy(data.packSearchDetails);
         $scope.packId = $scope.packDetails[0].pk_id;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt; //463 id of Auto
-        $scope.displayName = $scope.packDetails[0].displayName; //Auto
-
+        $scope.displayName = $scope.packDetails[0].displayName;
+        $scope.packType = $scope.packDetails[0].type;
+        $scope.contentType = {};
+        angular.forEach($scope.ContentTypeDetails, function( value, key ){     
+           angular.forEach(value, function( displayType, displayKey ){
+                if( displayKey == $scope.displayName ){
+                    angular.forEach(displayType, function(autoContentType, manualIndex ){
+                        angular.forEach(autoContentType, function(contentType, contentIndex ){
+                            if( contentIndex == $scope.packType ){
+                               $scope.contentType = autoContentType[contentIndex];
+                            }
+                        });
+                    });
+                }
+            });
+        });
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
-        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
+        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //auto
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
         $scope.action = 1;
         $scope.noOfRecords = 1;
@@ -129,19 +143,20 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     }
     $scope.submitForm = function (isValid) {
         if (isValid) {
-            $scope.contentTypeDataDetails = {};
+            $scope.contentTypeDataDetails = [];
             angular.forEach($scope.contentTypeData,function(value,key){
-              
+                var data = {};
                 if(key == 'property_release_year' ){
                    if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
-                       //data[$scope[key+'_id']] = 1;
-                       //$scope.contentTypeDataDetails.push(data
-                       $scope.contentTypeDataDetails[$scope[key+'_id']] = 1;                   }
+                       data[$scope[key+'_id']] = 1;
+                       $scope.contentTypeDataDetails.push(data);
+                       //$scope.contentTypeDataDetails[$scope[key+'_id']] = 1;
+                   }
                 }else{
                     if(value){
-                        //data[$scope[key+'_id']] = value;
-                        //$scope.contentTypeDataDetails.push(data);
-                        $scope.contentTypeDataDetails[$scope[key+'_id']] = value;
+                        data[$scope[key+'_id']] = value;
+                        $scope.contentTypeDataDetails.push(data);
+                       // $scope.contentTypeDataDetails[$scope[key+'_id']] = value;
                     }
 
                 }
@@ -168,9 +183,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
             Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {
                     $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                    //toastr.success(data.message)
-                    //Search.addPackSearchResult(data.SearchCriteriaResult);
-                    //console.log(data.SearchCriteriaResult)
+
                     $scope.successvisible = true;
                 }
                 else {

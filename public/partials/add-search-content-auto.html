@@ -34,7 +34,7 @@
                         <input type="hidden" name="pctId" class="form-control" data-ng-model="pctId">
                     </div>
                     <div class="col-md-8">
-                        <div class="form-group" ng-repeat="value in ContentRender track by $index">
+                        <div class="form-group" ng-repeat="value in contentType track by $index">
                             <div ng-repeat="(key,element) in value">
                                 <label class="col-sm-3 control-label">{{key}}</label>
                                 <div class="col-sm-6">
@@ -51,7 +51,7 @@
                                 <div class="col-md-3">
                                     <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
                                     <label for="title" class="col-md-1 control-label">Days</label>-->
-                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart"  >
+                                    <select ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart" ng-required="contentTypeData['property_release_year'].releaseYearEnd" >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -66,6 +66,9 @@
                         <div class="form-group">
                             <div class="col-md-3"></div>
                             <div class="col-md-9">
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearStart.$touched">
+                                    <span ng-show="searchForm.releaseYearStart.$error.required">From Release Year is required.</span>
+                                </span>
                                 <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$touched">
                                     <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
                                     <span ng-show="contentTypeData['property_release_year'].releaseYearStart > contentTypeData['property_release_year'].releaseYearEnd">To Release Year should be greater that From Release Year.</span>
@@ -95,7 +98,7 @@
                             <div class="form-group" style="color: red" ng-show="searchForm.$submitted">
                                 <span ng-show="searchForm.noOfRecords.$error.required">Please Select option for No. of Records.</span>
                             </div>
-                            <div class="form-group" ng-show="displayName != 'Manual'">
+                            <div class="form-group" >
                                 <div class="col-md-3 col-xs-12">
                                     <input type="radio" name="ruleType" value="1" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Automic Pack Creation</label>
@@ -108,13 +111,13 @@
                                     <label for="title" class="col-md-1 col-xs-1 control-label">Days</label>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" >
                                 <div class="col-md-12 col-xs-12">
                                     <input type="radio" name="ruleType" value="2" ng-model="ruleType" >&nbsp;
                                     <label class="control-label">Manual Pack Creation</label>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" ng-show="displayName == 'Manual'">
                                 <label for="title" class="col-md-1 control-label">Action</label>
                                 <div class="col-md-10">
                                     <input type="radio" name="action" value="1" ng-model="action" required>&nbsp;<label class="control-label">Add Selected Content</label>

@@ -1,4 +1,4 @@
-var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','angularUtils.directives.dirPagination','ngFileUpload', 'ngMessages']);
+var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','angularUtils.directives.dirPagination','ngFileUpload','validation', 'validation.rule','ngMessages']); 
 var ContentTypeDetails = [
     {'Manual': [
                     {'Wallpaper': [
@@ -10,11 +10,22 @@ var ContentTypeDetails = [
                                 {'Vendor': 'Vendor'},
                                 {'Photographer': 'Photographer'}
                             ]
+                    },
+                    {'Full Track': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
                     }
               ]
     },
     {'Auto': [
-                    {'FullTrack': [
+                    {'Full Track': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Singer':'Singer'},
@@ -65,7 +76,7 @@ myApp.config(function ($stateProvider) {
         .state("search-content-auto", {
             templateUrl: "partials/add-search-content-auto.html",
             controller: "searchContentAutoCtrl",
-            url: "/search-content-auto/:id"
+            url: "/search-content-auto/:pctId"
         })
         
         .state("add-content-list", {
@@ -103,7 +114,6 @@ myApp.config(function ($stateProvider) {
             controller: 'usersCtrl',
             url: '/changepassword'
         })
+}).run(function ($state) {
+    $state.go("add-pack");
 })
-    .run(function ($state) {
-        $state.go("add-pack");
-    })
