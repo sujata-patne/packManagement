@@ -143,19 +143,20 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     }
     $scope.submitForm = function (isValid) {
         if (isValid) {
-            $scope.contentTypeDataDetails = {};
+            $scope.contentTypeDataDetails = [];
             angular.forEach($scope.contentTypeData,function(value,key){
-              
+                var data = {};
                 if(key == 'property_release_year' ){
                    if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
-                       //data[$scope[key+'_id']] = 1;
-                       //$scope.contentTypeDataDetails.push(data
-                       $scope.contentTypeDataDetails[$scope[key+'_id']] = 1;                   }
+                       data[$scope[key+'_id']] = 1;
+                       $scope.contentTypeDataDetails.push(data);
+                       //$scope.contentTypeDataDetails[$scope[key+'_id']] = 1;
+                   }
                 }else{
                     if(value){
-                        //data[$scope[key+'_id']] = value;
-                        //$scope.contentTypeDataDetails.push(data);
-                        $scope.contentTypeDataDetails[$scope[key+'_id']] = value;
+                        data[$scope[key+'_id']] = value;
+                        $scope.contentTypeDataDetails.push(data);
+                       // $scope.contentTypeDataDetails[$scope[key+'_id']] = value;
                     }
 
                 }

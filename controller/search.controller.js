@@ -249,48 +249,36 @@ exports.saveSearchCriteria = function (req, res, next) {
                 packUpdateResponse = updatePackData( connection_ikon_cms,packData );
                 /* Add/update pack search criteria fields with values */
                 var count = req.body.contentTypeDataDetails.length;
-                
-                for (var searchFieldId in req.body.contentTypeDataDetails) {
-                    var data = {
-                            pcr_rec_type: 1,
-                            pcr_pct_id: req.body.pctId,
-                            pcr_start_year: req.body.releaseYearStart,
-                            pcr_end_year: req.body.releaseYearEnd,
-                            pcr_metadata_type: searchFieldId,
-                            pcr_metadata_search_criteria: req.body.contentTypeDataDetails[searchFieldId]
-                        }
-                    SearchModel.deleteSearchCriteriaField(connection_ikon_cms, data, function (err, response) {
-                        if (err) {
-                            connection_ikon_cms.release();
-                            res.status(500).json(err.message);
-                        }else{                                        
-                            if(response){                                
-                                addSearchCriteriaField(connection_ikon_cms,data);
-                            }                            
-                        }
-                    })
-                }
-                        
-                connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200
-                })
-                        /*if(response){
-                            //delete existing search criteria and then add
-                            SearchModel.deleteSearchCriteria(connection_ikon_cms, req.body.pctId, function (err, response) {
+                console.log(count)
+                SearchModel.existSearchCriteriaField(connection_ikon_cms, req.body.pctId, function (err, response) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                    } else {
+                        if (response) {
+                            SearchModel.deleteSearchCriteriaField(connection_ikon_cms, req.body.pctId, function (err, response) {
                                 if (err) {
                                     connection_ikon_cms.release();
                                     res.status(500).json(err.message);
-                                }else{
-                                    addEditSearch(0);
                                 }
                             })
-                        }else{
-                            //Add search criteria first time
-                            addEditSearch(0);
-                        }*/
-                    
+                        }
+                    }
+                })
+                addEditSearch(0);
+                /*for (var searchFieldId in req.body.contentTypeDataDetails) {
+                    var data = {
+                        pcr_rec_type: 1,
+                        pcr_pct_id: req.body.pctId,
+                        pcr_start_year: req.body.releaseYearStart,
+                        pcr_end_year: req.body.releaseYearEnd,
+                        pcr_metadata_type: searchFieldId,
+                        pcr_metadata_search_criteria: req.body.contentTypeDataDetails[searchFieldId]
+                    }
+
+                    addSearchCriteriaField(connection_ikon_cms,data);
+
+                }*/
                 function addEditSearch(cnt) {
                     var j = cnt;
                     var data = {
@@ -313,7 +301,6 @@ exports.saveSearchCriteria = function (req, res, next) {
                                     else {
                                         cnt = cnt + 1;
                                         if (cnt == count) {
-                                            connection_ikon_cms.release();
                                             res.send({
                                                 "success": true,
                                                 "status": 200,
@@ -328,6 +315,7 @@ exports.saveSearchCriteria = function (req, res, next) {
                         })
                     }
                 }
+                connection_ikon_cms.release();
             })
         }else {
             res.redirect('/accountlogin');
@@ -542,6 +530,7 @@ function updatePackData( connection_ikon_cms, data ){
 }
 
 function addSearchCriteriaField(connection_ikon_cms,data){
+
     getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
         if (lastInsertedSearchCriteriaId) {
             data['pcr_id'] = lastInsertedSearchCriteriaId;
@@ -553,4 +542,5 @@ function addSearchCriteriaField(connection_ikon_cms,data){
             })
         }
     })
+
 }
