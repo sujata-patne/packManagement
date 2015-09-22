@@ -98,7 +98,7 @@
                         <div class="form-group">
                             <div class="col-md-3"></div>
                             <div class="col-md-9">
-                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearStart.$touched">
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearStart.$dirty && searchForm.releaseYearStart.$invalid && searchForm.releaseYearStart.$touched">
                                     <span ng-show="searchForm.releaseYearStart.$error.required">From Release Year is required.</span>
                                     <span ng-messages="searchForm.releaseYearStart.$error" ng-messages-include="errors-template.html"> </span>
                                 </span>
@@ -108,7 +108,7 @@
                                 </span>
                                 <!-- error messages template -->
 							    <script id="errors-template.html" type="text/ng-template">
-									
+									 
         							<span class="form-error" style="color: red" ng-message="checkEndDate">To Release Year should be greater that From Release Year.</span>
     							</script>
                             </div>

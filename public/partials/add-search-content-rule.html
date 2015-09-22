@@ -56,16 +56,14 @@
                             <label for="title" class="col-md-3 control-label">Release Year</label>
                             <div class="col-md-9">
                                 <label for="title" class="col-md-1 control-label">From</label>
-                                <div class="col-md-3">
-                                                                            <!--<input type="text" name="releaseDuration" class="form-control" placeholder="Release Duration" data-ng-model="releaseDuration" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <label for="title" class="col-md-1 control-label">Days</label>-->
+                                <div class="col-md-3">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <label for="title" class="col-md-1 control-label">Days</label>-->
                                     <select data-ng-options="year for year in years" name="releaseYearStart" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearStart">
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
                                 <label for="title" class="col-md-1 control-label">To</label>
                                 <div class="col-md-3">
-                                    <select data-ng-options="year for year in years" name="releaseYearEnd" class="form-control" data-ng-model="contentTypeData['property_release_year'].releaseYearEnd" ng-required="contentTypeData['property_release_year'].releaseYearStart">
+                                    <select ng-options="year for year in years" name="releaseYearEnd" class="form-control" ng-model="contentTypeData['property_release_year'].releaseYearEnd"  ng-required="contentTypeData['property_release_year'].releaseYearStart"  start-date="{{contentTypeData['property_release_year'].releaseYearStart}}" compare-with-start-date  >
                                         <option value="">-- Select --</option>
                                     </select>
                                 </div>
@@ -74,10 +72,18 @@
                         <div class="form-group">
                             <div class="col-md-3"></div>
                             <div class="col-md-9">
-                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$touched">
-                                    <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
-                                    <span ng-show="contentTypeData['property_release_year'].releaseYearStart > contentTypeData['property_release_year'].releaseYearEnd">To Release Year should be greater that From Release Year.</span>
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearStart.$dirty && searchForm.releaseYearStart.$invalid && searchForm.releaseYearStart.$touched">
+                                    <span ng-show="searchForm.releaseYearStart.$error.required">From Release Year is required.</span>
+                                    <span ng-messages="searchForm.releaseYearStart.$error" ng-messages-include="errors-template.html"> </span>
                                 </span>
+                                <span style="color: red" ng-show="searchForm.$submitted || searchForm.releaseYearEnd.$dirty && searchForm.releaseYearEnd.$invalid && searchForm.releaseYearEnd.$touched">
+                                    <span ng-show="searchForm.releaseYearEnd.$error.required">To Release Year is required.</span>
+                                    <span ng-messages="searchForm.releaseYearEnd.$error" ng-messages-include="errors-template.html"></span>
+                                </span>
+                                <!-- error messages template -->
+							    <script id="errors-template.html" type="text/ng-template">
+        							<span class="form-error" style="color: red" ng-message="checkEndDate">To Release Year should be greater that From Release Year.</span>
+    							</script>
                             </div>
                         </div>
 
