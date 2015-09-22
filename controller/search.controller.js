@@ -444,7 +444,7 @@ exports.UploadFile =  function (req, res, next) {
                                         }); 
                                     },
                                     MaxTemplateGroupId : function(callback){
-                                        ContentModel.getLastInsertedTemplateId(connection_ikon_cms,function(err,MaxTemplateGroupId){
+                                        ContentModel.getTemplateGroupIdForAny(connection_ikon_cms,function(err,MaxTemplateGroupId){
                                                 callback(err,MaxTemplateGroupId);
                                         }); 
                                     },
@@ -454,22 +454,22 @@ exports.UploadFile =  function (req, res, next) {
                                         }); 
                                     }
                                 },function(err,results){
-                                    var template_data = {
-                                        ct_id : results.MaxTemplateId,
-                                        ct_group_id : results.MaxTemplateGroupId,
-                                        ct_param : 0,
-                                        ct_param_value : 'ANY'
-                                    }
+                                    // var template_data = {
+                                    //     ct_id : results.MaxTemplateId,
+                                    //     ct_group_id : results.MaxTemplateGroupId,
+                                    //     ct_param : 0,
+                                    //     ct_param_value : 'ANY'
+                                    // }
 
-                                    var template_inserted = saveTemplateForUpload( connection_ikon_cms,template_data );
-                                    if(template_inserted == true){
+                                    // var template_inserted = saveTemplateForUpload( connection_ikon_cms,template_data );
+                                    // if(template_inserted == true){
                                              var data = {
                                                 cf_id: results.MaxContentFilesId,
                                                 cf_cm_id : fields.cm_id,
                                                 cf_url_base : newPath,
                                                 cf_url : newPath,
                                                 cf_absolute_url : newPath,
-                                                cf_template_id : results.MaxTemplateId
+                                                cf_template_id : results.MaxTemplateGroupId
                                              }
 
                                        var content_files_inserted = saveContentFiles( connection_ikon_cms, data );      
@@ -477,7 +477,7 @@ exports.UploadFile =  function (req, res, next) {
                                        if(content_files_inserted == true){
                                             console.log("File uploaded!");
                                        }
-                                    }
+                                    // }
                                 });
                             });
                       });
