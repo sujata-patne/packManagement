@@ -11,7 +11,7 @@ var ContentTypeDetails = [
                                 {'Photographer': 'Photographer'}
                             ]
                     },
-                    {'FullTrack': [
+                    {'Full Track': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Singer':'Singer'},
@@ -25,7 +25,7 @@ var ContentTypeDetails = [
               ]
     },
     {'Auto': [
-                    {'FullTrack': [
+                    {'Full Track': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Singer':'Singer'},
@@ -39,7 +39,7 @@ var ContentTypeDetails = [
               ]
     },
 	{ 'Rule Based': [
-                     { 'FullTrack': [
+                     { 'Full Track': [
                                 { 'Language': 'Language' },
                                 { 'Actor/Actress': 'Actor_Actress' },
                                 { 'Singer': 'Singer' },
