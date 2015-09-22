@@ -193,6 +193,11 @@ exports.getContentTypeDetails = function (req, res, next) {
                             callback(err, music_directors);
                         });
                     },
+                    adult: function (callback) {
+                        SearchModel.getNudity( connection_ikon_cms, function(err,adult){
+                            callback(err, adult);
+                        });
+                    },
                     content_title: function (callback) {
                         SearchModel.getContentTitle( connection_ikon_cms, function(err,title){
                             callback(err, title);
@@ -344,7 +349,7 @@ exports.getPackSearchResult = function (req, res, next) {
                                 contentTypeData["searchWhereTitle"] = req.body.title;
                                 contentTypeData["searchWherePropertyTitle"] = req.body.property;
                                 packSearchDetails.forEach(function (metadataFields) {
-
+                                    console.log(metadataFields);
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
 
                                     if(metadataFields.pcr_start_year != '0000' || metadataFields.pcr_end_year != '0000'){
@@ -372,6 +377,15 @@ exports.getPackSearchResult = function (req, res, next) {
                                     }
                                     if (metadataFields.cm_name === "Genres") {
                                         contentTypeData["Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Singers") {
+                                        contentTypeData["Singers"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Music Directors") {
+                                        contentTypeData["Music_Directors"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+                                    }
+                                    if (metadataFields.cm_name === "Nudity") {
+                                        contentTypeData["Nudity"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
                                     if (metadataFields.cm_name === "Sub Genres") {
                                         contentTypeData["Sub_Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);

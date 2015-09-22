@@ -1,5 +1,20 @@
 myApp.controller('showContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search,showContents) {
 
+    $(document).ready(function() {
+
+    // $("a.grouped_elements").fancybox();
+
+    $("a.grouped_elements").fancybox({
+        'transitionIn'  :   'elastic',
+        'transitionOut' :   'elastic',
+        'speedIn'       :   600, 
+        'speedOut'      :   200, 
+        // 'overlayShow'   :   false,
+        'showCloseButton' : true
+    });
+    
+});
+
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
     $scope.pctId = $stateParams.pctId;
@@ -90,7 +105,6 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.showPublishContents = function (displayName) {
        if(displayName == 'Auto'){
                 angular.forEach($scope.searchContentList,function(value){
-                    console.log(value);
                     // $scope.contents.push(value);
                     //$scope.addSelectedContents(value.cm_id);
                     $scope.contents.push(value.cm_id);
@@ -98,7 +112,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
                 if($scope.contents.length > 0){
                         showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
                             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-                            $state.go('arrange-content-list', {pctId:$scope.pctId})
+                            // $state.go('arrange-content-list', {pctId:$scope.pctId})
                             toastr.success(data.message)
                         },function(error){
                             console.log(error)
@@ -106,10 +120,6 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
                         });
                     }
        }else{
-                    console.log("MAnual :");
-                    console.log($scope.pctId);
-                    console.log($scope.contents);
-
                     if($scope.contents.length > 0){
                         showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
                             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;

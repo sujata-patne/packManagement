@@ -75,7 +75,8 @@ form .progress {
                                                 <!-- Files: {{$index}} -->
                                                 <ul>
                                                     <li ng-repeat="f in fileUploads[$index]" style="font:smaller">
-                                                        {{f.name}} <span style="color:red">
+                                                        {{f.name}} 
+                                                        <span style="color:red">
                                                                      {{f.$error}}  {{f.$errorParam}}
                                                                   </span>
                                                     </li>  

@@ -25,6 +25,16 @@ var ContentTypeDetails = [
               ]
     },
     {'Auto': [
+                     {'Wallpaper': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Vendor': 'Vendor'},
+                                {'Photographer': 'Photographer'}
+                            ]
+                    },
                     {'Full Track': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
@@ -33,7 +43,8 @@ var ContentTypeDetails = [
                                 {'Vendor': 'Vendor'},
                                 {'Genres': 'Genres'},
                                 {'Sub Genres': 'Sub_Genres'},
-                                {'Mood': 'Mood'}
+                                {'Mood': 'Mood'},
+                                {'Adult': 'Adult'}
                             ]
                     }
               ]

@@ -54,6 +54,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         $scope.Actor_Actress = angular.copy(data.actor_actress);
         $scope.Singer = angular.copy(data.singers);
         $scope.Music_Director = angular.copy(data.music_directors);
+        $scope.Adult = angular.copy(data.adult);
 
         $scope.Keywords_id = data.keywords[0].cm_id;
         $scope.Language_id = data.languages[0].cm_id;
@@ -66,6 +67,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         $scope.Actor_Actress_id = data.actor_actress[0].cm_id;
         $scope.Singer_id = data.singers[0].cm_id;
         $scope.Music_Director_id = data.music_directors[0].cm_id;
+        $scope.Adult_id = data.adult[0].cm_id;
 
         $scope.Content_Title_id = data.content_title[0].cm_id;
         $scope.Content_Ids_id = data.content_id[0].cm_id;
@@ -75,6 +77,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         /*Form Data*/
         var searchCriteriaData = {};
         angular.forEach($scope.packSearchDetails, function (metadataFields){
+            console.log(metadataFields);
             if(metadataFields.cm_name === "Content Title"){
                 $scope.contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
             }
@@ -90,6 +93,16 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
             if(metadataFields.cm_name === "Languages"){
                 $scope.contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
+            if(metadataFields.cm_name === "Singers"){
+                $scope.contentTypeData["Singer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "Music Directors"){
+                $scope.contentTypeData["Music_Director"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "Nudity"){
+                $scope.contentTypeData["Adult"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+
             if(metadataFields.cm_name === "Celebrity"){
                 $scope.contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
@@ -178,7 +191,6 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
                 ruleType : $scope.ruleType,
                 nextRuleDuration : $scope.nextRuleDuration
             }
-            console.log(searchData)
             if(Object.keys($scope.contentTypeDataDetails).length > 0){
                     ngProgress.start();
                     Search.saveSearchCriteria(searchData, function (data) {

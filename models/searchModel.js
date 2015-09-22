@@ -44,15 +44,22 @@ exports.getMood = function(dbConnection, callback){
 
 exports.getSinger = function(dbConnection, callback){
     dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
-        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Singers") order by cm.cm_id ', function (err, mood) {
-        callback(err, mood)
+        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Singers") order by cm.cm_id ', function (err, singer) {
+        callback(err, singer)
     });
 }
 
 exports.getMusicDirectors = function(dbConnection, callback){
     dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
-        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Music Directors") order by cm.cm_id ', function (err, mood) {
-        callback(err, mood)
+        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Music Directors") order by cm.cm_id ', function (err, musicdirector) {
+        callback(err, musicdirector)
+    });
+}
+
+exports.getNudity = function(dbConnection, callback){
+    dbConnection.query('select cm.*,cd.cd_id, cd.cd_name from catalogue_master AS cm ' +
+        'join catalogue_detail as cd on cm.cm_id = cd.cd_cm_id where cm.cm_name in ("Nudity") order by cm.cm_id ', function (err, adult) {
+        callback(err, adult)
     });
 }
 
@@ -248,7 +255,7 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = '1';
     var limitstr = '';
-    //console.log(searchData)
+    console.log(searchData);
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }
@@ -329,11 +336,22 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         whereStr += ' AND cmd.cm_protographer = ' + searchData.Photographer;
     }
 
+    if(searchData.Singers && searchData.Singers != null){
+        whereStr += ' AND cmd.cm_singer = ' + searchData.Singers;
+    }
+    if(searchData.Music_Directors && searchData.Music_Directors != null){
+        whereStr += ' AND cmd.cm_music_director = ' + searchData.Music_Directors;
+    }
+    
+    if(searchData.Nudity && searchData.Nudity != null){
+        whereStr += ' AND cmd.cm_nudity = ' + searchData.Nudity;
+    }
+
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
     
-console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
+// console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
 
     var query = dbConnection.query('SELECT cmd.*, cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' from content_metadata As cmd ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) ' + whereStr + limitstr , function (err, result) {

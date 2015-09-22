@@ -6,7 +6,7 @@
             </div>
             <!-- /.content-header -->
             <div class="row">
-            	<h5 class="text-center"><u>Add Content >> {{packName}} >> {{contentType}} >> Manual  >> List </u></h5>  
+            	<h5 class="text-center"><u>Add Content >> {{packName}} >> {{contentType}} >> {{displayName}}  >> List </u></h5>  
                 <div class="col-md-12 col-xs-12">
                     <div class="table-responsive">
                         <div id="user-exportable">
@@ -34,8 +34,11 @@
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
                                         <td class="col-md-1 col-xs-1">
                                             <div class="row">
+
                                                 <div class="col-md-6 col-xs-6" style="text-align: center">
-                                                    <a ng-if="parentType != 'Audio' && parentType != 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-picture-o" style="color:green" title="View"></i></a>
+                                                    <a class="fancybox grouped_elements" href="http://dailymagic.in{{content.cm_thumb_url}}"  ng-if="parentType != 'Audio' && parentType != 'Video' "title="{{content.cm_thumb_url}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
+                                                        <img width="20" height="20" src="http://dailymagic.in{{content.cm_thumb_url}}" />
+                                                    </a>
                                                     <a ng-if="parentType == 'Audio' || parentType == 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-play" style="color:green" title="View"></i></a>
                                                 </div>
                                                 <div  ng-hide="displayName == 'Auto'" class="col-md-6 col-xs-6" style="text-align: center" >
