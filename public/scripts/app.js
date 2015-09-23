@@ -11,6 +11,16 @@ var ContentTypeDetails = [
                                 {'Photographer': 'Photographer'}
                             ]
                     },
+                    {'Animation': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Vendor': 'Vendor'},
+                                {'Photographer': 'Photographer'}
+                            ]
+                    },
                     {'Full Track': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
@@ -22,21 +32,42 @@ var ContentTypeDetails = [
                                 {'Mood': 'Mood'}
                             ]
                     },
-                    {'Video Clip': [
-                        {'Language': 'Language'},
-                        {'Actor/Actress': 'Actor_Actress'},
-                        {'Singer':'Singer'},
-                        {'Music Director':'Music_Director'},
-                        {'Vendor': 'Vendor'},
-                        {'Genres': 'Genres'},
-                        {'Sub Genres': 'Sub_Genres'},
-                        {'Mood': 'Mood'}
-                    ]
+                    {'Movies': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
                     },
+                    {'Video Clip': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
+                    }
               ]
     },
     {'Auto': [
                      {'Wallpaper': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Vendor': 'Vendor'},
+                                {'Photographer': 'Photographer'}
+                            ]
+                    },
+                    {'Animation': [
                                 {'Language': 'Language'},
                                 {'Actor/Actress': 'Actor_Actress'},
                                 {'Genres': 'Genres'},
@@ -56,6 +87,28 @@ var ContentTypeDetails = [
                                 {'Sub Genres': 'Sub_Genres'},
                                 {'Mood': 'Mood'},
                                 {'Adult': 'Adult'}
+                            ]
+                    },
+                    {'Movies': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
+                    },
+                     {'Video Clip': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
                             ]
                     }
               ]
