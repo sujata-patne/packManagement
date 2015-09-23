@@ -2,7 +2,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $('.removeActiveClass').removeClass('active');
     $('#add-search-content').addClass('active');
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
-    $scope.pctId = $stateParams.id;
+    $scope.pctId = $stateParams.pctId;
     $scope.success = "";
     $scope.limitCount = 5;
     $scope.successvisible = false;

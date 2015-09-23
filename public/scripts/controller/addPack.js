@@ -104,7 +104,8 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
 
     $scope.EditPack = function ( pctID,type_added_name ) {
         type_added_name = type_added_name.toLowerCase() == "rule based" ? "rule" : type_added_name.toLowerCase();
-        $window.location.href = "/#/search-content-"+type_added_name+"/" + pctID;
+        // $window.location.href = "/#/search-content-"+displayName+"/" + pctID;
+        $state.go('search-content-'+type_added_name, {pctId:pctID}); 
     }
 
     $scope.BlockUnBlockContentType = function( packId,contentTypeId, isActive ){

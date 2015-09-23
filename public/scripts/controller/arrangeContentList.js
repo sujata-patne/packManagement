@@ -148,4 +148,18 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
              }
            
     }
+
+    $(document).ready(function() {
+        // $("a.grouped_elements").fancybox();
+        $("a.grouped_elements").fancybox({
+            'transitionIn'  :   'elastic',
+            'transitionOut' :   'elastic',
+            'speedIn'       :   600, 
+            'speedOut'      :   200, 
+            'maxWidth'      :   400,
+            'maxHeight'     :   400,
+            'modal'         : false,
+            'closeBtn'      : true
+        });
+    });
 })

@@ -1,20 +1,4 @@
 myApp.controller('showContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search,showContents) {
-
-    $(document).ready(function() {
-
-    // $("a.grouped_elements").fancybox();
-
-    $("a.grouped_elements").fancybox({
-        'transitionIn'  :   'elastic',
-        'transitionOut' :   'elastic',
-        'speedIn'       :   600, 
-        'speedOut'      :   200, 
-        // 'overlayShow'   :   false,
-        'showCloseButton' : true
-    });
-    
-});
-
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
     $scope.pctId = $stateParams.pctId;
@@ -171,4 +155,21 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         })
 
     }
+
+
+
+    $(document).ready(function() {
+
+        // $("a.grouped_elements").fancybox();
+
+        $("a.grouped_elements").fancybox({
+            'transitionIn'  :   'elastic',
+            'transitionOut' :   'elastic',
+            'speedIn'       :   600, 
+            'speedOut'      :   200, 
+            // 'overlayShow'   :   false,
+            'showCloseButton' : true
+        });
+    
+    });
 })

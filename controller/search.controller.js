@@ -452,7 +452,8 @@ exports.UploadFile =  function (req, res, next) {
             form.parse(req, function (err, fields, files) {
                 console.log(fields);
                 fs.readFile(files.file.path, function (err, data) {
-                      var newPath = __dirname + "/../ContentFiles/"+files.file.name;
+                      var newPath = __dirname + "/../public/contentFiles/"+files.file.name;
+                      var absPath = "/contentFiles/"+files.file.name;
                       fs.writeFile(newPath, data, function (err) {
                             if (err) return console.log(err);
                             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
@@ -485,9 +486,9 @@ exports.UploadFile =  function (req, res, next) {
                                              var data = {
                                                 cf_id: results.MaxContentFilesId,
                                                 cf_cm_id : fields.cm_id,
-                                                cf_url_base : newPath,
-                                                cf_url : newPath,
-                                                cf_absolute_url : newPath,
+                                                cf_url_base : absPath,
+                                                cf_url : absPath,
+                                                cf_absolute_url : absPath,
                                                 cf_template_id : results.MaxTemplateGroupId
                                              }
 
