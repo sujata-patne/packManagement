@@ -8,8 +8,9 @@ exports.showArrangeContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-
-                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.unselectedContentsList);
+                if(req.body.unselectedContentsList.length > 0){
+                    deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.unselectedContentsList);
+                }
                 for (var contentId in req.body.selectedContentList) {
                     var cnt = 0;
                     var data = {
@@ -39,7 +40,9 @@ exports.showPublishContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList)
+                if(req.body.unselectedContentsList.length > 0){
+                    deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.unselectedContentsList);
+                }
                 for (var contentId in req.body.selectedContentList) {
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
