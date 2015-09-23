@@ -9,7 +9,7 @@ exports.showArrangeContents = function (req, res, next) {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
 
-                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList);
+                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.unselectedContentsList);
                 for (var contentId in req.body.selectedContentList) {
                     var cnt = 0;
                     var data = {

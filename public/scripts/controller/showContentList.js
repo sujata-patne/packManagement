@@ -58,7 +58,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
 
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.contents = [];
-        //console.log(data.contents)
+        $scope.unselectedContents = [];
         data.contents.forEach(function(value){
             $scope.contents.push(value.pc_cm_id);
             $scope.selectedContent[value.pc_cm_id] = true;
@@ -68,14 +68,16 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     });
 
     $scope.addSelectedContents = function (id) {
-        
+
         if ($scope.selectedContent[id] === true) {
             $scope.contents.push(id);
         }
         if ($scope.selectedContent[id] !== true) {
             var idx = $scope.contents.indexOf(id);
             $scope.contents.splice(idx, 1);
+            $scope.unselectedContents.push(id);
         }
+        console.log($scope.unselectedContents)
     }
 
 
@@ -86,13 +88,16 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
 
         $scope.removedContent.splice(idx, 1);
         $scope.searchContentList.splice(idx, 1);
+        $scope.unselectedContents.push(id);
+
         angular.forEach($scope.removedContent, function(value, key){
             $scope.contents.push(value);
         })
+        console.log($scope.unselectedContents)
     }
 
     $scope.addMoreSearchContents = function () {
-        showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+        showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
             var filename = 'search-content-'+$scope.displayName.toLowerCase()
             $state.go(filename, {pctId:$scope.pctId}) 
@@ -110,7 +115,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
                     $scope.contents.push(value.cm_id);
                 });
                 if($scope.contents.length > 0){
-                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                             // $state.go('arrange-content-list', {pctId:$scope.pctId})
                             toastr.success(data.message)
@@ -121,7 +126,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
                     }
        }else{
                     if($scope.contents.length > 0){
-                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                             $state.go('arrange-content-list', {pctId:$scope.pctId})
                             toastr.success(data.message)
@@ -139,7 +144,7 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
     $scope.showArrangeContents = function () {
         console.log($scope.contents)
         if($scope.contents.length > 0){
-            showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents}, function (data) {
+            showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                 //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                 $state.go('arrange-content-list', {pctId:$scope.pctId})
                 toastr.success(data.message)

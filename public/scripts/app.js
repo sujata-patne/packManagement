@@ -21,7 +21,18 @@ var ContentTypeDetails = [
                                 {'Sub Genres': 'Sub_Genres'},
                                 {'Mood': 'Mood'}
                             ]
-                    }
+                    },
+                    {'Video Clip': [
+                        {'Language': 'Language'},
+                        {'Actor/Actress': 'Actor_Actress'},
+                        {'Singer':'Singer'},
+                        {'Music Director':'Music_Director'},
+                        {'Vendor': 'Vendor'},
+                        {'Genres': 'Genres'},
+                        {'Sub Genres': 'Sub_Genres'},
+                        {'Mood': 'Mood'}
+                    ]
+                    },
               ]
     },
     {'Auto': [
