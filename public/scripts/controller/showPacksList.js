@@ -91,8 +91,6 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
                         st_date : $scope.StartDate,
                         end_date :$scope.EndDate
                      }
-                     console.log(criteria);
-                     debugger;
                     PacksList.getPacksByTitle(criteria,function( data ){
                              $scope.packsList = data.Packs;
                     },function(error){
@@ -101,5 +99,9 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
             }
                 
         }
+    }
+
+    $scope.showAllPacks = function(){
+        window.location.reload();
     }
 });

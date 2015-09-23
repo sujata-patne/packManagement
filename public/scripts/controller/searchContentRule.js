@@ -95,6 +95,16 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
             if (metadataFields.cm_name === "Languages") {
                 $scope.contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
+            if(metadataFields.cm_name === "Singers"){
+                $scope.contentTypeData["Singer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "Music Directors"){
+                $scope.contentTypeData["Music_Director"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "Nudity"){
+                $scope.contentTypeData["Adult"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+
             if (metadataFields.cm_name === "Celebrity") {
                 $scope.contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }

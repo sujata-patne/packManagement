@@ -44,9 +44,17 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
         $scope.contents = [];
         $scope.unselectedContents = [];
         data.contents.forEach(function(value){
-            $scope.contents.push(value.pc_cm_id);
+            if($scope.action == 1){ // add option
+                $scope.contents.push(value.pc_cm_id);
+            } 
             $scope.selectedContent[value.pc_cm_id] = true;
-        }) 
+        })
+        if($scope.action == 2){ // remove option
+
+            angular.forEach($scope.removedContent, function(value, key){
+                $scope.contents.push(value);
+            })
+        } 
     }, function (error) { 
         toastr.success(error)
     });
@@ -61,7 +69,6 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
             $scope.contents.splice(idx, 1);
             $scope.unselectedContents.push(id);
         }
-        console.log($scope.unselectedContents)
     }
 
 

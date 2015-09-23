@@ -59,6 +59,10 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.Vendor = angular.copy(data.vendor);
         $scope.Property = angular.copy(data.property);
         $scope.Actor_Actress = angular.copy(data.actor_actress);
+        $scope.Singer = angular.copy(data.singers);
+        $scope.Music_Director = angular.copy(data.music_directors);
+        $scope.Adult = angular.copy(data.adult);
+
 
         $scope.Keywords_id = data.keywords[0].cm_id;
         $scope.Language_id = data.languages[0].cm_id;
@@ -72,6 +76,11 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.Content_Title_id = data.content_title[0].cm_id;
         $scope.Content_Ids_id = data.content_id[0].cm_id;
         $scope.property_release_year_id = data.property_release_year[0].cm_id;
+        $scope.Singer_id = data.singers[0].cm_id;
+        $scope.Music_Director_id = data.music_directors[0].cm_id;
+        $scope.Adult_id = data.adult[0].cm_id;
+
+
        // $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
         $scope.contentTypeData['property_release_year'] = {'releaseYearStart':'','releaseYearEnd':''};
 
@@ -93,6 +102,16 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
             if(metadataFields.cm_name === "Languages"){
                 $scope.contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
+            if(metadataFields.cm_name === "Singers"){
+                $scope.contentTypeData["Singer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "Music Directors"){
+                $scope.contentTypeData["Music_Director"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if(metadataFields.cm_name === "Nudity"){
+                $scope.contentTypeData["Adult"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+
             if(metadataFields.cm_name === "Celebrity"){
                 $scope.contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
