@@ -9,22 +9,40 @@ exports.saveArrangedContents = function (req, res, next) {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 var count = req.body.arrangedContentList[contentId];
-
+                var unique = [];
+                var duplicate = [];
                 for (var contentId in req.body.arrangedContentList) { 
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: parseInt(contentId),
                         pc_arrange_seq: req.body.arrangedContentList[contentId]
                     }
-                    console.log(data)
-                    addEditContents(connection_ikon_cms,data);
+                    if( unique.length == 0 ) {
+                        unique.push( parseInt( req.body.arrangedContentList[contentId] ) );
+                    } else if( unique.indexOf(parseInt( req.body.arrangedContentList[contentId] ) ) == -1 ) {
+                        unique.push( parseInt( req.body.arrangedContentList[contentId] ) );
+                    } else {
+                        duplicate.push( parseInt( req.body.arrangedContentList[contentId] ) );
+                    }
+                    if(duplicate.length == 0){
+                        addEditContents(connection_ikon_cms,data);
+                    }
                 }
+                 
                 connection_ikon_cms.release();
-                res.send({
-                    "success": true,
-                    "status": 200,
-                    "message": "Contents saved successfully!."
-                })
+                if(duplicate.length > 0){
+                    res.send({
+                        "error": true,
+                        "status": 400,
+                        "message": "Duplicate entries found!."
+                    });
+                }else{ 
+                    res.send({
+                        "success": true,
+                        "status": 200,
+                        "message": "Contents saved successfully!."
+                    });
+                }
             })
         }else {
             res.redirect('/accountlogin');

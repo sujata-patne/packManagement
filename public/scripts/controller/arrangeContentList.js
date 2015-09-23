@@ -71,7 +71,11 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
     $scope.saveArrangedContents = function(){
         $scope.arrangeContent();
         arrangeContents.saveArrangedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
-            toastr.success(data.message)
+            if( data.error === true ) {
+            	toastr.error(data.message);
+            }else {
+            	toastr.success(data.message);
+            }
         },function(error){
             console.log(error)
             toastr.error(error)

@@ -8,8 +8,9 @@ exports.showArrangeContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-
-                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList);
+                if(req.body.selectedContentList.length > 0){
+                    deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList);
+                }
                 for (var contentId in req.body.selectedContentList) {
                     var cnt = 0;
                     var data = {
@@ -39,7 +40,10 @@ exports.showPublishContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList)
+                if(req.body.selectedContentList.length > 0){
+                    deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList);
+                }
+                //deleteUnwantedContents(connection_ikon_cms, req.body.pctId, req.body.selectedContentList)
                 for (var contentId in req.body.selectedContentList) {
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
@@ -109,6 +113,7 @@ exports.showResetRules = function (req, res, next) {
 }
 
 function deleteUnwantedContents(connection_ikon_cms,pctId,data){
+    console.log(data);
     SearchModel.getUnwantedPackContents(connection_ikon_cms, pctId, data, function (err, result) {
         if (err) {
             connection_ikon_cms.release();
