@@ -35,7 +35,27 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         toastr.success(error)
     });
 
-
+    $scope.checkForDuplicates = function(id) {
+    	var unique = [];
+    	var duplicate = [];
+    	var previous_value = 0;
+        angular.forEach($scope.sequence,function(value,key) {
+        	if( unique.length == 0 ) {
+                unique.push( parseInt( value ) );
+            } else if( unique.indexOf(parseInt( value ) ) == -1 ) {
+                unique.push( parseInt( value ) );
+            } else {
+            	duplicate.push( parseInt( value ) );
+            }
+        	$scope.unique = unique;
+        	$scope.duplicate = duplicate;
+        });
+        if( $scope.duplicate.length > 0 ) {
+        	toastr.error("Duplicate values not allowed!");
+        	$scope.sequence[id] = "";
+        }
+    }
+    
     $scope.arrangeContent = function () {
         $scope.arrangedContentList = {};
         angular.forEach($scope.sequence,function(value,key) {
