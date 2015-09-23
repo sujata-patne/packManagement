@@ -214,8 +214,13 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
     var celebrity = '(SELECT cd1.cd_name FROM catalogue_detail AS cd1 ' +
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
+    
+    var uploadedFiles = '(SELECT SUBSTRING_INDEX(group_concat(cf.cf_url), ",", -2) from content_files as cf where pc.pc_cm_id = cf.cf_cm_id and '+
+        ' cf_template_id = (select ct_group_id from content_template where ct_param_value = "ANY" order by ct_id desc limit 1 ) '+
+        ' Limit 1) as uploadedFiles , '; 
 
-    dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+celebrity+" FROM icn_pack_content AS pc " +
+
+    dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+uploadedFiles+" "+celebrity+" FROM icn_pack_content AS pc " +
         "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
         "INNER JOIN content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id " +
         "WHERE ISNULL(cmd1.cm_property_id) AND pc_pct_id = ? AND ISNULL(pc.pc_crud_isactive) ", [pctId],function (err, result) {

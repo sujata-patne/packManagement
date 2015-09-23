@@ -117,7 +117,7 @@ myApp.config(function ($stateProvider) {
         .state("search-content-rule", {
             templateUrl: "partials/add-search-content-rule.html",
             controller: "searchContentRuleCtrl",
-            url: "/search-content-rule/:id"
+            url: "/search-content-rule/:pctId"
         })
         .state("add-content-list", {
             templateUrl: "partials/add-content-list.html",

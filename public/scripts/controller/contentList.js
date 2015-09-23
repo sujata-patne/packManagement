@@ -71,11 +71,13 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
 
     $scope.EditPack = function ( pctID,type_added_name ) {
         type_added_name = type_added_name.toLowerCase() == "rule based" ? "rule" : type_added_name.toLowerCase();
-            $window.location.href = "/#/search-content-"+type_added_name.toLowerCase()+"/" + pctID;
+            // $window.location.href = "/#/search-content-"+type_added_name.toLowerCase()+"/" + pctID;
+        $state.go('search-content-'+type_added_name, {pctId:pctID}); 
     }
 
     $scope.showArrangeList = function ( pctID ) {
-        $window.location.href = "/#/arrange-content-list/"+pctID;
+        // $window.location.href = "/#/arrange-content-list/"+pctID;
+         $state.go('arrange-content-list', {pctId:pctID}); 
 
     }
 });
