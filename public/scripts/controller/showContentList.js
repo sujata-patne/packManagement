@@ -24,6 +24,8 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.removedContent = [];
     $scope.contents = [];
     $scope.dbcontents = [];
+    $scope.unselectedContents = [];
+
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
@@ -33,15 +35,33 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
+
         $scope.searchContentList.forEach(function(value){
             $scope.removedContent.push(value.cm_id);
         });
+        data.contents.forEach(function(value){
+            if($scope.action == 1){ // add option
+                $scope.contents.push(value.pc_cm_id);
+                $scope.dbcontents.push(value.pc_cm_id);
+            }
+            $scope.selectedContent[value.pc_cm_id] = true;
+        })
+        console.log($scope.removedContent);
+        console.log($scope.action);
+        if($scope.action == 2){ // remove option
+            angular.forEach($scope.removedContent, function(value, key){
+                $scope.contents.push(value);
+            })
+        }
+        console.log($scope.contents);
+
+
     }, function (error) {
         //console.log(error)
         toastr.success(error)
     });
 
-    Search.getSavedContents({pctId:$scope.pctId}, function (data) {
+    /*Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.contents = [];
         $scope.unselectedContents = [];
         data.contents.forEach(function(value){
@@ -52,14 +72,16 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
             } 
             $scope.selectedContent[value.pc_cm_id] = true;
         })
+        console.log($scope.action);
         if($scope.action == 2){ // remove option
             angular.forEach($scope.removedContent, function(value, key){
                 $scope.contents.push(value);
             })
         }
-    }, function (error) { 
+        console.log($scope.contents);
+    }, function (error) {
         toastr.success(error)
-    });
+    });*/
 
     $scope.addSelectedContents = function (id) {
 
@@ -115,10 +137,11 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.showPublishContents = function (displayName) {
-        angular.forEach($scope.searchContentList,function(value){
-            $scope.contents.push(value.cm_id);
-        });
+
         if(displayName == 'Auto'){
+            angular.forEach($scope.searchContentList,function(value){
+                $scope.contents.push(value.cm_id);
+            });
             if($scope.contents.length > 0){
                 showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                         //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
@@ -152,9 +175,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.showArrangeContents = function () {
-        angular.forEach($scope.searchContentList,function(value){
-            $scope.contents.push(value.cm_id);
-        });
+
         console.log($scope.contents)
         if($scope.contents.length > 0){
             showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {

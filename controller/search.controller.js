@@ -422,7 +422,12 @@ exports.getPackSearchResult = function (req, res, next) {
                         },
                         function (searchContentList,packDetails,packSearchDetails,callback) {
                             SearchModel.getPackContentSequence( connection_ikon_cms,req.body.pctId, function(err,packContentSequence){
-                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails, 'packContentSequence':packContentSequence});
+                                callback(err, searchContentList,packDetails,packSearchDetails,packContentSequence);
+                            });
+                        },
+                        function (searchContentList,packDetails,packSearchDetails,packContentSequence,callback) {
+                            SearchModel.getSavedContents(connection_ikon_cms, req.body.pctId, function (err, savedContents) {
+                                callback(err, {'searchContentList':searchContentList,'packDetails':packDetails, 'packSearchDetails':packSearchDetails, 'packContentSequence':packContentSequence,'contents':savedContents});
                             });
                         }
                     ],
