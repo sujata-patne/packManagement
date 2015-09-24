@@ -1,4 +1,4 @@
-myApp.controller('showContentListCtrl', function ($scope, $window, $http, $stateParams,$state, ngProgress, Search,showContents) {
+myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stateParams,$state, ngProgress, Search,showContents) {
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
     $scope.pctId = $stateParams.pctId;
@@ -131,14 +131,16 @@ myApp.controller('showContentListCtrl', function ($scope, $window, $http, $state
        }
     }
 
-
     $scope.showArrangeContents = function () {
         console.log($scope.contents)
         if($scope.contents.length > 0){
             showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                 //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-                $state.go('arrange-content-list', {pctId:$scope.pctId})
-                toastr.success(data.message)
+                $timeout(function(){
+                    $state.go('arrange-content-list', {pctId:$scope.pctId})
+                    toastr.success(data.message)
+                },1000)
+
 
             },function(error){
                 console.log(error)

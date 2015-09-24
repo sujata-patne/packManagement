@@ -113,7 +113,6 @@ exports.showResetRules = function (req, res, next) {
 }
 
 function deleteUnwantedContents(connection_ikon_cms,pctId,data){
-    console.log(data);
     SearchModel.getUnwantedPackContents(connection_ikon_cms, pctId, data, function (err, result) {
         if (err) {
             connection_ikon_cms.release();
@@ -124,7 +123,6 @@ function deleteUnwantedContents(connection_ikon_cms,pctId,data){
                     .map(function (element) {
                         return element
                     })
-                console.log(contentList)
                 var count = contentList.length;
                 deleteContent(0);
                 function deleteContent(cnt) {
@@ -133,7 +131,6 @@ function deleteUnwantedContents(connection_ikon_cms,pctId,data){
                             pc_pct_id: pctId,
                             pc_cm_id: contentList[j]
                         };
-                    console.log(contentList[j])
                     SearchModel.isPublishedContents(connection_ikon_cms, data, function (err, response) {
                         if (err) {
                             connection_ikon_cms.release();
