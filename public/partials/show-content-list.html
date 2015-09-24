@@ -36,10 +36,18 @@
                                             <div class="row">
 
                                                 <div class="col-md-6 col-xs-6" style="text-align: center">
-                                                    <a class="fancybox grouped_elements" href="http://dailymagic.in{{content.cm_thumb_url}}"  ng-if="parentType != 'Audio' && parentType != 'Video' "title="{{content.cm_thumb_url}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
+                                                    <a class="fancybox grouped_elements" href="http://dailymagic.in{{content.cm_thumb_url}}" ng-if="parentType != 'Audio' && parentType != 'Video' "title="{{content.cm_thumb_url}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
                                                         <img width="20" height="20" src="http://dailymagic.in{{content.cm_thumb_url}}" />
+
                                                     </a>
-                                                    <a ng-if="parentType == 'Audio' || parentType == 'Video' " href="" data-ng-click="playContent()" title="Play"><i class="fa fa-play" style="color:green" title="View"></i></a>
+                                                     <a  class="fancybox-video fancybox.iframe" ng-if="parentType == 'Video' && content.contentUrl != null" href="http://dailymagic.in{{ content.contentUrl }}" title="{{files.filename}}">
+                                                            <i class="fa fa-play" style="color:green" title="View"></i>
+                                                    </a>
+                                                        <i ng-show="content.contentUrl == null && parentType == 'Audio'" class="fa fa-play" style="color:red" title="Content not found"></i>
+                                                         <i ng-show="content.contentUrl == null && parentType == 'Video'" class="fa fa-play" style="color:red" title="Content not found"></i>
+                                                    <a  class="fancybox-audio fancybox.iframe" ng-if="parentType == 'Audio' && content.contentUrl != null" href="{{ content.contentUrl }}" title="{{files.filename}}">
+                                                            <i class="fa fa-play" style="color:green" title="View"></i>
+                                                    </a>
                                                 </div>
                                                 <div  ng-hide="displayName == 'Auto'" class="col-md-6 col-xs-6" style="text-align: center" >
                                                     <span ng-show="action != 1"><a href="" data-ng-click="removeContent(content.cm_id)"><i class="glyphicon glyphicon-remove" title="Remove" style="color:red"></i></a></span>
