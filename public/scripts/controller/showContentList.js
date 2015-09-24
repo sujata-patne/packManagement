@@ -108,7 +108,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
                 if($scope.contents.length > 0){
                         showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                             //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-                            // $state.go('arrange-content-list', {pctId:$scope.pctId})
+                            $state.go('arrange-content-list', {pctId:$scope.pctId})
                             toastr.success(data.message)
                         },function(error){
                             console.log(error)
@@ -176,9 +176,21 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
             'transitionOut' :   'elastic',
             'speedIn'       :   600, 
             'speedOut'      :   200, 
+            'maxWidth'      :   400,
+            'maxHeight'     :   400,
             // 'overlayShow'   :   false,
             'showCloseButton' : true
         });
-    
+            $('.fancybox').fancybox();
+        
+            $('.fancybox-audio').fancybox({
+                'maxWidth'      :   400,
+                'maxHeight'     :   400,
+            });
+        
+            $(".fancybox-video").fancybox({
+                'maxWidth': '70%',
+                'maxHeight': '70%'
+            });
     });
 })

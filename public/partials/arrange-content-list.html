@@ -48,7 +48,7 @@ form .progress {
                                         <th class="text-center">Property</th>
                                         <th class="text-center">Release Year</th>
                                         <th class="text-center">Actor/Actress</th>
-                                        <th class="text-center">Arrange</th>
+                                        <th ng-show="displayName != 'Auto'" class="text-center">Arrange</th>
                                         <th class="text-center">Upload <br/> [Max 2 images per content]</th>
                                     </tr>
                                 </thead>
@@ -59,7 +59,7 @@ form .progress {
                                         <td class="col-md-2 col-xs-2">{{content.property}}</td>
                                         <td class="col-md-1 col-xs-1">{{content.releaseYear}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
-                                        <td class="col-md-1 col-xs-1">
+                                        <td ng-show="displayName != 'Auto'" class="col-md-1 col-xs-1">
                                             <input type="text" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" ng-change="checkForDuplicates(content.cm_id)" ng-model-options='{ debounce: 1000 }' >
                                         </td>
                                         <td class="col-md-1 col-xs-1 text-center"><!-- <i class="fa fa-upload" style="color:green" title="Upload"> -->
@@ -126,7 +126,7 @@ form .progress {
                 	<div class="col-xs-4 col-md-4"></div>
                     <div class="col-xs-4 col-md-4">
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="saveArrangedContents()" >Save</button>
-                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="addMoreSearchContents()" >Add more content</button>
+                        <button ng-show="displayName != 'Auto'" type="button" class="btn btn-default btn-w-xs " data-ng-click="addMoreSearchContents()" >Add more content</button>
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="savePublishedContents()" >Publish current List</button>
                     </div>
                     <div class="col-xs-4 col-md-4"></div>
