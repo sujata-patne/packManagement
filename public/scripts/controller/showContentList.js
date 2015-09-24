@@ -23,6 +23,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.selectedContent = [];
     $scope.removedContent = [];
     $scope.contents = [];
+    $scope.dbcontents = [];
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
@@ -46,15 +47,16 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
         data.contents.forEach(function(value){
             if($scope.action == 1){ // add option
                 $scope.contents.push(value.pc_cm_id);
+                $scope.dbcontents.push(value.pc_cm_id);
+
             } 
             $scope.selectedContent[value.pc_cm_id] = true;
         })
         if($scope.action == 2){ // remove option
-
             angular.forEach($scope.removedContent, function(value, key){
                 $scope.contents.push(value);
             })
-        } 
+        }
     }, function (error) { 
         toastr.success(error)
     });
@@ -63,12 +65,25 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
 
         if ($scope.selectedContent[id] === true) {
             $scope.contents.push(id);
+            var idx = $scope.dbcontents.indexOf(parseInt( id ));
+            if( $scope.dbcontents.indexOf(parseInt( id ) ) !== -1 ) {
+                $scope.unselectedContents.splice(idx, 1);
+            }
         }
         if ($scope.selectedContent[id] !== true) {
             var idx = $scope.contents.indexOf(id);
             $scope.contents.splice(idx, 1);
-            $scope.unselectedContents.push(id);
+            if( $scope.dbcontents.indexOf(parseInt( id ) ) !== -1 ) {
+                $scope.unselectedContents.push(id);
+            }
         }
+        console.log('dbcontentsIndex ' + $scope.dbcontents.indexOf(parseInt( id ) ))
+        console.log('dbcontents')
+        console.log($scope.dbcontents)
+        console.log('unselectedContents')
+        console.log($scope.unselectedContents)
+        console.log('selectedContent')
+        console.log($scope.selectedContent)
     }
 
 
@@ -84,6 +99,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
         angular.forEach($scope.removedContent, function(value, key){
             $scope.contents.push(value);
         })
+        console.log('unselectedContents')
         console.log($scope.unselectedContents)
     }
 
@@ -99,39 +115,46 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.showPublishContents = function (displayName) {
-       if(displayName == 'Auto'){
-                angular.forEach($scope.searchContentList,function(value){
-                    // $scope.contents.push(value);
-                    //$scope.addSelectedContents(value.cm_id);
-                    $scope.contents.push(value.cm_id);
+        angular.forEach($scope.searchContentList,function(value){
+            $scope.contents.push(value.cm_id);
+        });
+        if(displayName == 'Auto'){
+            if($scope.contents.length > 0){
+                showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+                        //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                    $timeout(function(){
+                        $state.go('arrange-content-list', {pctId:$scope.pctId})
+                        toastr.success(data.message)
+                    },1000)
+                },function(error){
+                    console.log(error)
+                    toastr.error(error)
                 });
-                if($scope.contents.length > 0){
-                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
-                            //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-                            $state.go('arrange-content-list', {pctId:$scope.pctId})
-                            toastr.success(data.message)
-                        },function(error){
-                            console.log(error)
-                            toastr.error(error)
-                        });
-                    }
-       }else{
-                    if($scope.contents.length > 0){
-                        showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
-                            //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
-                            $state.go('arrange-content-list', {pctId:$scope.pctId})
-                            toastr.success(data.message)
-                        },function(error){
-                            console.log(error)
-                            toastr.error(error)
-                        })
-                    }else{
-                        toastr.error('Please select at least one record to publish!')
-                    }
-       }
+            }else{
+                toastr.error('Please select at least one record to publish!')
+            }
+        }else{
+            if($scope.contents.length > 0){
+                showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+                    //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                    $timeout(function(){
+                        $state.go('arrange-content-list', {pctId:$scope.pctId})
+                        toastr.success(data.message)
+                    },1000)
+                },function(error){
+                    console.log(error)
+                    toastr.error(error)
+                })
+            }else{
+                toastr.error('Please select at least one record to publish!')
+            }
+        }
     }
 
     $scope.showArrangeContents = function () {
+        angular.forEach($scope.searchContentList,function(value){
+            $scope.contents.push(value.cm_id);
+        });
         console.log($scope.contents)
         if($scope.contents.length > 0){
             showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
@@ -140,8 +163,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
                     $state.go('arrange-content-list', {pctId:$scope.pctId})
                     toastr.success(data.message)
                 },1000)
-
-
             },function(error){
                 console.log(error)
                 toastr.error(error)
@@ -162,7 +183,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
             console.log(error)
             toastr.error(error)
         })
-
     }
 
 
