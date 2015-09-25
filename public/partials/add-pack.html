@@ -45,7 +45,7 @@
                             <label for="contentType" class="col-sm-3 control-label"><span class="asterisk">*</span>Select Content Type</label>
                             <div class="col-sm-9">
                                 <span class="ui-select">
-                                    <select name="contentType" class="form-control" multiple data-ng-model="selectedContentTypes" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" required>
+                                    <select style="height:120px;" name="contentType" class="form-control" multiple data-ng-model="selectedContentTypes" data-ng-options="item.cd_id as item.cd_name for item in ContentTypes" required>
                                         <!--<option value="">-- Select Stores --</option>-->
                                     </select>
                                 </span>
@@ -84,7 +84,7 @@
                                                  <div class="col-md-3 col-xs-4" data-ng-if="i.pct_is_active == 1" class="text-right"><a href="" title="Click To Block" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
                                                 <div class="col-md-3 col-xs-4" 
                                                 data-ng-if="i.pct_is_active == 0" class="text-right"><a href="" title="Click To UnBlock" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
-                                                <div class="col-md-3 col-xs-4"><a href="" data-ng-click="DeletePlan(plan.planid,plan.contenttype)"><i class="fa fa-eye" title="View List"></i></a></div>
+                                               <div class="col-md-3 col-xs-4"><a href="" data-ng-click="showArrangeList(i.pct_id)"><i class="fa fa-eye" title="View List"></i></a></div>
                                             </div>
                                         
                                     </td>

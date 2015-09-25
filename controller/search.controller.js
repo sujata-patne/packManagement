@@ -456,11 +456,18 @@ exports.UploadFile =  function (req, res, next) {
             var form = new formidable.IncomingForm();
             form.parse(req, function (err, fields, files) {
                 console.log(fields);
-                fs.readFile(files.file.path, function (err, data) {
-                      var newPath = __dirname + "/../public/contentFiles/"+files.file.name;
-                      var absPath = "/contentFiles/"+files.file.name;
-                      fs.writeFile(newPath, data, function (err) {
-                            if (err) return console.log(err);
+                var newPath = __dirname + "/../public/contentFiles/"+files.file.name;
+                var absPath = "/contentFiles/"+files.file.name;
+                var tmp_path = files.file.path;
+                fs.rename(tmp_path,newPath, function (err) {
+                      if (err) console.log(err);
+                       // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+                       fs.unlink(tmp_path, function() {
+                        if (err) console.log(err);
+                       });
+                    
+                      // fs.writeFile(newPath, data, function (err) {
+                      //       if (err) return console.log(err);
                             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                                 async.parallel({
                                     MaxTemplateId : function(callback){
@@ -497,15 +504,18 @@ exports.UploadFile =  function (req, res, next) {
                                                 cf_template_id : results.MaxTemplateGroupId
                                              }
 
+                                        console.log(data);
                                        var content_files_inserted = saveContentFiles( connection_ikon_cms, data );      
 
                                        if(content_files_inserted == true){
                                             console.log("File uploaded!");
+                                       }else{
+                                            console.log("File not uploaded!");
                                        }
                                     // }
                                 });
                             });
-                      });
+                      // });
                 });
         });
 };

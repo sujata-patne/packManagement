@@ -100,6 +100,7 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
     $scope.resetForm = function () {
         $scope.successvisible = false;
         $scope.errorvisible = false;
+        $scope.isAdded = false;
     }
 
     $scope.EditPack = function ( pctID,type_added_name ) {
@@ -152,5 +153,11 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
                     $scope.type_added_name = data.PackContentTypes[0].type; 
                     $scope.pack_grid = data.PackContentTypes;
              });
+    }
+
+    $scope.showArrangeList = function ( pctID ) {
+        // $window.location.href = "/#/arrange-content-list/"+pctID;
+         $state.go('arrange-content-list', {pctId:pctID}); 
+
     }
 });
