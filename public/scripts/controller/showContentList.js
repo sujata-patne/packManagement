@@ -201,7 +201,9 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
         }
     }
 
-
+    $scope.backToAddContentList = function(){
+        $state.go("add-content-list");
+    }
 
     $(document).ready(function() {
 

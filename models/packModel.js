@@ -60,8 +60,16 @@ exports.updatePack = function(dbConnection,data,packId,callback){
 	});
 }
 
-exports.deletePackContentTypes = function(dbConnection,packId,callback){
-	var query = dbConnection.query("DELETE FROM `icn_pack_content_type` WHERE pct_pk_id = ?",[packId], function (err, response) {
+exports.existingContentTypes = function(dbConnection,packId,callback){
+	var query = dbConnection.query("SELECT Group_concat(pct_cnt_type) as pct_cnt_type_ids FROM `icn_pack_content_type` WHERE pct_pk_id = ? AND ISNULL(pct_crud_isactive) ",[packId], function (err, response) {
+		callback(err,response);
+	});
+}
+
+
+exports.deletePackContentTypes = function(dbConnection,packId,deleteContentTypeList,callback){
+	console.log("UPDATE `icn_pack_content_type` SET pct_crud_isactive = 1 WHERE pct_pk_id = "+packId+" AND pct_cnt_type IN ("+deleteContentTypeList+") ")
+	var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_crud_isactive = 1 WHERE pct_pk_id = ? AND pct_cnt_type IN ("+deleteContentTypeList+") ",[packId], function (err, response) {
 		callback(err,response);
 	});
 }
@@ -88,7 +96,7 @@ exports.getContentTypesByPackId = function(dbConnection,packId,callback){
 									"(select cd_name from catalogue_detail cd, `icn_packs` as ip where cd.cd_id = (Select ip.pk_cnt_display_opt from icn_packs as ip where ip.pk_id = ? Limit 1) Limit 1) as type "+
 									"FROM `icn_pack_content_type` pct inner join `catalogue_detail` cd on "+
 									"(pct.pct_cnt_type = cd.cd_id) inner join icn_packs ip on(ip.pk_id = pct_pk_id) "+
-									"where pct.pct_pk_id = ?",[packId,packId],
+									"where pct.pct_pk_id = ? AND ISNULL(pct_crud_isactive) ",[packId,packId],
 		            function(err,response){
                             callback(err,response);
                     }

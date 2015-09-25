@@ -152,7 +152,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     $scope.years = range;
 
     $scope.setLimit = function (option) {
-        $scope.limitCount = (option != 1 )? '':5;
+        $scope.limitCount = (option != 1 )? '':10;
     }
     $scope.submitForm = function (isValid) {
         if (isValid) {
@@ -195,8 +195,14 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
                     ngProgress.start();
                     Search.saveSearchCriteria(searchData, function (data) {
                         if (data.success) {
-                            $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-
+                            // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+                              var params = {pctId:$scope.pctId,
+                                limitCount:$scope.limitCount,
+                                action:$scope.action,
+                                title:$scope.searchWhereTitle,
+                                property:$scope.searchWherePropertyTitle
+                            }
+                            $state.go('show-content-list', params)
                             $scope.successvisible = true;
                         }
                         else {
@@ -220,8 +226,16 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
 
         $("#radio_noOfRecords").attr('checked', true);
         $("#radio_ruleType").attr('checked', true);
+        $scope.noOfRecords = 1;    
+
         
     }
+
+    
+    //    $scope.resetForm = function () {
+    //     $scope.noOfRecords = 2;
+    //     $scope.limitCount = '';
+    // }
 
 
 });

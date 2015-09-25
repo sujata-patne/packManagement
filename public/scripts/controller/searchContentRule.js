@@ -157,7 +157,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.years = range;
 
     $scope.setLimit = function (option) {
-        $scope.limitCount = (option != 1) ? '' : 5;
+        $scope.limitCount = (option != 1) ? '' : 10;
     }
     $scope.submitForm = function (isValid) {
         if (isValid) {
@@ -198,11 +198,15 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
             ngProgress.start();
             Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {
-                    $window.location.href = "/#/show-content-list/" + $scope.pctId + "/" + $scope.limitCount + "/" + $scope.action + "/" + $scope.searchWhereTitle + "/" + $scope.searchWherePropertyTitle;
-                    toastr.success(data.message)
-                    //Search.addPackSearchResult(data.SearchCriteriaResult);
-                    //console.log(data.SearchCriteriaResult)
-                    $scope.successvisible = true;
+                    // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+                      var params = {pctId:$scope.pctId,
+                        limitCount:$scope.limitCount,
+                        action:$scope.action,
+                        title:$scope.searchWhereTitle,
+                        property:$scope.searchWherePropertyTitle
+                      }
+                        $state.go('show-content-list', params)
+                        $scope.successvisible = true;
                 }
                 else {
                     toastr.error(error);

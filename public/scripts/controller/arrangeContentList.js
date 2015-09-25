@@ -153,6 +153,10 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
            
     }
 
+    $scope.backToAddContentList = function(){
+        $state.go("add-content-list");
+    }
+
     $(document).ready(function() {
         // $("a.grouped_elements").fancybox();
         $("a.grouped_elements").fancybox({

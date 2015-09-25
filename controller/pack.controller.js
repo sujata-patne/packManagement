@@ -1,6 +1,7 @@
 var mysql = require('../config/db').pool;
 var async = require("async");
 var packManager = require('../models/packModel');
+var underscore = require("underscore");
 
 exports.getData = function (req, res, next) {
     try {   
@@ -221,8 +222,13 @@ exports.editPack = function (req, res, next) {
                         });    
                     },
                     MaxPackId: function (callback) {
-                            packManager.getLastInsertedPackId(connection_ikon_cms,function(err,MaxPackId){
-                                callback(err,MaxPackId);
+                        packManager.getLastInsertedPackId(connection_ikon_cms,function(err,MaxPackId){
+                            callback(err,MaxPackId);
+                        }); 
+                    },
+                    existingContentTypes: function (callback) {
+                            packManager.existingContentTypes(connection_ikon_cms,req.body.packId,function(err,existingContentTypes){
+                                callback(err,existingContentTypes);
                             }); 
                         }
                     },function (err, results) {
@@ -241,12 +247,34 @@ exports.editPack = function (req, res, next) {
                             
                             var result = updateIconPack(connection_ikon_cms,data,req.body.packId);
                             if( result == true ){
+                                //var existingContentTypes = results.existingContentTypes[0].pct_cnt_type_ids;
+                                if(results.existingContentTypes[0].pct_cnt_type_ids !== null){
+                                    var existingContentTypes = results.existingContentTypes[0].pct_cnt_type_ids.split(',')
+                                     .map(function (element) {
+                                     return parseInt(element)
+                                     });
+                                 }else{
+                                    var existingContentTypes = [];
+                                 }
+                                
 
-                                var is_deleted = deletePackContentTypes( connection_ikon_cms,req.body.packId );    
-                                if(is_deleted == true){
+                                var contentTypes = req.body.pack_content_type;
+                                var addContentTypes = contentTypes.filter( function( el ) {
+                                                          return existingContentTypes.indexOf( el ) < 0;
+                                                        });
+                                 var deleteContentTypes = existingContentTypes.filter( function( el ) {
+                                                          return contentTypes.indexOf( el ) < 0;
+                                                        });
+ 
 
-                                    var count = req.body.pack_content_type.length;
-                                    v_pack_content_types = req.body.pack_content_type;
+                                if(deleteContentTypes.length > 0){
+                                    var is_deleted = deletePackContentTypes( connection_ikon_cms,req.body.packId, deleteContentTypes );
+                                }else{
+                                    var is_deleted = true;
+                                }
+                                if(is_deleted == true && addContentTypes.length > 0){
+                                    var count = addContentTypes.length;
+                                    v_pack_content_types = addContentTypes;
                                     var cnt = 0;
                                     loop(0);
                                     function loop( cnt ) {
@@ -263,6 +291,7 @@ exports.editPack = function (req, res, next) {
                                                     pct_modified_on: new Date(),
                                                     pct_modified_by: req.session.Pack_UserName
                                                 }
+                                                var contentTypeData;
                                                 contentTypeResponse = saveIconPackContentType( connection_ikon_cms,contentTypeData );
                                                 if(contentTypeResponse == true){
                                                     cnt = cnt + 1;
@@ -284,6 +313,17 @@ exports.editPack = function (req, res, next) {
                                         }); 
                                     }
                                 }//delete..
+                                else{
+                                    packManager.getContentTypesByPackId(connection_ikon_cms,req.body.packId,function(err,response){
+                                        if(err){
+                                          connection_ikon_cms.release();
+                                          res.status(500).json(err.message);  
+                                        }else{
+                                            connection_ikon_cms.release();
+                                            res.send({"success" : true,"status":200, "message":"Pack successfully updated.","pack_grid":response});
+                                        }  
+                                    });
+                                }
                             }
                         }
                     } 
@@ -323,8 +363,8 @@ function updateIconPack( connection_ikon_cms, data,packId ){
     return true;
 }
 
-function deletePackContentTypes( connection_ikon_cms,packId ){
-    packManager.deletePackContentTypes( connection_ikon_cms,packId, function(err,response ){
+function deletePackContentTypes( connection_ikon_cms,packId,deleteContentTypes ){
+    packManager.deletePackContentTypes( connection_ikon_cms,packId,deleteContentTypes, function(err,response ){
         if(err){
              connection_ikon_cms.release();
              res.status(500).json(err.message);
