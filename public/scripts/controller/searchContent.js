@@ -15,12 +15,11 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
     $scope.CurrentPage = $state.current.name;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
-    $scope.ContentTypeDetails = angular.copy(ContentTypeDetails);
-    //$scope.Wallpaper = $scope.ContentTypeDetails[0].Manual[0].Wallpaper;
+
     //console.log( $scope.Wallpaper );
     $scope.contentTypeData = {};
+    $scope.contentTypeDataDetails = [];
 
-    //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
     Search.getContentTypeDetails($scope.pctId, function(data){
         $scope.packDetails = angular.copy(data.packDetails);
         $scope.packSearchDetails = angular.copy(data.packSearchDetails);
@@ -30,19 +29,14 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.packType = $scope.packDetails[0].type;
 
         $scope.contentType = {};
-        angular.forEach($scope.ContentTypeDetails, function( value, key ){	   
-           angular.forEach(value, function( displayType, displayKey ){
-                if( displayKey == $scope.displayName ){
-
-                    angular.forEach(displayType, function(manualContentType, manualIndex ){
-                    	angular.forEach(manualContentType, function(contentType, contentIndex ){
-	                        if( contentIndex == $scope.packType ){
-	                           $scope.contentType = manualContentType[contentIndex];
-	                        }
-                    	});
-                    });
-                }
-            });
+        angular.forEach(ContentTypeDetails, function( displayType, displayKey ){
+            if( displayKey == $scope.displayName ){
+                angular.forEach(displayType, function(contentType, contentIndex ){
+                    if( contentIndex == $scope.packType ){
+                        $scope.contentType = displayType[contentIndex];
+                    }
+                });
+            }
         });
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
@@ -63,30 +57,27 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.Music_Director = angular.copy(data.music_directors);
         $scope.Adult = angular.copy(data.adult);
 
-
-        $scope.Keywords_id = data.keywords[0].cm_id;
-        $scope.Language_id = data.languages[0].cm_id;
-        $scope.Genres_id = data.genres[0].cm_id;
-        $scope.Sub_Genres_id = data.subgenres[0].cm_id;
-        $scope.Mood_id = data.mood[0].cm_id;
-        $scope.Photographer_id = data.photographer[0].cm_id;
-        $scope.Vendor_id = data.vendor[0].cm_id;
-        $scope.Property_id = data.property[0].cm_id;
-        $scope.Actor_Actress_id = data.actor_actress[0].cm_id;
-        $scope.Content_Title_id = data.content_title[0].cm_id;
-        $scope.Content_Ids_id = data.content_id[0].cm_id;
-        $scope.property_release_year_id = data.property_release_year[0].cm_id;
-        $scope.Singer_id = data.singers[0].cm_id;
-        $scope.Music_Director_id = data.music_directors[0].cm_id;
-        $scope.Adult_id = data.adult[0].cm_id;
-
-
-       // $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
-        $scope.contentTypeData['property_release_year'] = {'releaseYearStart':'','releaseYearEnd':''};
+        $scope.list = {
+            "Keywords_id": data.keywords[0] ? data.keywords[0].cm_id : "",
+            "Language_id": data.languages[0] ? data.languages[0].cm_id : "",
+            "Genres_id": data.genres[0].cm_id,
+            "Sub_Genres_id": data.subgenres[0].cm_id,
+            "Mood_id": data.mood[0].cm_id,
+            "Photographer_id": data.photographer[0].cm_id,
+            "Vendor_id": data.vendor[0].cm_id,
+            "Property_id": data.property[0].cm_id,
+            "Actor_Actress_id": data.actor_actress[0].cm_id,
+            "Singer_id": data.singers[0].cm_id,
+            "Music_Director_id": data.music_directors[0].cm_id,
+            "Content_Title_id" : data.content_title[0].cm_id,
+            "Content_Ids_id" :data.content_id[0].cm_id,
+            "property_release_year_id" : data.property_release_year[0].cm_id,
+            "Rules_id" : data.rules[0].cm_id,
+            "Adult_id" : data.adult[0].cm_id
+        };
 
         /*Form Data*/
-        var searchCriteriaData = {};
-        angular.forEach($scope.packSearchDetails, function (metadataFields){
+         /*angular.forEach($scope.packSearchDetails, function (metadataFields){
             if(metadataFields.cm_name === "Content Title"){
                 $scope.contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
             }
@@ -136,7 +127,12 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
 
             $scope.contentTypeData['property_release_year'] = {'releaseYearStart':parseInt(metadataFields.pcr_start_year),'releaseYearEnd':parseInt(metadataFields.pcr_end_year)};
 
-        })
+        })*/
+        $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart':'','releaseYearEnd':''};
+
+        $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
+        console.log($scope.contentTypeDataDetails)
 
         $scope.searchWhere = [
             {cd_id:'start',cd_name:'Title starting with'},
@@ -168,28 +164,28 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.limitCount = '';
     }
 
-    $scope.submitForm = function (isValid) { 
+    $scope.submitForm = function (isValid) {
         if (isValid) {
 
             $scope.contentTypeDataDetails = [];
-            angular.forEach($scope.contentTypeData,function(value,key){
-                var data = {};
-
-                if(key == 'property_release_year' ){
-                   if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
-                       data[$scope[key+'_id']] = 1;
-                       $scope.contentTypeDataDetails.push(data)
-                       //$scope.contentTypeDataDetails[$scope[key+'_id']] = 1;
-                   }
-                }else{
-                    if(value){
-                        data[$scope[key+'_id']] = value;
-                        $scope.contentTypeDataDetails.push(data);
-                        //$scope.contentTypeDataDetails[$scope[key+'_id']] = value;
-                    }
-                }
-            });
-                                   
+            //angular.forEach($scope.contentTypeData,function(value,key){
+            //    var data = {};
+            //
+            //    if(key == 'property_release_year' ){
+            //       if($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0){
+            //           data[$scope.list[key+'_id']] = 1;
+            //           $scope.contentTypeDataDetails.push(data)
+            //           //$scope.contentTypeDataDetails[$scope[key+'_id']] = 1;
+            //       }
+            //    }else{
+            //        if(value){
+            //            data[$scope.list[key+'_id']] = value;
+            //            $scope.contentTypeDataDetails.push(data);
+            //            //$scope.contentTypeDataDetails[$scope[key+'_id']] = value;
+            //        }
+            //    }
+            //});
+            $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
             console.log($scope.contentTypeDataDetails);
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,
@@ -214,7 +210,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
                 Search.saveSearchCriteria(searchData, function (data) {
                     if (data.success) {
                         //$window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                        
+
                         var params = {pctId:$scope.pctId,
                             limitCount:$scope.limitCount,
                             action:$scope.action,

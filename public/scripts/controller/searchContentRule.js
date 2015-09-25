@@ -11,7 +11,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.CurrentPage = $state.current.name;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
-    $scope.ContentTypeDetails = angular.copy(ContentTypeDetails); //Read config file.
+    $scope.contentTypeDataDetails = [];
     //$scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
     $scope.contentTypeData = {};
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
@@ -23,18 +23,14 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.displayName = $scope.packDetails[0].displayName; //Auto
         $scope.packType = $scope.packDetails[0].type;
         $scope.contentType = {};
-        angular.forEach($scope.ContentTypeDetails, function (value, key) {
-            angular.forEach(value, function (displayType, displayKey) {
-                if (displayKey == $scope.displayName) {
-                    angular.forEach(displayType, function (autoContentType, manualIndex) {
-                        angular.forEach(autoContentType, function (contentType, contentIndex) {
-                            if (contentIndex == $scope.packType) {
-                                $scope.contentType = autoContentType[contentIndex];
-                            }
-                        });
-                    });
-                }
-            });
+        angular.forEach(ContentTypeDetails, function( displayType, displayKey ){
+            if( displayKey == $scope.displayName ){
+                angular.forEach(displayType, function(contentType, contentIndex ){
+                    if( contentIndex == $scope.packType ){
+                        $scope.contentType = displayType[contentIndex];
+                    }
+                });
+            }
         });
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
@@ -71,68 +67,12 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.Content_Ids_id = data.content_id[0].cm_id;
         $scope.property_release_year_id = data.property_release_year[0].cm_id;
         $scope.Rules_id = data.rules[0].cm_id;
-        // $scope.releaseYearEnd_id = data.releaseYearEnd[0].cm_id;
 
-        $scope.contentTypeData['property_release_year'] = { 'releaseYearStart': '', 'releaseYearEnd': '' };
-        $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
         /*Form Data*/
 
-        var searchCriteriaData = {};
-        angular.forEach($scope.packSearchDetails, function (metadataFields) {
-
-            if (metadataFields.cm_name === "Content Title") {
-                $scope.contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
-            }
-            if (metadataFields.cm_name === "Property") {
-                $scope.contentTypeData["Property"] = metadataFields.pcr_metadata_search_criteria;
-            }
-            if (metadataFields.cm_name === "Search Keywords") {
-                $scope.contentTypeData["Keywords"] = metadataFields.pcr_metadata_search_criteria;
-            }
-            if (metadataFields.cm_name === "Content Ids") {
-                $scope.contentTypeData["Content_Ids"] = metadataFields.pcr_metadata_search_criteria;
-            }
-            if (metadataFields.cm_name === "Languages") {
-                $scope.contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if(metadataFields.cm_name === "Singers"){
-                $scope.contentTypeData["Singer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if(metadataFields.cm_name === "Music Directors"){
-                $scope.contentTypeData["Music_Director"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if(metadataFields.cm_name === "Nudity"){
-                $scope.contentTypeData["Adult"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-
-            if (metadataFields.cm_name === "Celebrity") {
-                $scope.contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Genres") {
-                $scope.contentTypeData["Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Sub Genres") {
-                $scope.contentTypeData["Sub_Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Mood") {
-                $scope.contentTypeData["Mood"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Photographer") {
-                $scope.contentTypeData["Photographer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Vendor") {
-                $scope.contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Property Release Year") {
-                $scope.contentTypeData["property_release_year"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-            if (metadataFields.cm_name === "Rules") {
-                $scope.contentTypeData["Rules"] = parseInt(metadataFields.pcr_metadata_search_criteria);
-            }
-
-            $scope.contentTypeData['property_release_year'] = { 'releaseYearStart': parseInt(metadataFields.pcr_start_year), 'releaseYearEnd': parseInt(metadataFields.pcr_end_year) };
-
-        })
+        $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
+        $scope.contentTypeData['property_release_year'] = { 'releaseYearStart': '', 'releaseYearEnd': '' };
+        $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
 
         $scope.searchWhere = [
             { cd_id: 'start', cd_name: 'Title starting with' },
@@ -162,9 +102,9 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.submitForm = function (isValid) {
         if (isValid) {
             $scope.contentTypeDataDetails = [];
+
             angular.forEach($scope.contentTypeData, function (value, key) {
                 var data = {};
-
                 if (key == 'property_release_year') {
                     if ($scope.contentTypeData[key].releaseYearStart > 0 && $scope.contentTypeData[key].releaseYearEnd > 0) {
                         data[$scope[key + '_id']] = 1;
@@ -175,7 +115,6 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                         data[$scope[key + '_id']] = value;
                         $scope.contentTypeDataDetails.push(data);
                     }
-
                 }
             })
             var searchData = {
