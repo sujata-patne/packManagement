@@ -54,7 +54,7 @@ form .progress {
                                 </thead>
                                 <tbody>
                                     <tr data-ng-repeat="content in searchContentList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
-                                        <td class="col-md-1 col-xs-1 text-center">{{$index+1}}&nbsp;&nbsp;<span class="text-center" ng-show="published[content.cm_id]"><i class="fa fa-flag" style="color:red"></i></span></td>
+                                        <td class="col-md-1 col-xs-1 text-center">{{$index+1+(listcurrentPage*listpageSize)}}&nbsp;&nbsp;<span class="text-center" ng-show="published[content.cm_id]"><i class="fa fa-flag" style="color:red"></i></span></td>
                                         <td class="col-md-2 col-xs-2">{{content.cm_title}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.property}}</td>
                                         <td class="col-md-1 col-xs-1">{{content.releaseYear}}</td>

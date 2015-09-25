@@ -99,13 +99,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
                 $scope.unselectedContents.push(id);
             }
         }
-        console.log('dbcontentsIndex ' + $scope.dbcontents.indexOf(parseInt( id ) ))
-        console.log('dbcontents')
-        console.log($scope.dbcontents)
-        console.log('unselectedContents')
-        console.log($scope.unselectedContents)
-        console.log('selectedContent')
-        console.log($scope.selectedContent)
     }
 
 
@@ -121,8 +114,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
         angular.forEach($scope.removedContent, function(value, key){
             $scope.contents.push(value);
         })
-        console.log('unselectedContents')
-        console.log($scope.unselectedContents)
     }
 
     $scope.addMoreSearchContents = function () {
@@ -176,7 +167,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
 
     $scope.showArrangeContents = function () {
 
-        console.log($scope.contents)
         if($scope.contents.length > 0){
             showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                 //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
