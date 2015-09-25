@@ -128,7 +128,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.showPublishContents = function (displayName) {
-
         if(displayName == 'Auto'){
             angular.forEach($scope.searchContentList,function(value){
                 $scope.contents.push(value.cm_id);
@@ -184,16 +183,22 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.showResetRules = function () {
-        showContents.showResetRules({pctId:$scope.pctId}, function (data) {
-            //$window.location.href = "/#/search-content/"+$scope.pctId;
-            var filename = 'search-content-'+$scope.displayName.toLowerCase()
-            console.log(filename)
-            $state.go(filename, {pctId:$scope.pctId})
-            toastr.success(data.message)
-        },function(error){
-            console.log(error)
-            toastr.error(error)
-        })
+        var r = confirm("Are you sure you want to reset the previous data?");
+        if( r == true){
+                showContents.showResetRules({pctId:$scope.pctId}, function (data) {
+                    //$window.location.href = "/#/search-content/"+$scope.pctId;
+                    var filename = 'search-content-'+$scope.displayName.toLowerCase()
+                    console.log(filename)
+                    $state.go(filename, {pctId:$scope.pctId})
+                    toastr.success(data.message)
+                },function(error){
+                    console.log(error)
+                    toastr.error(error)
+                })
+
+        }else{
+            
+        }
     }
 
 

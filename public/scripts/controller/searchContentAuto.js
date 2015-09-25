@@ -4,7 +4,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.pctId;
     $scope.success = "";
-    $scope.limitCount = 5;
+    $scope.limitCount = 10;
     $scope.successvisible = false;
     $scope.error = "";
     $scope.errorvisible = false;
@@ -214,4 +214,14 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
             }
         }
     }
+
+
+    $scope.resetForm = function(){
+
+        $("#radio_noOfRecords").attr('checked', true);
+        $("#radio_ruleType").attr('checked', true);
+        
+    }
+
+
 });

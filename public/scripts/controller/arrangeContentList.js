@@ -140,8 +140,12 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
                                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                                 // console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
                                 $("#"+index).html("Uploaded: "+progressPercentage+"%");
-                              $scope.fileUploads[index].progress = Math.min(100, parseInt(100.0 * 
+                                $scope.fileUploads[index].progress = Math.min(100, parseInt(100.0 * 
                                                        evt.loaded / evt.total));
+
+                                if( progressPercentage == 100 ){
+                                    window.location.reload();
+                                }
                             });
                         }   
                      }); 
