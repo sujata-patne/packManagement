@@ -122,17 +122,63 @@ var ContentTypeDetails = [
               ]
     },
 	{ 'Rule Based': [
-                     { 'Full Track': [
-                                { 'Language': 'Language' },
-                                { 'Actor/Actress': 'Actor_Actress' },
-                                { 'Singer': 'Singer' },
-                                { 'Music Director': 'Music_Director' },
-                                { 'Vendor': 'Vendor' },
-                                { 'Genres': 'Genres' },
-                                { 'Sub Genres': 'Sub_Genres' },
-                                { 'Mood': 'Mood' }
+                    {'Wallpaper': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Vendor': 'Vendor'},
+                                {'Photographer': 'Photographer'},
+                                {'Adult': 'Adult'}
                             ]
-                     }
+                    },
+                    {'Animation': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Vendor': 'Vendor'},
+                                {'Photographer': 'Photographer'},
+                                {'Adult': 'Adult'}
+                            ]
+                    },
+                    {'Full Track': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Adult': 'Adult'}
+                            ]
+                    },
+                    {'Movies': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'},
+                                {'Adult': 'Adult'}
+                            ]
+                    },
+                     {'Video Clip': [
+                                {'Language': 'Language'},
+                                {'Actor/Actress': 'Actor_Actress'},
+                                {'Singer':'Singer'},
+                                {'Music Director':'Music_Director'},
+                                {'Vendor': 'Vendor'},
+                                {'Genres': 'Genres'},
+                                {'Sub Genres': 'Sub_Genres'},
+                                {'Mood': 'Mood'}
+                            ]
+                    }
               ]
     }
 ];

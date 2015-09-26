@@ -38,7 +38,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         });
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
-        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
+        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //manual
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
         $scope.action = 1;
         $scope.noOfRecords = 1;
@@ -95,13 +95,13 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
             if (metadataFields.cm_name === "Languages") {
                 $scope.contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
-            if(metadataFields.cm_name === "Singers"){
+            if (metadataFields.cm_name === "Singers") {
                 $scope.contentTypeData["Singer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
-            if(metadataFields.cm_name === "Music Directors"){
+            if (metadataFields.cm_name === "Music Directors") {
                 $scope.contentTypeData["Music_Director"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
-            if(metadataFields.cm_name === "Nudity"){
+            if (metadataFields.cm_name === "Nudity") {
                 $scope.contentTypeData["Adult"] = parseInt(metadataFields.pcr_metadata_search_criteria);
             }
 
@@ -199,14 +199,14 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
             Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {
                     // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                      var params = {pctId:$scope.pctId,
-                        limitCount:$scope.limitCount,
-                        action:$scope.action,
-                        title:$scope.searchWhereTitle,
-                        property:$scope.searchWherePropertyTitle
-                      }
-                        $state.go('show-content-list', params)
-                        $scope.successvisible = true;
+                    var params = { pctId: $scope.pctId,
+                        limitCount: $scope.limitCount,
+                        action: $scope.action,
+                        title: $scope.searchWhereTitle,
+                        property: $scope.searchWherePropertyTitle
+                    }
+                    $state.go('show-content-list', params)
+                    $scope.successvisible = true;
                 }
                 else {
                     toastr.error(error);
