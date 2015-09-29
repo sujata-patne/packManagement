@@ -49,7 +49,7 @@ form .progress {
                                         <th class="text-center">Release Year</th>
                                         <th class="text-center">Actor/Actress</th>
                                         <th ng-show="displayName != 'Auto'" class="text-center">Arrange</th>
-                                        <th class="text-center">Upload <br/> [Max 2 images per content]</th>
+                                        <th ng-show="displayName != 'Auto'" class="text-center">Upload <br/> [Max 2 images per content]</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -60,9 +60,9 @@ form .progress {
                                         <td class="col-md-1 col-xs-1">{{content.releaseYear}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
                                         <td ng-show="displayName != 'Auto'" class="col-md-1 col-xs-1">
-                                            <input type="number" min="0" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" ng-change="checkForDuplicates(content.cm_id)" ng-model-options='{ debounce: 1000 }' >
+                                            <input type="number" min="1" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" ng-change="checkForDuplicates(content.cm_id)" ng-model-options='{ debounce: 1000 }' >
                                         </td>
-                                        <td class="col-md-1 col-xs-1 text-center"><!-- <i class="fa fa-upload" style="color:green" title="Upload"> -->
+                                        <td ng-show="displayName != 'Auto'" class="col-md-1 col-xs-1 text-center"><!-- <i class="fa fa-upload" style="color:green" title="Upload"> -->
                                             <form name="form">
                                                  <button  ngf-select ng-model="fileUploads[$index]" ngf-multiple="true"
                                                  accept="image/*" ngf-pattern="'.jpg,.png,.gif,.jpeg'" ngf-max-height="1000" ngf-max-size="1MB">
@@ -125,6 +125,7 @@ form .progress {
                 <div class="col-md-12 col-xs-12">
                 	<div class="col-xs-4 col-md-4"></div>
                     <div class="col-xs-4 col-md-4">
+                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="backToAddContentList()" > < </button>
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="saveArrangedContents()" >Save</button>
                         <button ng-show="displayName != 'Auto'" type="button" class="btn btn-default btn-w-xs " data-ng-click="addMoreSearchContents()" >Add more content</button>
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="savePublishedContents()" >Publish current List</button>

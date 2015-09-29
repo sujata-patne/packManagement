@@ -34,7 +34,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         });
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
-        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual
+        $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //manual
         $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
         $scope.action = 1;
         $scope.noOfRecords = 1;
@@ -97,7 +97,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.years = range;
 
     $scope.setLimit = function (option) {
-        $scope.limitCount = (option != 1) ? '' : 5;
+        $scope.limitCount = (option != 1) ? '' : 10;
     }
     $scope.submitForm = function (isValid) {
         if (isValid) {
@@ -137,10 +137,14 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
             ngProgress.start();
             Search.saveSearchCriteria(searchData, function (data) {
                 if (data.success) {
-                    $window.location.href = "/#/show-content-list/" + $scope.pctId + "/" + $scope.limitCount + "/" + $scope.action + "/" + $scope.searchWhereTitle + "/" + $scope.searchWherePropertyTitle;
-                    toastr.success(data.message)
-                    //Search.addPackSearchResult(data.SearchCriteriaResult);
-                    //console.log(data.SearchCriteriaResult)
+                    // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+                    var params = { pctId: $scope.pctId,
+                        limitCount: $scope.limitCount,
+                        action: $scope.action,
+                        title: $scope.searchWhereTitle,
+                        property: $scope.searchWherePropertyTitle
+                    }
+                    $state.go('show-content-list', params)
                     $scope.successvisible = true;
                 }
                 else {

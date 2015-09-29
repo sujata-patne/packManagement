@@ -24,6 +24,7 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
             $scope.edit_mode = true;
             preData.state  = "edit-pack";
             preData.packId = $stateParams.id;
+            $scope.isAdded  = true;
     }
    
 
@@ -36,6 +37,7 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
                 data.PackDetails.forEach(function(el){
                      $scope.selectedContentTypes.push(el.cd_id);
                 });
+                $scope.getResultData({'pack_grid':data.PackDetails})
         }
     	$scope.ContentTypes = data.ContentTypes;
     	$scope.PackTypes = data.PackTypes;
@@ -76,6 +78,7 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
     };
 
     $scope.result = function( data ){
+        
          if(data.success){
                 $scope.getResultData(data);
                 $scope.success = data.message;

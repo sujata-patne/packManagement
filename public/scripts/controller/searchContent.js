@@ -157,11 +157,12 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
     $scope.years = range;
 
     $scope.setLimit = function (option) {
-        $scope.limitCount = (option != 1 )? '':5;
+        $scope.limitCount = (option != 1 )? '':10;
     }
     $scope.resetForm = function () {
-        $scope.noOfRecords = 2;
-        $scope.limitCount = '';
+        $("#radio_noOfRecords").attr('checked', true);
+        $("#radio_manualPack").attr('checked', true);
+        $("#radio_addselected").attr('checked', true);
     }
 
     $scope.submitForm = function (isValid) {
