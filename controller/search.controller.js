@@ -454,8 +454,9 @@ exports.getPackSearchResult = function (req, res, next) {
 
 exports.UploadFile =  function (req, res, next) {
             var form = new formidable.IncomingForm();
+            var template_id;
+            var count = 0;
             form.parse(req, function (err, fields, files) {
-                console.log(fields);
                 var newPath = __dirname + "/../public/contentFiles/"+files.file.name;
                 var absPath = "/contentFiles/"+files.file.name;
                 var tmp_path = files.file.path;
@@ -465,9 +466,7 @@ exports.UploadFile =  function (req, res, next) {
                        fs.unlink(tmp_path, function() {
                         if (err) console.log(err);
                        });
-                    
-                      // fs.writeFile(newPath, data, function (err) {
-                      //       if (err) return console.log(err);
+
                             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                                 async.parallel({
                                     MaxTemplateId : function(callback){
@@ -486,17 +485,15 @@ exports.UploadFile =  function (req, res, next) {
                                         }); 
                                     }
                                 },function(err,results){
-                                    // var template_data = {
-                                    //     ct_id : results.MaxTemplateId,
-                                    //     ct_group_id : results.MaxTemplateGroupId,
-                                    //     ct_param : 0,
-                                    //     ct_param_value : 'ANY'
-                                    // }
+                                            if(results.MaxContentFilesId == template_id){
+                                                template_id = template_id + 1;
+                                            }else{
+                                                template_id = results.MaxContentFilesId;
+                                            }
+                                             
 
-                                    // var template_inserted = saveTemplateForUpload( connection_ikon_cms,template_data );
-                                    // if(template_inserted == true){
                                              var data = {
-                                                cf_id: results.MaxContentFilesId,
+                                                cf_id: template_id + parseInt(Date.now().toString().slice(-2)),
                                                 cf_cm_id : fields.cm_id,
                                                 cf_url_base : absPath,
                                                 cf_url : absPath,
@@ -504,7 +501,7 @@ exports.UploadFile =  function (req, res, next) {
                                                 cf_template_id : results.MaxTemplateGroupId
                                              }
 
-                                        console.log(data);
+                                       console.log(data);
                                        var content_files_inserted = saveContentFiles( connection_ikon_cms, data );      
 
                                        if(content_files_inserted == true){
@@ -512,12 +509,11 @@ exports.UploadFile =  function (req, res, next) {
                                        }else{
                                             console.log("File not uploaded!");
                                        }
-                                    // }
                                 });
                             });
-                      // });
                 });
         });
+
 };
 
 function saveTemplateForUpload( connection_ikon_cms, data ){

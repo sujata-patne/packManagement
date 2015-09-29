@@ -242,7 +242,7 @@ exports.editPack = function (req, res, next) {
                                 pk_cnt_display_opt : req.body.pack_type,
                                 pk_is_active : 1,
                                 pk_modified_on: new Date(),
-                                pk_modified_by: req.session.Pack_UserName
+                                pk_modified_by: req.session.pack_UserName
                             }
                             
                             var result = updateIconPack(connection_ikon_cms,data,req.body.packId);

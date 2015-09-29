@@ -55,6 +55,25 @@ exports.savePack = function(dbConnection,data,callback){
 }
 
 exports.updatePack = function(dbConnection,data,packId,callback){
+	var query = dbConnection.query("SELECT MAX(ald_id) as id FROM `icn_admin_log_detail`",function(err,response){
+		if(err){
+
+		}else{
+			var log_id = response[0].id + 1;
+			var log_data = {
+				ald_id : log_id,
+				ald_message : data.pk_modified_by+' has updated pack '+packId,
+				ald_action : 'Pack Updated'
+			}
+			dbConnection.query("INSERT into `icn_admin_log_detail` SET ? ",log_data,function(err,response){
+				if(err){
+
+				}else{
+					console.log("Log created");
+				}
+			});
+		}
+	})
 	var query = dbConnection.query("UPDATE `icn_packs` SET ? WHERE pk_id = ?",[data,packId], function (err, response) {
 		callback(err,response);
 	});

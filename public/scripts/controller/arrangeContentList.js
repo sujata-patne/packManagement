@@ -144,7 +144,10 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
                                                        evt.loaded / evt.total));
 
                                 if( progressPercentage == 100 ){
-                                    window.location.reload();
+                                    setTimeout(function(){
+                                        window.location.reload();
+
+                                    },1000);
                                 }
                             });
                         }   

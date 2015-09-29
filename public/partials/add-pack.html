@@ -86,7 +86,7 @@
                                                  <div class="col-md-3 col-xs-4" data-ng-if="i.pct_is_active == 1" class="text-right"><a href="" title="Click To Block" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
                                                 <div class="col-md-3 col-xs-4" 
                                                 data-ng-if="i.pct_is_active == 0" class="text-right"><a href="" title="Click To UnBlock" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
-                                               <div class="col-md-3 col-xs-4"><a href="" data-ng-click="showArrangeList(i.pct_id)"><i class="fa fa-eye" title="View List"></i></a></div>
+                                               <div ng-hide="i.pct_is_active == 0" class="col-md-3 col-xs-4"><a href="" data-ng-click="showArrangeList(i.pct_id)"><i class="fa fa-eye" title="View List"></i></a></div>
                                             </div>
                                         
                                     </td>
