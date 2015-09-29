@@ -15,10 +15,11 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label"><span class="asterisk">*</span>Pack Name</label>
                             <div class="col-sm-9">
-                                <input type="text" name="packname" class="form-control" placeholder="Pack Name" data-ng-model="packname" required>
+                                <input type="text" name="packname" class="form-control" placeholder="Pack Name" data-ng-model="packname" ng-pattern="/^[a-zA-Z0-9 ]*$/" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <span style="color: red" ng-show="packForm.$submitted || packForm.packname.$dirty">
                                     <span ng-show="packForm.packname.$error.required">Pack Name is required.</span>
+                                     <span ng-show="packForm.packname.$error.pattern">Please use numbers/letters only</span>
                                 </span>
                             </div>
                         </div>
