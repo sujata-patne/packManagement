@@ -419,7 +419,7 @@ exports.deleteSearchCriteriaField = function(dbConnection,pctId,callback){
 }
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
-    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? ", [pctId, pctId], function (err, response) {
+    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? and pc_ispublished !ad= 1 ", [pctId, pctId], function (err, response) {
         if (err) {
             dbConnection.release();
             res.status(500).json(err.message);

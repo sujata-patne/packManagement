@@ -134,7 +134,7 @@
                                     </span>
                                 </div>
                                 <div class="col-md-2 col-xs-6">
-                                    <input type="text" ng-pattern="/^[0-9]*$/" name="limitCount" ng-disabled="noOfRecords == 2" class="form-control" placeholder="Limit" data-ng-model="limitCount" ng-required="noOfRecords == 1">
+                                    <input type="text" ng-pattern="/^[0-9]*$/" name="limitCount" class="form-control" placeholder="Limit" data-ng-model="limitCount" ng-required="noOfRecords == 1">
                                     <span style="color: red" ng-show="searchForm.$submitted || searchForm.limitCount.$touched">
                                         <span ng-show="searchForm.limitCount.$error.required">Limit is required.</span>
                                         <span ng-show="searchForm.limitCount.$error.pattern">Insert valid limit for No. of Records.</span>
