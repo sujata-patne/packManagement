@@ -260,10 +260,10 @@ exports.editPack = function (req, res, next) {
 
                                 var contentTypes = req.body.pack_content_type;
                                 var addContentTypes = contentTypes.filter( function( el ) {
-                                                          return existingContentTypes.indexOf( el ) < 0;
+                                                            return existingContentTypes.indexOf( el ) < 0;
                                                         });
                                  var deleteContentTypes = existingContentTypes.filter( function( el ) {
-                                                          return contentTypes.indexOf( el ) < 0;
+                                                            return contentTypes.indexOf( el ) < 0;
                                                         });
  
 
@@ -287,9 +287,9 @@ exports.editPack = function (req, res, next) {
                                                     pct_cnt_type : v_pack_content_types[i],
                                                     pct_is_active : 1,
                                                     pct_created_on: new Date(),
-                                                    pct_created_by: req.session.Pack_UserName,
+                                                    pct_created_by: req.session.pack_UserName,
                                                     pct_modified_on: new Date(),
-                                                    pct_modified_by: req.session.Pack_UserName
+                                                    pct_modified_by: req.session.pack_UserName
                                                 }
                                                 var contentTypeData;
                                                 contentTypeResponse = saveIconPackContentType( connection_ikon_cms,contentTypeData );
