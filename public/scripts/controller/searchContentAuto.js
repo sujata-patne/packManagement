@@ -36,7 +36,11 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //auto
-        $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
+        if($scope.packSearchDetails){
+            if($scope.packSearchDetails[0]){
+                $scope.nextRuleDuration = $scope.packSearchDetails[0].duration;      
+            }
+        }
         $scope.action = 1;
         $scope.noOfRecords = 1;
         $scope.Keywords = angular.copy(data.keywords);
@@ -126,7 +130,8 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
                     Search.saveSearchCriteria(searchData, function (data) {
                         if (data.success) {
                             // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                              var params = {pctId:$scope.pctId,
+                              var params = {
+                                pctId:$scope.pctId,
                                 limitCount:$scope.limitCount,
                                 action:$scope.action,
                                 title:$scope.searchWhereTitle,
@@ -142,8 +147,8 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
                         }
                         ngProgress.complete();
                     },function(error){
-                        console.log(error)
-                        toastr.success(error)
+                        console.log(error);
+                        toastr.success(error);
                     });
             }else{
                 toastr.error('Please add Search criteria')

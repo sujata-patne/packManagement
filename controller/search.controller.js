@@ -5,6 +5,7 @@ var ContentModel = require('../models/contentModel');
 var formidable = require('formidable');
 var fs = require('fs');
 var inspect = require('util-inspect');
+var moment = require('moment');
 
 //var data = require('../config/config');
 
@@ -251,12 +252,27 @@ exports.saveSearchCriteria = function (req, res, next) {
                 var packData = {
                     pk_id : req.body.packId,
                     pk_rule_type : req.body.ruleType,
-                    pk_nxt_rule_duration : req.body.nextRuleDuration,
+                    // pk_nxt_rule_duration : req.body.nextRuleDuration,
                     pk_modified_on: new Date(),
                     pk_modified_by: req.session.pack_UserName
                 }
                 /*update pack details*/
                 packUpdateResponse = updatePackData( connection_ikon_cms,packData );
+
+              
+
+                //To add/ update the duration and next execution date : 
+                var where_contentTypeDataDuration = {
+                    pct_id : req.body.pctId,
+                    pct_pk_id : req.body.packId
+                }  
+              
+                var data_contentTypeDataDuration = {
+                    pct_nxt_rule_duration : req.body.nextRuleDuration,
+                } 
+
+                updateContentTypeDurationResponse = updateContentTypeForDuration( connection_ikon_cms,data_contentTypeDataDuration , where_contentTypeDataDuration);
+
                 /* Add/update pack search criteria fields with values */
                 var count = req.body.contentTypeDataDetails.length;
                 console.log(count)
@@ -551,6 +567,17 @@ function getLastSearchCriteriaId( connection_ikon_cms, callback ) {
 
 function updatePackData( connection_ikon_cms, data ){
     SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
+        if(err){
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            return false;
+        }
+    });
+    return true;
+}
+
+function updateContentTypeForDuration( connection_ikon_cms, data , whereData ){
+    SearchModel.updateContentTypeForDuration( connection_ikon_cms, data , whereData, function(err,response ){
         if(err){
             connection_ikon_cms.release();
             res.status(500).json(err.message);

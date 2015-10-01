@@ -89,7 +89,6 @@ exports.existingContentTypes = function(dbConnection,packId,callback){
 
 
 exports.deletePackContentTypes = function(dbConnection,packId,deleteContentTypeList,callback){
-	console.log("UPDATE `icn_pack_content_type` SET pct_crud_isactive = 1 WHERE pct_pk_id = "+packId+" AND pct_cnt_type IN ("+deleteContentTypeList+") ")
 	var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_is_active = 0 WHERE pct_pk_id = ? AND pct_cnt_type IN ("+deleteContentTypeList+") ",[packId], function (err, response) {
 		callback(err,response);
 	});
@@ -199,4 +198,17 @@ exports.getPacksByTitle = function( dbConnection,term,start_date,end_date,storeI
 		" group by pk.pk_id ORDER BY pk.pk_id desc",storeId, function ( err, response ) {
         callback( err,response );
     });
+}
+
+
+exports.getAllAutoPacks = function(dbConnection,callback){
+
+	var query = dbConnection.query('SELECT pct.pct_id,pct.pct_nxt_rule_exe_date,pk.pk_id,pc.pc_cm_id '+
+								   'FROM `icn_packs`  as pk Join `icn_pack_content_type` as pct ON (pk.pk_id = pct.pct_pk_id) '+
+								   'Join `icn_pack_content` as pc ON (pct.pct_id = pc.pc_pct_id AND pc.pc_ispublished = 1) '+
+                                   'where pk_cnt_display_opt = 463 group by pct.pct_id',
+				function (err, response ) {
+               		callback(err, response );
+    			}
+    );
 }

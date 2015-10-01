@@ -206,6 +206,13 @@ exports.updateSearchContents = function(dbConnection, data, callback){
             dbConnection.release();
             res.status(500).json(err.message);
         } else {
+            var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_modified_on = NOW() WHERE pct_id = ? ",[data.pc_pct_id], function (err, response) {
+                        if(err){
+
+                        }else{
+
+                        }
+            });
             callback(err,result);
         }
     })
@@ -248,7 +255,7 @@ exports.getPackContentSequence = function(dbConnection,pctId,callback){
 }
 
 exports.getPackSearchDetails = function(dbConnection,pctId,callback){
-    dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId, pcr.*, cm.* FROM icn_packs AS pk " +
+    dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId,pct.pct_nxt_rule_duration as duration, pcr.*, cm.* FROM icn_packs AS pk " +
         "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
         "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id " +
         "JOIN catalogue_master AS cm ON cm.cm_id = pcr.pcr_metadata_type " +
@@ -356,7 +363,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
     
-  console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
+  // console.log('select cmd.*, cmd1.cm_title AS property, '+celebrity+' from content_metadata As cmd INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ISNULL(cmd1.cm_property_id) AND ' + whereStr + limitstr )
+
+    console.log('SELECT cmd.*,cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' , (SELECT cf.cf_url FROM content_files as cf WHERE cmd.cm_id = cf.cf_cm_id Limit 1) AS contentUrl  from content_metadata As cmd ' +
+        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + limitstr);
 
     var query = dbConnection.query('SELECT cmd.*,cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' , (SELECT cf.cf_url FROM content_files as cf WHERE cmd.cm_id = cf.cf_cm_id Limit 1) AS contentUrl  from content_metadata As cmd ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + limitstr , function (err, result) {
@@ -419,7 +429,7 @@ exports.deleteSearchCriteriaField = function(dbConnection,pctId,callback){
 }
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
-    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? and pc_ispublished !ad= 1 ", [pctId, pctId], function (err, response) {
+    var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? and pc_ispublished != 1 ", [pctId, pctId], function (err, response) {
         if (err) {
             dbConnection.release();
             res.status(500).json(err.message);
@@ -489,5 +499,42 @@ exports.deleteUnwantedPackContentsByContentIds = function(dbConnection, pctId, c
     //console.log("DELETE FROM icn_pack_content WHERE pc_pct_id = "+ pctId +" AND pc_cm_id IN ("+ contentIds +") ");
     var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? AND pc_cm_id IN ("+ contentIds +") ", [pctId], function (err, result) {
         callback(err,result);
+    });
+}
+
+
+exports.getSearchCriteriaByPackContentTypeId = function(dbConnection,pctId,callback){
+    dbConnection.query("SELECT pcr.* FROM icn_pack_content_rule AS pcr " +
+        "WHERE pcr_pct_id  = ? AND ISNULL(pcr_crud_isactive) ",
+        [pctId],function (err, result) {
+            callback(err,result);
+        });
+}
+
+exports.deletePackContentsForCron = function(dbConnection, pctId, callback){
+    var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, result) {
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        } else {
+            callback(err,result);
+        }
+    })
+}
+
+
+exports.savePackContentForCron = function(dbConnection,data,callback){
+    var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ",data, function (err, response) {
+        callback(err,response);
+    });
+}
+
+exports.updateContentTypeForDuration = function(dbConnection,data, whereData,callback){
+    var moment = require('moment');
+    // console.log("DATE IN MODEL :: "+data.pct_nxt_rule_exe_date);
+    var now = moment(new Date());
+    var nxt_rule_date = now.add(data.pct_nxt_rule_duration,'days').format('YYYY-MM-DD');
+    var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_nxt_rule_duration = ?, pct_nxt_rule_exe_date = ? WHERE pct_pk_id = ? AND pct_id = ?", [data.pct_nxt_rule_duration,nxt_rule_date, whereData.pct_pk_id, whereData.pct_id], function (err, response) {
+        callback(err,response);
     });
 }

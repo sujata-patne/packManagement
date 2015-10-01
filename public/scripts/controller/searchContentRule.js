@@ -35,7 +35,11 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //manual
-        $scope.nextRuleDuration = $scope.packDetails[0].pk_nxt_rule_duration;
+        if($scope.packSearchDetails){
+            if($scope.packSearchDetails[0]){
+                $scope.nextRuleDuration = $scope.packSearchDetails[0].duration;      
+            }
+        }
         $scope.action = 1;
         $scope.noOfRecords = 1;
         $scope.Rules = angular.copy(data.rules);
