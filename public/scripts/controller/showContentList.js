@@ -6,6 +6,11 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.action = $stateParams.action;
     $scope.title = $stateParams.title;
     $scope.property = $stateParams.property;
+    $scope.ruleType = $stateParams.ruleType;
+    $scope.ruleAuto = false;
+    if($scope.ruleType == 1){
+        $scope.ruleAuto = true;
+    }
 
     $scope.success = "";
     $scope.successvisible = false;
@@ -20,13 +25,14 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.selectedContentTypes = [];
     $scope.isAdded = false;
     $scope.action = $stateParams.action;
+    $scope.rule = $stateParams.rule;
     $scope.selectedContent = [];
     $scope.removedContent = [];
     $scope.contents = [];
     $scope.dbcontents = [];
     $scope.unselectedContents = [];
 
-    Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property}, function (data) {
+    Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property, rule: $scope.rule}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
 
@@ -35,7 +41,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
-
         $scope.searchContentList.forEach(function(value){
             $scope.removedContent.push(value.cm_id);
         });

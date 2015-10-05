@@ -14,6 +14,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.contentTypeDataDetails = [];
     //$scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
     $scope.contentTypeData = {};
+
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
     Search.getContentTypeDetails($scope.pctId, function (data) {
         $scope.packDetails = angular.copy(data.packDetails);
@@ -32,7 +33,6 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                 });
             }
         });
-
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //manual
         if($scope.packSearchDetails){
@@ -71,13 +71,31 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.Content_Ids_id = data.content_id[0].cm_id;
         $scope.property_release_year_id = data.property_release_year[0].cm_id;
         $scope.Rules_id = data.rules[0].cm_id;
+        // console.log($scope.Rules_id);
+
 
         /*Form Data*/
 
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
         $scope.contentTypeData['property_release_year'] = { 'releaseYearStart': '', 'releaseYearEnd': '' };
-        $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
+       // $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
+        
+       
+        // $scope.Rule_name = $scope.Rules[idx].cd_name;
 
+
+        if($scope.contentTypeData['Rules'] == undefined){
+            $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
+            //First  initialization
+            $scope.ruleChange('Most User Rated');
+        }else{
+            var sel_arr = $scope.Rules.filter(function(item,index){ 
+                return item.cd_id == $scope.contentTypeData['Rules'];
+            });
+            $scope.ruleChange(sel_arr[0].cd_name);
+        }
+
+        console.log($scope.Rule_name)
         $scope.searchWhere = [
             { cd_id: 'start', cd_name: 'Title starting with' },
             { cd_id: 'end', cd_name: 'Title ending with' },
@@ -103,6 +121,11 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.setLimit = function (option) {
         $scope.limitCount = (option != 1) ? '' : 10;
     }
+
+    $scope.ruleChange = function(rule_name){
+        $scope.Rule_name = rule_name.replace(/ /g,'');
+    }
+
     $scope.submitForm = function (isValid) {
         if (isValid) {
             $scope.contentTypeDataDetails = [];
@@ -135,7 +158,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                 flagForNoOfRecords: $scope.noOfRecords,
                 limitCount: $scope.limitCount,
                 flagAction: $scope.action,
-                ruleType: $scope.ruleType,
+                ruleType: $scope.ruleType,                
                 nextRuleDuration: $scope.nextRuleDuration
             }
             ngProgress.start();
@@ -146,7 +169,9 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                         limitCount: $scope.limitCount,
                         action: $scope.action,
                         title: $scope.searchWhereTitle,
-                        property: $scope.searchWherePropertyTitle
+                        property: $scope.searchWherePropertyTitle,
+                        rule: $scope.Rule_name,
+                        ruleType:$scope.ruleType
                     }
                     $state.go('show-content-list', params)
                     $scope.successvisible = true;

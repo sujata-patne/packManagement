@@ -218,7 +218,7 @@ myApp.config(function ($stateProvider) {
         .state("show-content-list", {
             templateUrl: "partials/show-content-list.html",
             controller: "showContentListCtrl",
-            url: "/show-content-list/:pctId/:limitCount/:action/:title/:property"
+            url: "/show-content-list/:pctId/:limitCount/:action/:title/:property/:rule/:ruleType"
         })
         .state("arrange-content-list", {
             templateUrl: "partials/arrange-content-list.html",

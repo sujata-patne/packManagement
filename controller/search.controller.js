@@ -259,7 +259,7 @@ exports.saveSearchCriteria = function (req, res, next) {
                 /*update pack details*/
                 packUpdateResponse = updatePackData( connection_ikon_cms,packData );
 
-              
+                
 
                 //To add/ update the duration and next execution date : 
                 var where_contentTypeDataDuration = {
@@ -364,6 +364,9 @@ exports.getPackSearchResult = function (req, res, next) {
                                 contentTypeData["limitCount"] = req.body.limitCount;
                                 contentTypeData["searchWhereTitle"] = req.body.title;
                                 contentTypeData["searchWherePropertyTitle"] = req.body.property;
+                                contentTypeData["ruleName"] = req.body.rule;
+                                console.log("RULLLLEEEEE :: "+req.body.rule);
+
                                 packSearchDetails.forEach(function (metadataFields) {
                                     console.log(metadataFields);
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
@@ -403,6 +406,9 @@ exports.getPackSearchResult = function (req, res, next) {
                                     if (metadataFields.cm_name === "Nudity") {
                                         contentTypeData["Nudity"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
+                                    if (metadataFields.cm_name === "Rules") {
+                                        contentTypeData["Rules"] = metadataFields.pcr_metadata_search_criteria;
+                                    }
                                     if (metadataFields.cm_name === "Sub Genres") {
                                         contentTypeData["Sub_Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
@@ -415,6 +421,8 @@ exports.getPackSearchResult = function (req, res, next) {
                                     if (metadataFields.cm_name === "Vendor") {
                                         contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
+                                    
+                                    
                                 })
                                 callback(err, contentTypeData);
                             });
