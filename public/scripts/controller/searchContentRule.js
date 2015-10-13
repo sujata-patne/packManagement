@@ -23,6 +23,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt; //463 id of Auto
         $scope.displayName = $scope.packDetails[0].displayName; //Auto
         $scope.packType = $scope.packDetails[0].type;
+        $scope.packRuleType = $scope.packDetails[0].pk_rule_type;
         $scope.contentType = {};
         angular.forEach(ContentTypeDetails, function( displayType, displayKey ){
             if( displayKey == $scope.displayName ){
@@ -54,6 +55,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.Actor_Actress = angular.copy(data.actor_actress);
         $scope.Singer = angular.copy(data.singers);
         $scope.Music_Director = angular.copy(data.music_directors);
+        $scope.Adult = angular.copy(data.adult);
 
         $scope.Keywords_id = data.keywords[0] ? data.keywords[0].cm_id : '';
         $scope.Language_id = data.languages[0] ? data.languages[0].cm_id : '';
@@ -71,7 +73,9 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.Content_Ids_id = data.content_id[0].cm_id;
         $scope.property_release_year_id = data.property_release_year[0].cm_id;
         $scope.Rules_id = data.rules[0].cm_id;
-        // console.log($scope.Rules_id);
+        $scope.Adult_id = data.adult[0].cm_id;
+       
+      
 
 
         /*Form Data*/
@@ -126,6 +130,15 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.Rule_name = rule_name.replace(/ /g,'');
     }
 
+    $scope.resetForm = function(){
+
+        $("#radio_noOfRecords").attr('checked', true);
+        $("#radio_ruleType").attr('checked', true);
+        $scope.noOfRecords = 1;    
+
+        
+    }
+
     $scope.submitForm = function (isValid) {
         if (isValid) {
             $scope.contentTypeDataDetails = [];
@@ -144,6 +157,11 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                     }
                 }
             })
+
+
+            if($scope.ruleType == 2){
+                $scope.nextRuleDuration = null;
+            }
             var searchData = {
                 contentTypeDataDetails: $scope.contentTypeDataDetails,
                 contentTypeData: $scope.contentTypeData,

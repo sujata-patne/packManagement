@@ -29,7 +29,12 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
- 
+        $scope.ruleType = $scope.packDetails[0].pk_rule_type;
+
+        if($scope.ruleType == 1 && $scope.displayName == 'Rule Based'){
+            $scope.displayName = 'Auto';
+        }
+
     }, function (error) {
         //console.log(error)
         toastr.success(error)
@@ -69,7 +74,13 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         console.log('test '+$scope.pctId)
         arrangeContents.saveArrangedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
-            var filename = 'search-content-'+$scope.displayName.toLowerCase()
+            
+            var filename = '';
+            if($scope.displayName == 'Rule Based'){
+                filename = 'search-content-rule';
+            }else{
+                filename = 'search-content-'+$scope.displayName.toLowerCase();
+            }   
             $state.go(filename, {pctId:$scope.pctId})
             toastr.success(data.message)
         },function(error){

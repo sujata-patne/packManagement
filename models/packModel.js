@@ -203,12 +203,20 @@ exports.getPacksByTitle = function( dbConnection,term,start_date,end_date,storeI
 
 exports.getAllAutoPacks = function(dbConnection,callback){
 
-	var query = dbConnection.query('SELECT pct.pct_id,pct.pct_nxt_rule_exe_date,pk.pk_id,pc.pc_cm_id '+
+	var query = dbConnection.query('SELECT pct.pct_id,pct.pct_pk_id,pct.pct_nxt_rule_duration,pct.pct_nxt_rule_exe_date,pk.pk_id,pc.pc_cm_id '+
 								   'FROM `icn_packs`  as pk Join `icn_pack_content_type` as pct ON (pk.pk_id = pct.pct_pk_id) '+
 								   'Join `icn_pack_content` as pc ON (pct.pct_id = pc.pc_pct_id AND pc.pc_ispublished = 1) '+
-                                   'where pk_cnt_display_opt = 463 group by pct.pct_id',
+                                   'where pk_cnt_display_opt = 463 OR (pk_cnt_display_opt = 465 AND pk_rule_type = 1) group by pct.pct_id',
 				function (err, response ) {
                		callback(err, response );
     			}
     );
+}
+
+exports.updatePackNextRuleDate = function(dbConnection,data,callback){
+									// update `icn_pack_content_type` set pct_nxt_rule_exe_date = '2015-20-12 00:00:00' where pct_id = 6
+	var query = dbConnection.query("UPDATE `icn_pack_content_type` SET  pct_nxt_rule_exe_date = ? WHERE pct_pk_id = ? AND pct_id = ?", [data.pct_nxt_rule_exe_date, data.pct_pk_id, data.pct_id], function (err, response) {
+				callback(err,response);
+	});
+
 }

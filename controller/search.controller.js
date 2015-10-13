@@ -365,7 +365,6 @@ exports.getPackSearchResult = function (req, res, next) {
                                 contentTypeData["searchWhereTitle"] = req.body.title;
                                 contentTypeData["searchWherePropertyTitle"] = req.body.property;
                                 contentTypeData["ruleName"] = req.body.rule;
-                                console.log("RULLLLEEEEE :: "+req.body.rule);
 
                                 packSearchDetails.forEach(function (metadataFields) {
                                     console.log(metadataFields);

@@ -18,7 +18,7 @@
     <div class="content">
         <div class="content-container">
             <div class="content-header">
-                <h2 class="content-header-title">{{displayName}} Search Content</h2>
+                <h2 class="content-header-title">{{displayName}} Search Content >> {{packType}}</h2>
             </div>
             <!-- /.content-header -->
             <span class="col-sm-offset-3 col-sm-9" data-ng-show="errorvisible" style="color: red;">{{error}}
@@ -92,10 +92,10 @@
                             <div class="form-group">
                                 <label for="title" class="col-md-2 col-xs-12 control-label" style="padding-top:0px; text-align: left">No. of Records</label>
                                 <div class="col-md-2 col-xs-6">
-                                    <input type="radio" name="noOfRecords" value="1" ng-model="noOfRecords" required data-ng-change="setLimit(noOfRecords)">&nbsp;<label>Limited</label>
+                                    <input type="radio" name="noOfRecords" value="1" id="radio_noOfRecords" ng-model="noOfRecords" required data-ng-change="setLimit(noOfRecords)">&nbsp;<label>Limited</label>
                                 </div>
                                 <div class="col-md-2 col-xs-6">
-                                    <input type="text" ng-pattern="/^[0-9]*$/" name="limitCount" class="form-control" placeholder="Limit" data-ng-model="limitCount" ng-required="noOfRecords == 1">
+                                    <input type="number" min="1" ng-disabled="noOfRecords == 2" ng-pattern="/^[0-9]*$/" name="limitCount" class="form-control" placeholder="Limit" data-ng-model="limitCount" ng-required="noOfRecords == 1">
                                     <span style="color: red" ng-show="searchForm.$submitted || searchForm.limitCount.$touched">
                                         <span ng-show="searchForm.limitCount.$error.required">Limit is required.</span>
                                         <span ng-show="searchForm.limitCount.$error.pattern">Insert valid limit for No. of Records.</span>
@@ -113,20 +113,20 @@
                             </div>
                             <div class="form-group" ng-show="displayName != 'Manual'">
                                 <div class="col-md-5 col-xs-12">
-                                    <input type="radio" name="ruleType" value="1" ng-model="ruleType">&nbsp;
+                                    <input type="radio" ng-disabled="packRuleType == 2" name="ruleType" value="1" id="radio_ruleType" ng-model="ruleType">&nbsp;
                                     <label class="control-label">Automic Pack Creation</label>
                                 </div>
                                 <div class="col-md-9 col-xs-12" ng-show="ruleType == 1">
                                     <label for="title" class="col-md-5 col-xs-6 control-label">Publish list post every</label>
                                     <div class="col-md-6 col-xs-5">
-                                        <input type="text" name="nextRuleDuration" class="form-control" placeholder="Days" data-ng-model="nextRuleDuration">
+                                        <input type="number" min="1" type="text" name="nextRuleDuration" class="form-control" placeholder="Days" data-ng-model="nextRuleDuration">
                                     </div>
                                     <label for="title" class="col-md-1 col-xs-1 control-label">Days</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-5 col-xs-12">
-                                    <input type="radio" name="ruleType" value="2" ng-model="ruleType">&nbsp;
+                                    <input type="radio" name="ruleType" value="2" ng-disabled="packRuleType == 1" ng-model="ruleType">&nbsp;
                                     <label class="control-label">Manual Pack Creation</label>
                                 </div>
                                 <div class="col-md-9 col-xs-12" ng-show="ruleType == 2">
@@ -147,7 +147,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-5 col-sm-7">
                                 <button type="submit" class="btn btn-primary btn-w-md" title="Save">Submit</button>
-                                <button type="reset" class="btn btn-default btn-w-md" title="Reset">Reset</button>
+                                <button type="reset" class="btn btn-default btn-w-md" title="Reset" ng-click="resetForm()">Reset</button>
                             </div>
                         </div>
                     </div>

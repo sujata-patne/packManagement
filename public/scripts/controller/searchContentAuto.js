@@ -75,6 +75,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
             "Rules_id" : data.rules[0].cm_id,
             "Adult_id" : data.adult[0].cm_id
         };
+        
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
         $scope.contentTypeData['property_release_year'] = {'releaseYearStart':'','releaseYearEnd':''};
 

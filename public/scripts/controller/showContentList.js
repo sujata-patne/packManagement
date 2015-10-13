@@ -124,7 +124,13 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.addMoreSearchContents = function () {
         showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
-            var filename = 'search-content-'+$scope.displayName.toLowerCase()
+            var filename = '';
+            if($scope.displayName == 'Rule Based'){
+                filename = 'search-content-rule';
+            }else{
+                filename = 'search-content-'+$scope.displayName.toLowerCase();
+            } 
+            // var filename = 'search-content-'+$scope.displayName.toLowerCase()
             $state.go(filename, {pctId:$scope.pctId}) 
         },function(error){
             console.log(error)
@@ -133,7 +139,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.showPublishContents = function (displayName) {
-        if(displayName == 'Auto'){
+        if(displayName == 'Auto' || $scope.ruleAuto == true){
             angular.forEach($scope.searchContentList,function(value){
                 $scope.contents.push(value.cm_id);
             });
