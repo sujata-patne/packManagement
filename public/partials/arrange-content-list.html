@@ -50,11 +50,16 @@ form .progress {
                                         <th class="text-center">Actor/Actress</th>
                                         <th ng-show="displayName != 'Auto'" class="text-center">Arrange</th>
                                         <th ng-show="displayName != 'Auto'" class="text-center">Upload <br/> [Max 2 images per content]</th>
+                                        <th ng-show="displayName == 'Auto'" class="text-center">
+                                            Thumbnail
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- {{searchContentList}} -->
                                     <tr data-ng-repeat="content in searchContentList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
                                         <td class="col-md-1 col-xs-1 text-center">{{$index+1+(listcurrentPage*listpageSize)}}&nbsp;&nbsp;<span class="text-center" ng-show="published[content.cm_id]"><i class="fa fa-check" style="color:green"></i></span></td>
+
                                         <td class="col-md-2 col-xs-2">{{content.cm_title}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.property}}</td>
                                         <td class="col-md-1 col-xs-1">{{content.releaseYear}}</td>
@@ -75,7 +80,7 @@ form .progress {
                                                   <div style="margin-top:8px" ng-show="content.uploadedFiles.split(',').length > 0" ng-init="prev_uploaded_files = content.uploadedFiles.split(',') ">
                                                         <span ng-repeat="p in prev_uploaded_files ">
                                                             <a class="fancybox grouped_elements" href="{{p}}" title="{{p}}" >
-                                                                <img src="{{p}}" width="20" height="20"/>
+                                                                <img src="{{p}}" width="50" height="50"/>
                                                             </a>
                                                         </span>
                                                   </div>        
@@ -94,6 +99,11 @@ form .progress {
                                                         
                                                   </span>
 
+                                        </td>
+                                        <td class="col-md-1 col-xs-1 text-center" ng-show="displayName == 'Auto'">
+                                            <span ng-if="content.cm_thumb_url != ''">
+                                                    <img src="http://dailymagic.in{{content.cm_thumb_url}}" width="50" height="50" />
+                                            </span>
                                         </td>
                                     </tr>
                                     <tr ng-hide="searchContentList.length > 0">

@@ -4,7 +4,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     $scope.pctId = $stateParams.pctId;
     $scope.success = "";
-    $scope.limitCount = 5;
+    $scope.limitCount = 10;
     $scope.successvisible = false;
     $scope.error = "";
     $scope.errorvisible = false;
@@ -179,30 +179,34 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                 ruleType: $scope.ruleType,                
                 nextRuleDuration: $scope.nextRuleDuration
             }
-            ngProgress.start();
-            Search.saveSearchCriteria(searchData, function (data) {
-                if (data.success) {
-                    // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
-                    var params = { pctId: $scope.pctId,
-                        limitCount: $scope.limitCount,
-                        action: $scope.action,
-                        title: $scope.searchWhereTitle,
-                        property: $scope.searchWherePropertyTitle,
-                        rule: $scope.Rule_name,
-                        ruleType:$scope.ruleType
-                    }
-                    $state.go('show-content-list', params)
-                    $scope.successvisible = true;
-                }
-                else {
-                    toastr.error(error);
-                    //$scope.error = data.message;
-                    $scope.errorvisible = true;
-                }
-                ngProgress.complete();
-            }, function (error) {
-                toastr.error(error)
-            });
+
+
+            if(Object.keys($scope.contentTypeDataDetails).length > 0){
+                    ngProgress.start();
+                    Search.saveSearchCriteria(searchData, function (data) {
+                        if (data.success) {
+                            // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
+                            var params = { pctId: $scope.pctId,
+                                limitCount: $scope.limitCount,
+                                action: $scope.action,
+                                title: $scope.searchWhereTitle,
+                                property: $scope.searchWherePropertyTitle,
+                                rule: $scope.Rule_name,
+                                ruleType:$scope.ruleType
+                            }
+                            $state.go('show-content-list', params)
+                            $scope.successvisible = true;
+                        }
+                        else {
+                            toastr.error(error);
+                            //$scope.error = data.message;
+                            $scope.errorvisible = true;
+                        }
+                        ngProgress.complete();
+                    }, function (error) {
+                        toastr.error(error)
+                    });
+            }
         }
     }
 });
