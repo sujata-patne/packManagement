@@ -81,10 +81,10 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
         
          if(data.success){
                 $scope.getResultData(data);
-                $scope.success = data.message;
+                toastr.success(data.message);
                 $scope.successvisible = true;
          }else{
-                $scope.error = data.message;
+                toastr.error(data.message);
                 $scope.errorvisible = true;
          }
     }
@@ -128,11 +128,11 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
                         Packs.blockUnBlockContentType(data, function (data) {
                             if (data.success) {
                                 $scope.getContentTypesByPack();
-                                $scope.success = data.message;
+                                toastr.success(data.message);
                                 $scope.successvisible = true;
                             }
                             else {
-                                $scope.error = data.message;
+                                toastr.error(data.message);
                                 $scope.errorvisible = true;
                             }
                             ngProgress.complete();
