@@ -34,6 +34,11 @@ exports.getData = function (req, res, next) {
                             }else{
                                 callback(null);
                             }
+                        },
+                        PackageTotal: function (callback) {
+                            packManager.getPackageTotal( connection_ikon_cms, {PackId:req.body.packId, StoreId:req.session.pack_StoreId}, function(err,PackageTotal){
+                                callback(err, PackageTotal);
+                            });
                         }
                     },
                      function (err, results) {
@@ -91,31 +96,34 @@ exports.blockUnBlockContentType = function (req, res, next) {
 
 exports.getContentTypesByPack = function (req, res, next) {
     try {   
-            if (req.session && req.session.pack_UserName) {
-                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                    async.parallel({
-                         PackContentTypes: function (callback) {
-
-                            packManager.getContentTypesByPackId( connection_ikon_cms, req.body.packId, function(err,PackContentTypes){
-                                callback(err, PackContentTypes);
-                            });
-                        }
+        if (req.session && req.session.pack_UserName) {
+            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                async.parallel({
+                    PackContentTypes: function (callback) {
+                        packManager.getContentTypesByPackId( connection_ikon_cms, req.body.packId, function(err,PackContentTypes){
+                            callback(err, PackContentTypes);
+                        });
                     },
-                     function (err, results) {
-                            if (err) {
-                                connection_ikon_cms.release();
-                                res.status(500).json(err.message);
-                                console.log(err.message);
-                            } else {
-                                connection_ikon_cms.release();
-                                res.send(results);
-                            }
-                      });
-                   });
-            }else{
-                
-                res.redirect('/accountlogin');
-            }
+                    PackageTotal: function (callback) {
+                        packManager.getPackageTotal( connection_ikon_cms, {PackId:req.body.packId, StoreId:req.session.pack_StoreId}, function(err,PackageTotal){
+                           callback(err, PackageTotal);
+                        });
+                    }
+                },
+                function (err, results) {
+                    if (err) {
+                        connection_ikon_cms.release();
+                        res.status(500).json(err.message);
+                        console.log(err.message);
+                    } else {
+                        connection_ikon_cms.release();
+                        res.send(results);
+                    }
+                });
+            });
+        }else{
+            res.redirect('/accountlogin');
+        }
         }catch(err){
                  res.status(500).json(err.message);
       }      

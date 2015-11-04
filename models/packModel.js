@@ -47,6 +47,14 @@ exports.getPacksForStore = function(dbConnection,storeId,callback){
 	            callback(err, response);
         });
 }
+exports.getPackageTotal = function(dbConnection,data,callback){
+		dbConnection.query("SELECT count(sp_pkg_id) as pkgCount FROM icn_store_package AS isp " +
+					" JOIN icn_packs AS ip ON ip.pk_id = isp.sp_pk_id "+
+					" WHERE isp.sp_st_id = ? AND isp.sp_pk_id = ? ",[data.StoreId,data.PackId],function (err, response) {
+	            callback(err, response);
+        });
+}
+
 
 exports.savePack = function(dbConnection,data,callback){
 	var query = dbConnection.query("INSERT INTO `icn_packs` SET ? ",data, function (err, response) {

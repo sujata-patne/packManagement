@@ -41,6 +41,8 @@ myApp.controller('addPackCtrl', function ($scope, $window, $http, $stateParams,$
         }
     	$scope.ContentTypes = data.ContentTypes;
     	$scope.PackTypes = data.PackTypes;
+        $scope.PackageTotal = data.PackageTotal[0];
+
     },function(error){
         console.log(error);
     });

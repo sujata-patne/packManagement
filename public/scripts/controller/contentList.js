@@ -66,6 +66,7 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
             $scope.pack_added_name = data.PackContentTypes[0].pk_name;
             $scope.type_added_name = data.PackContentTypes[0].type; 
             $scope.pack_grid = data.PackContentTypes;
+            $scope.PackageTotal = data.PackageTotal[0];
          });
     }
 
