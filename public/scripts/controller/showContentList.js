@@ -35,12 +35,14 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property, rule: $scope.rule}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
-
+console.log('$scope.packDetails')
+console.log($scope.packDetails)
         $scope.contentType = $scope.packDetails[0].type;
         $scope.parentType = $scope.packDetails[0].parent_type;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
+        $scope.packId = $scope.packDetails[0].pk_id;
         $scope.searchContentList.forEach(function(value){
             $scope.removedContent.push(value.cm_id);
         });
@@ -122,7 +124,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     }
 
     $scope.addMoreSearchContents = function () {
-        showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+        showContents.showArrangeContents({pctId:$scope.pctId, packId:$scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
             var filename = '';
             if($scope.displayName == 'Rule Based'){
@@ -144,7 +146,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
                 $scope.contents.push(value.cm_id);
             });
             if($scope.contents.length > 0){
-                showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+                showContents.showPublishContents({pctId:$scope.pctId, packId:$scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                         //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                     $timeout(function(){
                         $state.go('arrange-content-list', {pctId:$scope.pctId})
@@ -159,7 +161,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
             }
         }else{
             if($scope.contents.length > 0){
-                showContents.showPublishContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+                showContents.showPublishContents({pctId:$scope.pctId, packId: $scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                     //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                     $timeout(function(){
                         $state.go('arrange-content-list', {pctId:$scope.pctId})
@@ -178,7 +180,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.showArrangeContents = function () {
 
         if($scope.contents.length > 0){
-            showContents.showArrangeContents({pctId:$scope.pctId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+            showContents.showArrangeContents({pctId:$scope.pctId, packId:$scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                 //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                 $timeout(function(){
                     $state.go('arrange-content-list', {pctId:$scope.pctId})

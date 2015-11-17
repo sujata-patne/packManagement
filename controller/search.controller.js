@@ -16,17 +16,17 @@ exports.getSavedContents = function (req, res, next) {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.parallel({
-                        packDetails: function (callback) {
-                            SearchModel.getPackDetails( connection_ikon_cms,req.body.pctId, function(err,packDetails){
-                                callback(err, packDetails);
-                            });
-                        },
-                        packSearchDetails: function (callback) {
-                            SearchModel.getPackSearchDetails( connection_ikon_cms,req.body.pctId, function(err,packSearchDetails){
-                                callback(err, packSearchDetails);
-                            });
-                        },
-                        packContentsSequence: function (callback) {
+                    packDetails: function (callback) {
+                        SearchModel.getPackDetails( connection_ikon_cms,req.body.pctId, function(err,packDetails){
+                            callback(err, packDetails);
+                        });
+                    },
+                    packSearchDetails: function (callback) {
+                        SearchModel.getPackSearchDetails( connection_ikon_cms,req.body.pctId, function(err,packSearchDetails){
+                            callback(err, packSearchDetails);
+                        });
+                    },
+                    packContentsSequence: function (callback) {
                         SearchModel.getPackContents(connection_ikon_cms, req.body.pctId, function (err, packContents) {
                             var data = {};
                             packContents.forEach(function(value,key){
@@ -367,7 +367,6 @@ exports.getPackSearchResult = function (req, res, next) {
                                 contentTypeData["ruleName"] = req.body.rule;
 
                                 packSearchDetails.forEach(function (metadataFields) {
-                                    console.log(metadataFields);
                                     contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
 
                                     if(metadataFields.pcr_start_year != '0000' || metadataFields.pcr_end_year != '0000'){

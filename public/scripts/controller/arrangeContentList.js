@@ -29,6 +29,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
         $scope.displayName = $scope.packDetails[0].displayName;
         $scope.packName = $scope.packDetails[0].pk_name;
+        $scope.packId = $scope.packDetails[0].pk_id;
         $scope.ruleType = $scope.packDetails[0].pk_rule_type;
 
         if($scope.ruleType == 1 && $scope.displayName == 'Rule Based'){
@@ -72,7 +73,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
     $scope.addMoreSearchContents = function () {
         $scope.arrangeContent();
         console.log('test '+$scope.pctId)
-        arrangeContents.saveArrangedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
+        arrangeContents.saveArrangedContents({pctId:$scope.pctId, packId:$scope.packId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             //$window.location.href = "/#/search-content/"+$scope.pctId;
             
             var filename = '';
@@ -91,7 +92,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
 
     $scope.savePublishedContents = function () {
         $scope.arrangeContent(); 
-        arrangeContents.savePublishedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
+        arrangeContents.savePublishedContents({pctId:$scope.pctId, packId:$scope.packId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             toastr.success(data.message)
         },function(error){
             console.log(error)
@@ -101,7 +102,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
 
     $scope.saveArrangedContents = function(){
         $scope.arrangeContent();
-        arrangeContents.saveArrangedContents({pctId:$scope.pctId, arrangedContentList:$scope.arrangedContentList}, function (data) {
+        arrangeContents.saveArrangedContents({pctId:$scope.pctId, packId:$scope.packId, arrangedContentList:$scope.arrangedContentList}, function (data) {
             if( data.error === true ) {
             	toastr.error(data.message);
             }else {

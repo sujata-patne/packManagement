@@ -11,6 +11,11 @@ exports.saveArrangedContents = function (req, res, next) {
                 var count = req.body.arrangedContentList[contentId];
                 var unique = [];
                 var duplicate = [];
+
+                if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
+                    updatePackData(connection_ikon_cms, req);
+                }
+
                 for (var contentId in req.body.arrangedContentList) { 
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
@@ -61,6 +66,10 @@ exports.savePublishedContents = function (req, res, next) {
                 
                 var count = req.body.arrangedContentList[contentId];
 
+                if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
+                    updatePackData(connection_ikon_cms, req);
+                }
+
                 for (var contentId in req.body.arrangedContentList) {
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
@@ -87,6 +96,24 @@ exports.savePublishedContents = function (req, res, next) {
     }
 }
 
+
+function updatePackData( connection_ikon_cms, req ){
+    var data = {
+        pk_id: req.body.packId,
+        pk_modified_on: new Date(),
+        pk_modified_by: req.session.pack_UserName
+    }
+console.log('updatePackData in arrange')
+console.log(data)
+    SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
+        if(err){
+            connection_ikon_cms.release();
+            res.status(500).json(err.message);
+            return false;
+        }
+    });
+    return true;
+}
 
 function addEditContents(connection_ikon_cms,data,req){
 
