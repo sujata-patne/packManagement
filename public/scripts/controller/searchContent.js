@@ -58,22 +58,22 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.Adult = angular.copy(data.adult);
 
         $scope.list = {
-            "Keywords_id": data.keywords[0] ? data.keywords[0].cm_id : "",
-            "Language_id": data.languages[0] ? data.languages[0].cm_id : "",
-            "Genres_id": data.genres[0].cm_id,
-            "Sub_Genres_id": data.subgenres[0].cm_id,
-            "Mood_id": data.mood[0].cm_id,
-            "Photographer_id": data.photographer[0].cm_id,
-            "Vendor_id": data.vendor[0].cm_id,
-            "Property_id": data.property[0].cm_id,
-            "Actor_Actress_id": data.actor_actress[0].cm_id,
-            "Singer_id": data.singers[0].cm_id,
-            "Music_Director_id": data.music_directors[0].cm_id,
-            "Content_Title_id" : data.content_title[0].cm_id,
-            "Content_Ids_id" :data.content_id[0].cm_id,
-            "property_release_year_id" : data.property_release_year[0].cm_id,
-            "Rules_id" : data.rules[0].cm_id,
-            "Adult_id" : data.adult[0].cm_id
+            "Keywords_id": (data.keywords[0]) ? data.keywords[0].cm_id : "",
+            "Language_id": (data.languages[0]) ? data.languages[0].cm_id : "",
+            "Genres_id": (data.genres[0]) ? data.genres[0].cm_id:"",
+            "Sub_Genres_id": (data.subgenres[0])? data.subgenres[0].cm_id:"",
+            "Mood_id": (data.mood[0])? data.mood[0].cm_id:"",
+            "Photographer_id": (data.photographer[0])? data.photographer[0].cm_id:"",
+            "Vendor_id": (data.vendor[0])? data.vendor[0].cm_id:"",
+            "Property_id": (data.property[0])? data.property[0].cm_id:"",
+            "Actor_Actress_id": (data.actor_actress[0])? data.actor_actress[0].cm_id:"",
+            "Singer_id": (data.singers[0])? data.singers[0].cm_id:"",
+            "Music_Director_id": (data.music_directors[0])? data.music_directors[0].cm_id:"",
+            "Content_Title_id" : (data.content_title[0])? data.content_title[0].cm_id:"",
+            "Content_Ids_id" : (data.content_id[0])? data.content_id[0].cm_id:"",
+            "property_release_year_id" : (data.property_release_year[0])? data.property_release_year[0].cm_id:"",
+            "Rules_id" : (data.rules[0])? data.rules[0].cm_id:"",
+            "Adult_id" : (data.adult[0])? data.adult[0].cm_id:""
         };
 
         /*Form Data*/

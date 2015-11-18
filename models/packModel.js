@@ -50,7 +50,7 @@ exports.getPacksForStore = function(dbConnection,storeId,callback){
 exports.getPackageTotal = function(dbConnection,data,callback){
 		dbConnection.query("SELECT count(sp_pkg_id) as pkgCount FROM icn_store_package AS isp " +
 					" JOIN icn_packs AS ip ON ip.pk_id = isp.sp_pk_id "+
-					" WHERE isp.sp_st_id = ? AND isp.sp_pk_id = ? ",[data.StoreId,data.PackId],function (err, response) {
+					" WHERE isp.sp_is_active = 1 AND ISNULL(isp.sp_crud_isactive) AND isp.sp_st_id = ? AND isp.sp_pk_id = ? ",[data.StoreId,data.PackId],function (err, response) {
 	            callback(err, response);
         });
 }
