@@ -24,7 +24,7 @@ exports.showArrangeContents = function (req, res, next) {
                                 pc_pct_id: parseInt(req.body.pctId),
                                 pc_cm_id: selectedContent,
                             }
-                            addEditContents( connection_ikon_cms,data );
+                            addEditContents( connection_ikon_cms,data,req );
                             callback(null, null);
                         });
                         callback(null, null);
@@ -77,7 +77,7 @@ exports.showPublishContents = function (req, res, next) {
                                 pc_cm_id: selectedContent,
                                 pc_ispublished: 1
                             }
-                            addEditContents( connection_ikon_cms,data );
+                            addEditContents( connection_ikon_cms,data,req );
                             callback(null, null);
                         });
                         callback(null, null);
@@ -122,7 +122,7 @@ exports.showArrangeContents123 = function (req, res, next) {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: req.body.selectedContentList[contentId],
                     }
-                    addEditContents(connection_ikon_cms,data);
+                    addEditContents(connection_ikon_cms,data,req);
                 }
                 connection_ikon_cms.release();
                 res.send({
@@ -154,7 +154,7 @@ exports.showPublishContents123 = function (req, res, next) {
                         pc_cm_id: req.body.selectedContentList[contentId],
                         pc_ispublished: 1
                     }
-                    addEditContents(connection_ikon_cms,data);
+                    addEditContents(connection_ikon_cms,data,req);
                 }
                 connection_ikon_cms.release();
                 res.send({
@@ -376,12 +376,14 @@ function deleteUnwantedContents123(connection_ikon_cms,pctId,data){
     })
 }
 
-function addEditContents(connection_ikon_cms,data){
+function addEditContents(connection_ikon_cms,data,req){
     SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
         if (err) {
             connection_ikon_cms.release();
             res.status(500).json(err.message);
         }else {
+            data['pc_modified_on'] =  new Date();
+            data['pc_modified_by'] =  req.session.pack_UserName;
             if (response) {
                 SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
@@ -390,7 +392,8 @@ function addEditContents(connection_ikon_cms,data){
                     }
                 })
             } else {
-                console.log(data)
+                data['pc_created_on'] = new Date();
+                data['pc_created_by'] = req.session.pack_UserName;
                 SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();

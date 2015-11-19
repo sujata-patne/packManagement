@@ -132,8 +132,22 @@ exports.searchContentsExist = function(dbConnection, data, callback){
 }
 exports.insertSearchContents = function(dbConnection, data, callback){
     var query = dbConnection.query("INSERT INTO `icn_pack_content` SET ? ",data, function (err, response) {
-        callback(err,response);
-    });
+        if (err) {
+            dbConnection.release();
+            res.status(500).json(err.message);
+        } else {
+            dbConnection.query("SELECT pct.* FROM icn_pack_content_type AS pct WHERE pct_id = ? AND ISNULL(pct_crud_isactive)  ",
+                [data.pc_pct_id],function (err, result) {
+                    if(result.length > 0){
+                        dbConnection.query("UPDATE `icn_pack_content_type` SET pct_modified_on = NOW() WHERE pct_id = ? ",[data.pc_pct_id], function (err, data) {
+
+                        })
+                    }
+                });
+
+            callback(err,response);
+        }
+    })
 }
 exports.saveSearchContents = function(dbConnection, data, callback){
     //console.log(data.pc_pct_id +' : '+ data.pc_cm_id)
@@ -207,11 +221,10 @@ exports.updateSearchContents = function(dbConnection, data, callback){
             res.status(500).json(err.message);
         } else {
             var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_modified_on = NOW() WHERE pct_id = ? ",[data.pc_pct_id], function (err, response) {
-                        if(err){
-
-                        }else{
-
-                        }
+                if(err){
+                    dbConnection.release();
+                    res.status(500).json(err.message);
+                }
             });
             callback(err,result);
         }

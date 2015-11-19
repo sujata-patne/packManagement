@@ -8,14 +8,12 @@ exports.getData = function (req, res, next) {
             if (req.session && req.session.pack_UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     async.parallel({
-                         ContentTypes: function (callback) {
-
+                        ContentTypes: function (callback) {
                             packManager.getContentTypes( connection_ikon_cms, req.session.pack_StoreId, function(err,ContentTypes){
                                 callback(err, ContentTypes);
                             });
                         }, 
                         StorePacks: function (callback) {
-
                             packManager.getPacksForStore( connection_ikon_cms, req.session.pack_StoreId, function(err,StorePacks){
                                 callback(err, StorePacks);
                             });
@@ -24,7 +22,6 @@ exports.getData = function (req, res, next) {
                             packManager.getPackTypes( connection_ikon_cms, function(err,PackTypes){
                                 callback(err, PackTypes);
                             });
-                            
                         },
                         PackDetails: function (callback) {
                             if(req.body.state == 'edit-pack'){
@@ -41,16 +38,16 @@ exports.getData = function (req, res, next) {
                             });
                         }
                     },
-                     function (err, results) {
-                            if (err) {
-                                connection_ikon_cms.release();
-                                res.status(500).json(err.message);
-                                console.log(err.message)
-                            } else {
-                                connection_ikon_cms.release();
-                                res.send(results);
-                            }
-                      });
+                    function (err, results) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.status(500).json(err.message);
+                            console.log(err.message)
+                        } else {
+                            connection_ikon_cms.release();
+                            res.send(results);
+                        }
+                    });
                    });
             }else{
                 

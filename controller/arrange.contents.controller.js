@@ -25,7 +25,7 @@ exports.saveArrangedContents = function (req, res, next) {
                         duplicate.push( parseInt( req.body.arrangedContentList[contentId] ) );
                     }
                     if(duplicate.length == 0){
-                        addEditContents(connection_ikon_cms,data);
+                        addEditContents(connection_ikon_cms,data,req);
                     }
 
                 }
@@ -61,7 +61,7 @@ exports.savePublishedContents = function (req, res, next) {
                 
                 var count = req.body.arrangedContentList[contentId];
 
-                for (var contentId in req.body.arrangedContentList) { 
+                for (var contentId in req.body.arrangedContentList) {
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: parseInt(contentId),
@@ -69,7 +69,7 @@ exports.savePublishedContents = function (req, res, next) {
                         pc_ispublished: 1
                     }
                     //console.log(data)
-                    addEditContents(connection_ikon_cms,data);
+                    addEditContents(connection_ikon_cms,data,req);
                 }
                 connection_ikon_cms.release();
                 res.send({
@@ -88,13 +88,15 @@ exports.savePublishedContents = function (req, res, next) {
 }
 
 
-function addEditContents(connection_ikon_cms,data){
+function addEditContents(connection_ikon_cms,data,req){
 
     SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
         if (err) {
             connection_ikon_cms.release();
             res.status(500).json(err.message);
         }else {
+            data['pc_modified_on'] =  new Date();
+            data['pc_modified_by'] =  req.session.pack_UserName;
             if (response) {
                 SearchModel.updateSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
@@ -103,6 +105,8 @@ function addEditContents(connection_ikon_cms,data){
                     }
                 })
             } else {
+                data['pc_created_on'] = new Date();
+                data['pc_created_by'] = req.session.pack_UserName;
                 SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();
