@@ -83,16 +83,17 @@
                                     <td><small><i>Content Count :</i></small><br/>
                                         <span ng-if="i.content_count > 0" class="padding-left-25pc"><b>{{i.content_count}}</b></span><i ng-if="i.content_count == 0" class="fa fa-spinner padding-left-25pc"></i></td>
                                     <td><small ><i>List Last updated on :</i></small><br/>
-                                        <span ng-if="i.pct_modified_on != ''" ><b>{{i.pct_modified_on | date:'dd-MMM-yyyy'}}</b></span><i ng-if="i.pct_modified_on == ''" class="fa fa-spinner padding-left-25pc"></i></td>
+                                        <span ng-if="i.pct_modified_on != ''" >
+                                            <b><i ng-if="i.content_count == 0" class="fa fa-spinner padding-left-25pc"></i>
+                                                <span ng-if="i.content_count > 0">{{i.pct_modified_on | date:'dd-MMM-yyyy'}}</span></b>
+                                        </span>
                                     <td>
                                         <div class="row">
-                                                <div ng-hide="i.pct_is_active == 0" class="col-md-3 col-xs-4"><a href="" data-ng-click="EditPack(i.pct_id,type_added_name)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
-                                                 <div class="col-md-3 col-xs-4" data-ng-if="i.pct_is_active == 1" class="text-right"><a href="" title="Click To Block" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
-                                                <div class="col-md-3 col-xs-4" 
-                                                data-ng-if="i.pct_is_active == 0" class="text-right"><a href="" title="Click To UnBlock" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
-                                               <div ng-hide="i.pct_is_active == 0" class="col-md-3 col-xs-4"><a href="" data-ng-click="showArrangeList(i.pct_id)"><i class="fa fa-eye" title="View List"></i></a></div>
-                                            </div>
-                                        
+                                            <div ng-hide="i.pct_is_active == 0" class="col-md-3 col-xs-4"><a href="" data-ng-click="EditPack(i.pct_id,type_added_name)" title="Edit"><i class="fa fa-edit" title="Edit"></i></a></div>
+                                            <div class="col-md-3 col-xs-4" data-ng-if="i.pct_is_active == 1" class="text-right"><a href="" title="Click To Block" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right red" style="color: green;"></i></a></div>
+                                            <div class="col-md-3 col-xs-4" data-ng-if="i.pct_is_active == 0" class="text-right"><a href="" title="Click To UnBlock" data-ng-click="BlockUnBlockContentType(i.pk_id,i.cd_id,i.pct_is_active)"><i class="fa fa-ban text-right green" style="color: red;"></i></a></div>
+                                            <div ng-hide="i.pct_is_active == 0" class="col-md-3 col-xs-4"><a href="" data-ng-click="showArrangeList(i.pct_id)"><i class="fa fa-eye" title="View List"></i></a></div>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>

@@ -394,6 +394,8 @@ function addEditContents(connection_ikon_cms,data,req){
             } else {
                 data['pc_created_on'] = new Date();
                 data['pc_created_by'] = req.session.pack_UserName;
+                data['pc_modified_on'] =  new Date();
+                data['pc_modified_by'] =  req.session.pack_UserName;
                 SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();

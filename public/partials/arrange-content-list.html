@@ -76,7 +76,6 @@ form .progress {
                                                   <button type="submit" ng-click="uploadSubmit($index,content.pc_cm_id)">
                                                        Upload
                                                   </button>
-                                                    
                                                   <div style="margin-top:8px" ng-show="content.uploadedFiles.split(',').length > 0" ng-init="prev_uploaded_files = content.uploadedFiles.split(',') ">
                                                         <span ng-repeat="p in prev_uploaded_files ">
                                                             <a class="fancybox grouped_elements" href="{{p}}" title="{{p}}" >
