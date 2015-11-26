@@ -39,12 +39,9 @@ exports.getPacksStartsWith = function (req, res, next) {
     try {   
             if (req.session && req.session.pack_UserName) {
                 mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                  console.log("in 1");
                     async.parallel({
                            Packs: function (callback) {
                               packManager.getAllPacksForListStartsWith( connection_ikon_cms,req.body.term, req.session.pack_StoreId, function(err,Packs){
-                                  console.log('in 2');
-                                  console.log(Packs);
                                   callback(err, Packs);
                               });
                             }

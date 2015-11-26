@@ -110,7 +110,6 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.searchWherePropertyTitle = $scope.searchWhere[0].cd_id;
 
     }, function (error) {
-        //console.log(error)
         toastr.error(error)
     });
     $scope.getContentData = function () { };

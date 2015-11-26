@@ -33,10 +33,7 @@ function autoPublish(){
 				    (function() {
 				       var j = i;
 				       process.nextTick(function() {
-							// console.log(PackDetails[j].pct_id);
-							console.log('checking for date..');
 							var someDate = moment(PackDetails[j].pct_nxt_rule_exe_date);
-							console.log(PackDetails[j]);
 							var isToday = someDate.startOf('day').isSame(moment().startOf('day'));
 							if(isToday){
 								async.waterfall([
@@ -118,24 +115,19 @@ function autoPublish(){
 												    				if(err){
 
 												    				}else{
-												    					console.log("DELETED contents!!");
 												    					var insertData = {
 												    						pc_pct_id : PackDetails[j].pct_id,
 												    						pc_cm_id :  results.searchContentList[x].cm_id,
 												    						pc_ispublished : 1
 												    					}
 
-												    					console.log('::::'+PackDetails[j].pct_pk_id);
 												    					SearchModel.savePackContentForCron( connection_ikon_cms, insertData, function(err,resp){
 												    						if(err){
 												    							connection_ikon_cms.release();
 												    						}else{
-												    								console.log('inserted contents')
 												    								var now = moment(new Date());
    																					var nxt_rule_date = now.add(PackDetails[j].pct_nxt_rule_duration,'days').format('YYYY-MM-DD');
 
-   																					console.log('NEXT DATE::: '+nxt_rule_date);
-   																					console.log('updating next rule date');
    																					var udata ={
    																						pct_nxt_rule_exe_date : nxt_rule_date,
    																						pct_pk_id : PackDetails[j].pct_pk_id,

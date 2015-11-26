@@ -11,8 +11,6 @@ exports.showArrangeContents = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.series([
                     function (callback) {
-                        console.log('showArrangeContents req.body.packId')
-                        console.log(req.body.packId)
                         if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
                             updatePackData(connection_ikon_cms, req);
                         }
@@ -69,8 +67,6 @@ exports.showPublishContents = function (req, res, next) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                 async.series([
                     function (callback) {
-                        console.log('showPublishContents req.body.packId')
-                        console.log(req.body)
                         if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
                             updatePackData(connection_ikon_cms, req);
                         }
@@ -184,8 +180,6 @@ function deleteUnwantedContents(connection_ikon_cms,pctId,data){
                 deleteIds.push( parseInt( deletedContentId )  );
             }
         });
-        console.log( " ====== published " + publishedIds );
-        console.log( " ====== deleteIds " + deleteIds );
 
         if( publishedIds.length > 0 ) {
             SearchModel.deletePackContentsByIds(connection_ikon_cms, pctId, publishedIds, function (err, result) {
@@ -203,72 +197,7 @@ function deleteUnwantedContents(connection_ikon_cms,pctId,data){
                 }
             });
         }
-
     });
-    /*SearchModel.getUnwantedPackContents(connection_ikon_cms, pctId, data, function (err, result) {
-     console.log( " result");
-     console.log( result);
-     if (err) {
-     connection_ikon_cms.release();
-     res.status(500).json(err.message);
-     }else {
-     if(result[0].contents != null ) {
-     async.parallel({
-     deletedContent: function() {
-     var contentList = result[0].contents.split(',')
-     .map(function (element) {
-     return element
-     });
-     var count = contentList.length;
-     deleteContent(0);
-     function deleteContent(cnt) {
-     var j = cnt;
-     var data = {
-     pc_pct_id: pctId,
-     pc_cm_id: contentList[j]
-     };
-     console.log('data  ');
-     console.log(data);
-
-     SearchModel.isPublishedContents(connection_ikon_cms, data, function (err, response) {
-     if (err) {
-     connection_ikon_cms.release();
-     res.status(500).json(err.message);
-     } else {
-     if (response) {
-     SearchModel.deletePackContents(connection_ikon_cms, data, function (err, result) {
-     if (err) {
-     connection_ikon_cms.release();
-     res.status(500).json(err.message);
-     }
-     });
-     } else {
-     SearchModel.deleteUnwantedPackContents(connection_ikon_cms, data, function (err, response) {
-     if (err) {
-     connection_ikon_cms.release();
-     res.status(500).json(err.message);
-     }
-     });
-     }
-     cnt = cnt + 1;
-     if (cnt < count) {
-     deleteContent(cnt);
-     }
-     }
-     });
-
-     }
-     }
-     }, function(err) {
-
-     }
-
-     }
-
-     }
-
-     });
-     return true;*/
 }
 
 function updatePackData( connection_ikon_cms, req ){
@@ -277,8 +206,6 @@ function updatePackData( connection_ikon_cms, req ){
         pk_modified_on: new Date(),
         pk_modified_by: req.session.pack_UserName
     }
-    console.log('updatePackData in show')
-    console.log(data)
 
     SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
         if(err){

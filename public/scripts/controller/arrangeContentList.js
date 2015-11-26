@@ -37,7 +37,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
         }
 
     }, function (error) {
-        //console.log(error)
         toastr.success(error)
     });
 
@@ -150,7 +149,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window, $http, $st
 
                             file.upload.progress(function (evt) {
                                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                                // console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
                                 $("#"+index).html("Uploaded: "+progressPercentage+"%");
                                 $scope.fileUploads[index].progress = Math.min(100, parseInt(100.0 * 
                                                        evt.loaded / evt.total));

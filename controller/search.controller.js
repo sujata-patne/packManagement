@@ -275,7 +275,6 @@ exports.saveSearchCriteria = function (req, res, next) {
 
                 /* Add/update pack search criteria fields with values */
                 var count = req.body.contentTypeDataDetails.length;
-                console.log(count)
                 SearchModel.existSearchCriteriaField(connection_ikon_cms, req.body.pctId, function (err, response) {
                     if (err) {
                         connection_ikon_cms.release();
@@ -512,7 +511,6 @@ exports.UploadFile =  function (req, res, next) {
                                             }else{
                                                 template_id = results.MaxContentFilesId;
                                             }
-                                             
 
                                              var data = {
                                                 cf_id: template_id + parseInt(Date.now().toString().slice(-2)),
@@ -523,8 +521,7 @@ exports.UploadFile =  function (req, res, next) {
                                                 cf_template_id : results.MaxTemplateGroupId
                                              }
 
-                                       console.log(data);
-                                       var content_files_inserted = saveContentFiles( connection_ikon_cms, data );      
+                                       var content_files_inserted = saveContentFiles( connection_ikon_cms, data );
 
                                        if(content_files_inserted == true){
                                             console.log("File uploaded!");

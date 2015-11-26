@@ -16,7 +16,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
 
-    //console.log( $scope.Wallpaper );
     $scope.contentTypeData = {};
     $scope.contentTypeDataDetails = [];
 
@@ -144,7 +143,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.searchWherePropertyTitle = $scope.searchWhere[0].cd_id;
 
     },function(error){
-        //console.log(error)
         toastr.success(error)
     });
     $scope.getContentData = function(){};

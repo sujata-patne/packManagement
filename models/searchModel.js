@@ -120,7 +120,6 @@ exports.saveSearchCriteria = function(dbConnection,data,callback){
     });
 }
 exports.searchContentsExist = function(dbConnection, data, callback){
-    //console.log(data.pc_pct_id +" : "+ data.pc_cm_id)
     dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND ISNULL(pc_crud_isactive)  ",
         [data.pc_pct_id, data.pc_cm_id],function (err, result) {
             if(result.length > 0){
@@ -179,7 +178,6 @@ exports.isDeletedContents = function(dbConnection, data, callback) {
     })
 }
 exports.isPublishedContents = function(dbConnection, data, callback) {
-    //console.log("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = "+data.pc_pct_id+" AND pc_cm_id IN ("+data.pc_cm_id+") AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ")
     dbConnection.query("SELECT pc.* FROM icn_pack_content AS pc WHERE pc_pct_id = ? AND pc_cm_id = ? AND pc_ispublished IS NOT NULL AND ISNULL(pc_crud_isactive) ",
     [data.pc_pct_id, data.pc_cm_id], function (err, result) {
         if (err) {
@@ -278,16 +276,9 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
 }
 
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
-    // console.log('search data :::');
-    // console.log(searchData);
-    // console.log('**********************************');
-
-
-
 
     var whereStr = ' ISNULL(cmd1.cm_property_id)  ';
     var limitstr = '';
-    console.log(searchData.limitCount);
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }
@@ -516,14 +507,12 @@ exports.getPulishedContentIds = function( dbConnection, pctId, data, callback ) 
 }
 
 exports.deletePackContentsByIds = function(dbConnection, pctId, contentIds , callback){
-    //console.log("UPDATE icn_pack_content SET pc_crud_isactive = "+pctId+" WHERE pc_pct_id =  "+pctId+" AND pc_cm_id IN ("+ contentIds +") ")
     var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? AND pc_cm_id IN ("+ contentIds +") ", [pctId, pctId], function (err, result) {
         callback(err,result);
     });
 }
 
 exports.deleteUnwantedPackContentsByContentIds = function(dbConnection, pctId, contentIds , callback){
-    //console.log("DELETE FROM icn_pack_content WHERE pc_pct_id = "+ pctId +" AND pc_cm_id IN ("+ contentIds +") ");
     var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? AND pc_cm_id IN ("+ contentIds +") ", [pctId], function (err, result) {
         callback(err,result);
     });

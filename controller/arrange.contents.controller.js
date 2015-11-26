@@ -77,7 +77,6 @@ exports.savePublishedContents = function (req, res, next) {
                         pc_arrange_seq: req.body.arrangedContentList[contentId],
                         pc_ispublished: 1
                     }
-                    //console.log(data)
                     addEditContents(connection_ikon_cms,data,req);
                 }
                 connection_ikon_cms.release();
@@ -103,8 +102,6 @@ function updatePackData( connection_ikon_cms, req ){
         pk_modified_on: new Date(),
         pk_modified_by: req.session.pack_UserName
     }
-console.log('updatePackData in arrange')
-console.log(data)
     SearchModel.updatePackData( connection_ikon_cms, data, function(err,response ){
         if(err){
             connection_ikon_cms.release();
