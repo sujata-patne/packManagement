@@ -1,4 +1,4 @@
-myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stateParams,$state, ngProgress, Search,showContents) {
+myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,thumb_path, $stateParams,$state, ngProgress, Search,showContents) {
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
     $scope.pctId = $stateParams.pctId;
@@ -7,6 +7,8 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http, $stat
     $scope.title = $stateParams.title;
     $scope.property = $stateParams.property;
     $scope.ruleType = $stateParams.ruleType;
+    $scope.thumb_path = thumb_path;
+    
     $scope.ruleAuto = false;
     if($scope.ruleType == 1){
         $scope.ruleAuto = true;

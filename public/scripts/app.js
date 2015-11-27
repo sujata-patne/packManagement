@@ -1,4 +1,6 @@
 var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','angularUtils.directives.dirPagination','ngFileUpload','validation', 'validation.rule','ngMessages']); 
+myApp.constant('thumb_path', 'http://dailymagic.in');
+
 var ContentTypeDetails ={
     "Manual":{
         "Wallpaper": [
