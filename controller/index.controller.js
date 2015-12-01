@@ -93,7 +93,7 @@ exports.pages = function (req, res, next) {
  * @description user can login
  */
 exports.login = function (req, res, next) {
-    if(req.cookies.remember == 1 && req.cookies.username != '' ){
+    if(req.cookies.pack_remember == 1 && req.cookies.pack_username != '' ){
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
             userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.pack_username), decrypt(req.cookies.pack_password), function( err, userDetails ){
                 if (err) {
