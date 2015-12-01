@@ -55,7 +55,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.Singer = angular.copy(data.singers);
         $scope.Music_Director = angular.copy(data.music_directors);
         $scope.Adult = angular.copy(data.adult);
-
         $scope.list = {
             "Keywords_id": (data.keywords[0]) ? data.keywords[0].cm_id : "",
             "Language_id": (data.languages[0]) ? data.languages[0].cm_id : "",
@@ -128,8 +127,9 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
 
         })*/
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
-        $scope.contentTypeData['property_release_year'] = {'releaseYearStart':'','releaseYearEnd':''};
-
+        console.log($scope.contentTypeData);
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : '' ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : ''};
+        console.log($scope.contentTypeData['property_release_year']);
         $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
         console.log($scope.contentTypeDataDetails)
 

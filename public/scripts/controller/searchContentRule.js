@@ -69,6 +69,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         $scope.Singer_id = data.singers[0].cm_id;
         $scope.Music_Director_id = data.music_directors[0].cm_id;
 
+
         $scope.Content_Title_id = data.content_title[0].cm_id;
         $scope.Content_Ids_id = data.content_id[0].cm_id;
         $scope.property_release_year_id = data.property_release_year[0].cm_id;
@@ -81,7 +82,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         /*Form Data*/
 
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
-        $scope.contentTypeData['property_release_year'] = { 'releaseYearStart': '', 'releaseYearEnd': '' };
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : '' ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : ''};
        // $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
         
        

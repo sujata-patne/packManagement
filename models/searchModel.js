@@ -216,12 +216,10 @@ exports.updateSearchContents = function(dbConnection, data, callback){
     var query = dbConnection.query("UPDATE icn_pack_content SET ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data, data.pc_pct_id, data.pc_cm_id], function (err, result) {
         if (err) {
             dbConnection.release();
-            res.status(500).json(err.message);
         } else {
             var query = dbConnection.query("UPDATE `icn_pack_content_type` SET pct_modified_on = NOW() WHERE pct_id = ? ",[data.pc_pct_id], function (err, response) {
                 if(err){
                     dbConnection.release();
-                    res.status(500).json(err.message);
                 }
             });
             callback(err,result);
@@ -407,23 +405,13 @@ exports.searchCriteriaExist = function(dbConnection,pctId,callback){
 }
 exports.addSearchCriteriaField = function(dbConnection,data,callback){
     var query = dbConnection.query("INSERT INTO icn_pack_content_rule SET ? ",data, function (err, response) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        }else{
             callback(err,response);
-        }
     });
 }
 exports.deleteSearchCriteria = function(dbConnection,pctId,callback){
 
     var query = dbConnection.query("UPDATE icn_pack_content_rule SET pcr_crud_isactive = ? WHERE pcr_pct_id = ? ", [pctId, pctId], function (err, response) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        }else{
-            callback(err,response);
-        }
+        callback(err,response);
     });
 }
 exports.existSearchCriteriaField = function(dbConnection,pctId,callback){
@@ -450,44 +438,32 @@ exports.deleteSearchCriteriaField = function(dbConnection,pctId,callback){
 
 exports.deleteSearchedContent = function(dbConnection,pctId,callback){
     var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? and pc_ispublished != 1 ", [pctId, pctId], function (err, response) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        }else{
+        
             callback(err,response);
-        }
+        
     })
 }
 exports.deletePackContents = function(dbConnection, data, callback){
     var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? AND pc_cm_id = ? ", [data.pc_pct_id,data.pc_pct_id, data.pc_cm_id], function (err, result) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        } else {
+        
             callback(err,result);
-        }
+        
     })
 }
 exports.deleteUnwantedPackContents = function(dbConnection,data,callback){
     var query = dbConnection.query("UPDATE icn_pack_content SET pc_crud_isactive = ? WHERE pc_pct_id = ? " +
         "AND pc_cm_id = ? ", [data.pc_pct_id,data.pc_pct_id, data.pc_cm_id], function (err, response) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        }else{
+        
             callback(err,response);
-        }
+    
     })
 }
 
 exports.getPackContents = function(dbConnection,pctId,callback){
     var query = dbConnection.query("SELECT * FROM icn_pack_content WHERE pc_pct_id = ? AND ISNULL(pc_crud_isactive) ", [pctId], function (err, response) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        }else{
+        
             callback(err,response);
-        }
+        
     });
 }
 exports.getUnwantedPackContents = function(dbConnection,pctId, data,callback){
@@ -531,12 +507,9 @@ exports.getSearchCriteriaByPackContentTypeId = function(dbConnection,pctId,callb
 
 exports.deletePackContentsForCron = function(dbConnection, pctId, callback){
     var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, result) {
-        if (err) {
-            dbConnection.release();
-            res.status(500).json(err.message);
-        } else {
+        
             callback(err,result);
-        }
+        
     })
 }
 

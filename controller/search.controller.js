@@ -139,7 +139,7 @@ exports.getContentTypeDetails = function (req, res, next) {
                         });
 
                     },
-					  rules: function (callback) {
+                      rules: function (callback) {
                         SearchModel.getRules(connection_ikon_cms, function (err, rules) {
                             callback(err, rules);
                         });
@@ -306,11 +306,12 @@ exports.saveSearchCriteria = function (req, res, next) {
                 }*/
                 function addEditSearch(cnt) {
                     var j = cnt;
+
                     var data = {
                         pcr_rec_type: 1,
                         pcr_pct_id: req.body.pctId,
-                        pcr_start_year: req.body.releaseYearStart,
-                        pcr_end_year: req.body.releaseYearEnd
+                        pcr_start_year: req.body.releaseYearStart == '' ? null : req.body.releaseYearStart ,
+                        pcr_end_year: req.body.releaseYearEnd == '' ? null : req.body.releaseYearEnd
                     }
                     for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
                         data['pcr_metadata_type']= searchFieldId;
@@ -326,8 +327,11 @@ exports.saveSearchCriteria = function (req, res, next) {
                                     else {
                                         cnt = cnt + 1;
                                         if (cnt == count) {
+                                            connection_ikon_cms.release();
                                             res.send({
-                                                "success": true,
+
+            
+                                    "success": true,
                                                 "status": 200,
                                                 //"message": "Search Criteria added successfully added.",
                                             });
@@ -340,7 +344,6 @@ exports.saveSearchCriteria = function (req, res, next) {
                         })
                     }
                 }
-                connection_ikon_cms.release();
             })
         }else {
             res.redirect('/accountlogin');
