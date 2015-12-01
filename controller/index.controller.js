@@ -2,6 +2,23 @@
 var mysql = require('../config/db').pool;
 var nodemailer = require('nodemailer');
 var userManager = require('../models/userModel');
+var crypto = require('crypto');
+ algorithm = 'aes-256-ctr', //Algorithm used for encrytion
+ password = 'd6F3Efeq'; //Encryption password 
+
+ function encrypt(text){
+  var cipher = crypto.createCipher(algorithm,password)
+  var crypted = cipher.update(text,'utf8','hex')
+  crypted += cipher.final('hex');
+  return crypted;
+}
+ 
+function decrypt(text){
+  var decipher = crypto.createDecipher(algorithm,password)
+  var dec = decipher.update(text,'hex','utf8')
+  dec += decipher.final('utf8');
+  return dec;
+}
 
 
 function getDate(val) {
@@ -76,21 +93,63 @@ exports.pages = function (req, res, next) {
  * @description user can login
  */
 exports.login = function (req, res, next) {
-    if (req.session) {
-        if (req.session.pack_UserName) {
-            if (req.session.pack_StoreId) {
-                res.redirect("/add-pack");
+    if(req.cookies.remember == 1 && req.cookies.username != '' ){
+        mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.username), decrypt(req.cookies.password), function( err, userDetails ){
+                if (err) {
+                    res.render('account-login', { error: 'Error in database connection' });
+                } else {
+                    if (userDetails.length > 0) {
+                        if (userDetails[0].ld_active == 1) {
+                            if(userDetails[0].ld_role == 'Store Manager') {
+                                connection_ikon_cms.release();
+                                var session = req.session;
+                                session.pack_UserId = userDetails[0].ld_id;
+                                session.pack_UserRole = userDetails[0].ld_role;
+                                session.pack_UserName = userDetails[0].ld_user_name;
+                                session.pack_Password = userDetails[0].ld_user_pwd;
+                                session.pack_Email = userDetails[0].ld_email_id;
+                                session.pack_FullName = userDetails[0].ld_display_name;
+                                session.pack_lastlogin = userDetails[0].ld_last_login;
+                                session.pack_UserType = userDetails[0].ld_user_type;
+                                session.pack_StoreId = userDetails[0].su_st_id;
+                                    if (req.session) {
+                                        if (req.session.pack_UserName) {
+                                            if (req.session.pack_StoreId) {
+                                                res.redirect("/");
+                                            }
+                                            else {
+                                                res.redirect("/accountlogin");
+                                            }
+                                        }
+                                        else {
+                                            res.render('account-login', { error: '' });
+                                        }
+                                    }
+                                    else {
+                                        res.render('account-login', { error: '' });
+                                    }
+                           }
+                       }
+                    }
+                 }
+            });
+        });
+    }else if (req.session) {
+            if (req.session.pack_UserName) {
+                if (req.session.pack_StoreId) {
+                    res.redirect("/add-pack");
+                }
+                else {
+                    res.redirect("/accountlogin");
+                }
             }
             else {
-                res.redirect("/add-pack");
+                res.render('account-login', { error: '' });
             }
-        }
-        else {
-            res.render('account-login', { error: '' });
-        }
     }
     else {
-        res.render('account-login', { error: '' });
+            res.render('account-login', { error: '' });
     }
 }
 /**
@@ -115,6 +174,9 @@ exports.logout = function (req, res, next) {
                     req.session.pack_lastlogin = null;
                     req.session.pack_UserType = null;
                     req.session.pack_StoreId = null;
+                    res.clearCookie('remember');
+                    res.clearCookie('username');
+                    res.clearCookie('password');
 
                     res.redirect('/accountlogin');
                 }
@@ -140,17 +202,32 @@ exports.logout = function (req, res, next) {
  * @param next
  * @description user is authenticated
  */
+
 exports.authenticate = function (req, res, next) {
     try {
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-            userManager.getUserDetails( connection_ikon_cms, req.body.username, req.body.password, function( err, userDetails ){
+            if(req.body.rememberMe){
+                var minute = 10080 * 60 * 1000;
+                res.cookie('remember', 1, { maxAge: minute });
+                res.cookie('username', encrypt(req.body.username), { maxAge: minute });
+                res.cookie('password', encrypt(req.body.password), { maxAge: minute });
+            }
+            userAuthDetails(connection_ikon_cms,req.body.username,req.body.password,req,res);
+        });
+    }
+    catch (error) {
+        res.render('account-login', { error: 'Error in database connection' });
+    }
+}
+
+function userAuthDetails(dbConnection, username,password,req,res){
+        userManager.getUserDetails( dbConnection, username, password, function( err, userDetails ){
                 if (err) {
-                    res.render('account-login', { error: 'Error in database connection.' });
+                    res.render('account-login', { error: 'Error in database connection' });
                 } else {
                     if (userDetails.length > 0) {
                         if (userDetails[0].ld_active == 1) {
                             if(userDetails[0].ld_role == 'Store Manager') {
-
                                 var session = req.session;
                                 session.pack_UserId = userDetails[0].ld_id;
                                 session.pack_UserRole = userDetails[0].ld_role;
@@ -161,39 +238,42 @@ exports.authenticate = function (req, res, next) {
                                 session.pack_lastlogin = userDetails[0].ld_last_login;
                                 session.pack_UserType = userDetails[0].ld_user_type;
                                 session.pack_StoreId = userDetails[0].su_st_id;//coming from new store's user table.
-                                connection_ikon_cms.release();
-                                res.redirect('/');
+                                userManager.updateLastLoggedIn( dbConnection, userDetails[0].ld_id ,function(err,response){
+                                    if(err){
+                                        dbConnection.release();
+                                    }else{
+                                          dbConnection.release();
+                                          res.redirect('/');
+                                    }
+                                })                              
                             } else {
-                                connection_ikon_cms.release();
-                                res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login.' });
+                                dbConnection.release();
+                                res.render('account-login', { error: 'Only Store Admin/Manager are allowed to login' });
                             }
                         }
                         else {
-                            connection_ikon_cms.release();
-                            res.render('account-login', { error: 'Your account has been disable.' });
+                            dbConnection.release();
+                            res.render('account-login', { error: 'Your account has been disable' });
                         }
                     } else {
-                        connection_ikon_cms.release();
-                        if( req.body.username.length == 0  &&  req.body.password.length == 0 ) {
-                            res.render('account-login', {error: 'Please enter username and password.'});
-                        }else if(req.body.username.length != 0  &&  req.body.password.length == 0 ){
-                            res.render('account-login', {error: 'Please enter password.'});
+                        dbConnection.release();
+                        if( req.body.username != undefined && req.body.username.length == 0  &&  req.body.password.length == 0 ) {
+                            res.render('account-login', {error: 'Please enter username and password'});
+                        }else if(req.body.username != undefined && req.body.username.length != 0  &&  req.body.password.length == 0 ){
+                            res.render('account-login', {error: 'Please enter password'});
                         }
-                        else if(req.body.username.length == 0  &&  req.body.password.length != 0){
-                            res.render('account-login', {error: 'Please enter username.'});
+                        else if(req.body.username != undefined && req.body.username.length == 0  &&  req.body.password.length != 0){
+                            res.render('account-login', {error: 'Please enter username'});
                         }
                         else {
-                            res.render('account-login', {error: 'Invalid Username / Password.'});
+                            res.render('account-login', {error: 'Invalid Username / Password'});
                         }
                     }
                 }
             });
-        });
-    }
-    catch (error) {
-        res.render('account-login', { error: 'Error in database connection.' });
-    }
 }
+
+
 /**
  * #function getPages
  * @param role
