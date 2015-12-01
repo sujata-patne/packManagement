@@ -77,7 +77,8 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         };
         
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
-                $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': ( $scope.contentTypeData.property_release_year != undefined && ( $scope.contentTypeData.property_release_year.releaseYearStart != undefined || $scope.contentTypeData.property_release_year.releaseYearStart != '') ) ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,
+            'releaseYearEnd': ( $scope.contentTypeData.property_release_year !=undefined && ( $scope.contentTypeData.property_release_year.releaseYearEnd != undefined || $scope.contentTypeData.property_release_year.releaseYearEnd != '') ) ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
 
         $scope.searchWhere = [
             {cd_id:'start',cd_name:'Title starting with'},

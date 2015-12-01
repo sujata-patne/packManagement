@@ -127,7 +127,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
 
         })*/
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
-        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': ( $scope.contentTypeData.property_release_year != undefined && ( $scope.contentTypeData.property_release_year.releaseYearStart != undefined || $scope.contentTypeData.property_release_year.releaseYearStart != '') ) ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,
+            'releaseYearEnd': ( $scope.contentTypeData.property_release_year !=undefined && ( $scope.contentTypeData.property_release_year.releaseYearEnd != undefined || $scope.contentTypeData.property_release_year.releaseYearEnd != '') ) ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
         $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
 
         $scope.searchWhere = [

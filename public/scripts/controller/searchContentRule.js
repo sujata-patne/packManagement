@@ -82,8 +82,9 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         /*Form Data*/
 
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
-        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
-       // $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': ( $scope.contentTypeData.property_release_year != undefined && ( $scope.contentTypeData.property_release_year.releaseYearStart != undefined || $scope.contentTypeData.property_release_year.releaseYearStart != '') ) ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,
+            'releaseYearEnd': ( $scope.contentTypeData.property_release_year !=undefined && ( $scope.contentTypeData.property_release_year.releaseYearEnd != undefined || $scope.contentTypeData.property_release_year.releaseYearEnd != '') ) ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
+        // $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
         
        
         // $scope.Rule_name = $scope.Rules[idx].cd_name;
