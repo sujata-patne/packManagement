@@ -69,7 +69,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
             "Music_Director_id": (data.music_directors[0])? data.music_directors[0].cm_id:"",
             "Content_Title_id" : (data.content_title[0])? data.content_title[0].cm_id:"",
             "Content_Ids_id" : (data.content_id[0])? data.content_id[0].cm_id:"",
-            "property_release_year_id" : (data.property_release_year[0])? data.property_release_year[0].cm_id:"",
+            "property_release_year_id" : (data.property_release_year[0])? data.property_release_year[0].cm_id:null,
             "Rules_id" : (data.rules[0])? data.rules[0].cm_id:"",
             "Adult_id" : (data.adult[0])? data.adult[0].cm_id:""
         };
@@ -127,11 +127,8 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
 
         })*/
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
-        console.log($scope.contentTypeData);
-        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : '' ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : ''};
-        console.log($scope.contentTypeData['property_release_year']);
+        $scope.contentTypeData['property_release_year'] = {'releaseYearStart': $scope.contentTypeData.property_release_year.releaseYearStart != undefined ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,'releaseYearEnd': $scope.contentTypeData.property_release_year.releaseYearEnd != undefined ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
         $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
-        console.log($scope.contentTypeDataDetails)
 
         $scope.searchWhere = [
             {cd_id:'start',cd_name:'Title starting with'},
