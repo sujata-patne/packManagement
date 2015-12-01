@@ -95,7 +95,7 @@ exports.pages = function (req, res, next) {
 exports.login = function (req, res, next) {
     if(req.cookies.remember == 1 && req.cookies.username != '' ){
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.username), decrypt(req.cookies.password), function( err, userDetails ){
+            userManager.getUserDetails( connection_ikon_cms, decrypt(req.cookies.pack_username), decrypt(req.cookies.pack_password), function( err, userDetails ){
                 if (err) {
                     res.render('account-login', { error: 'Error in database connection' });
                 } else {
@@ -174,9 +174,9 @@ exports.logout = function (req, res, next) {
                     req.session.pack_lastlogin = null;
                     req.session.pack_UserType = null;
                     req.session.pack_StoreId = null;
-                    res.clearCookie('remember');
-                    res.clearCookie('username');
-                    res.clearCookie('password');
+                    res.clearCookie('pack_remember');
+                    res.clearCookie('pack_username');
+                    res.clearCookie('pack_password');
 
                     res.redirect('/accountlogin');
                 }
@@ -208,9 +208,9 @@ exports.authenticate = function (req, res, next) {
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
             if(req.body.rememberMe){
                 var minute = 10080 * 60 * 1000;
-                res.cookie('remember', 1, { maxAge: minute });
-                res.cookie('username', encrypt(req.body.username), { maxAge: minute });
-                res.cookie('password', encrypt(req.body.password), { maxAge: minute });
+                res.cookie('pack_remember', 1, { maxAge: minute });
+                res.cookie('pack_username', encrypt(req.body.username), { maxAge: minute });
+                res.cookie('pack_password', encrypt(req.body.password), { maxAge: minute });
             }
             userAuthDetails(connection_ikon_cms,req.body.username,req.body.password,req,res);
         });
