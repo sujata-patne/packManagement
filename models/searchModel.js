@@ -383,10 +383,8 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
    if(searchData.ruleName == 'MostClicked'){
         whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
    }
-
-
-
-    var query = dbConnection.query('SELECT cmd.*,cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' , (SELECT cf.cf_url FROM content_files as cf WHERE cmd.cm_id = cf.cf_cm_id Limit 1) AS contentUrl,(SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id) as new_thumb_url  from content_metadata As cmd ' +
+ 
+    var query = dbConnection.query('SELECT cmd.*,cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' , (SELECT cf.cf_url FROM content_files as cf WHERE cmd.cm_id = cf.cf_cm_id Limit 1) AS contentUrl,(SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url  from content_metadata As cmd ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + limitstr , function (err, result) {
         callback(err,result);
     })
