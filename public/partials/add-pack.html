@@ -15,18 +15,22 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label"><span class="asterisk">*</span>Pack Name</label>
                             <div class="col-sm-9">
-                                <input type="text" name="packname" class="form-control" placeholder="Pack Name" data-ng-model="packname" ng-pattern="/^[a-zA-Z0-9 ]*$/" required>
+                                <input type="text"  data-ng-maxlength="200"  name="packname" class="form-control" placeholder="Pack Name" data-ng-model="packname" ng-pattern="/^[a-zA-Z0-9 ]*$/" required>
                                 <input type="hidden" name="ld_Id" class="form-control" data-ng-model="PlanId">
                                 <span style="color: red" ng-show="packForm.$submitted || packForm.packname.$dirty">
                                     <span ng-show="packForm.packname.$error.required">Pack Name is required.</span>
                                      <span ng-show="packForm.packname.$error.pattern">Please use numbers/letters only</span>
+                                     <span ng-show="packForm.packname.$error.maxlength">Maximum 200 characters allowed</span>
                                 </span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="packdesc" class="col-sm-3 control-label">Description</label>
                             <div class="col-sm-9">
-                                <textarea name="packdesc" class="form-control" placeholder="Pack Description" data-ng-model="packdesc"></textarea>
+                                <textarea name="packdesc" data-ng-maxlength="500" class="form-control" placeholder="Pack Description" data-ng-model="packdesc"></textarea>
+                                <span style="color: red" ng-show="packForm.$submitted || packForm.packdesc.$touched">
+                                    <span data-ng-show="packForm.packdesc.$error.maxlength">Maximum 500 characters allowed.</span>
+                                </span>
                             </div>
                         </div>
                         <div class="form-group">
