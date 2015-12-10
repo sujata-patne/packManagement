@@ -170,7 +170,7 @@ exports.getContentTypeDetails = function (req, res, next) {
                         });
                     },
                     vendor: function (callback) {
-                        SearchModel.getVendor( connection_ikon_cms, function(err,vendor){
+                        SearchModel.getVendor( connection_ikon_cms,req.session.pack_StoreId, function(err,vendor){
                             callback(err, vendor);
                         });
                     },
