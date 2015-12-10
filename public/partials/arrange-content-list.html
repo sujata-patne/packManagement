@@ -82,18 +82,18 @@ form .progress {
                                                                 <img src="{{p}}" width="50" height="50"/>
                                                             </a>
                                                         </span>
-                                                  </div>        
+                                                  </div>
                                             </form>
                                                 <!-- Files: {{$index}} -->
 
                                                 <ul>
                                                     <li ng-repeat="f in fileUploads[$index]" style="font:smaller">
-                                                        {{f.name}} 
+                                                        {{f.name}}
                                                         <span style="color:red">
                                                                      {{f.$error}}  {{f.$errorParam}}
                                                                   </span>
-                                                    </li>  
-                                                </ul>  
+                                                    </li>
+                                                </ul>
                                                   <span class="progress" style="color:green" id="{{$index}}">
                                                         
                                                   </span>
