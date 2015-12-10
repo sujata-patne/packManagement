@@ -36,16 +36,18 @@
                                             <div class="row">
 
                                                 <div class="col-md-6 col-xs-6" style="text-align: center">
-                                                    <a class="fancybox grouped_elements" href="{{thumb_path}}{{content.new_thumb_url}}" ng-if="parentType != 'Audio' && parentType != 'Video'" title="{{content.cm_title}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
-                                                        <img width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />
+                                                    <a class="fancybox grouped_elements" href="{{thumb_path}}{{content.contentUrl}}" ng-if="parentType != 'Audio' && parentType != 'Video'" title="{{content.cm_title}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
+                                                        <!--<img width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />-->
+                                                        <img ng-show="content.new_thumb_url != null" width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />
+                                                        <img ng-hide="content.new_thumb_url != null" width="50" height="50" src="contentFiles/no_image.gif" />
 
                                                     </a>
-                                                     <a  class="fancybox-video fancybox.iframe" ng-if="parentType == 'Video' && content.contentUrl != null" href="{{thumb_path}}{{ content.contentUrl }}" title="{{files.filename}}">
+                                                    <a  class="fancybox-video fancybox.iframe" ng-if="parentType == 'Video' && content.contentUrl != null" href="{{thumb_path}}{{ content.contentUrl }}" title="{{files.filename}}">
                                                             <i class="fa fa-play" style="color:green" title="View"></i>
                                                     </a>
                                                         <i ng-show="content.contentUrl == null && parentType == 'Audio'" class="fa fa-play" style="color:red" title="Content not found"></i>
                                                          <i ng-show="content.contentUrl == null && parentType == 'Video'" class="fa fa-play" style="color:red" title="Content not found"></i>
-                                                    <a  class="fancybox-audio fancybox.iframe" ng-if="parentType == 'Audio' && content.contentUrl != null" href="{{ content.contentUrl }}" title="{{files.filename}}">
+                                                    <a  class="fancybox-audio fancybox.iframe" ng-if="parentType == 'Audio' && content.contentUrl != null" href="{{thumb_path}}{{ content.contentUrl }}" title="{{files.filename}}">
                                                             <i class="fa fa-play" style="color:green" title="View"></i>
                                                     </a>
                                                 </div>
