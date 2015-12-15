@@ -70,9 +70,11 @@ exports.getPhotographer = function(dbConnection, callback){
     });
 }
 
-exports.getVendor = function(dbConnection, callback){
-    dbConnection.query('SELECT vd_id AS cd_id, vd_name AS cd_name, (select cm.cm_id FROM catalogue_master AS cm WHERE cm.cm_name in ("Vendor") )as cm_id ' +
-        'FROM icn_vendor_detail WHERE vd_is_active = 1 ', function (err, vendor) {
+exports.getVendor = function(dbConnection,storeId, callback){
+    dbConnection.query('SELECT ivd.vd_id as cd_id,ivd.vd_name as cd_name , mlm.cmd_entity_type as cm_id  FROM icn_store st ' +
+    'inner join   multiselect_metadata_detail mlm on (mlm.cmd_group_id = st.st_vendor) ' +
+    'join icn_vendor_detail ivd on ivd.vd_id =  mlm.cmd_entity_detail ' +
+    'WHERE st.st_id = ? and ivd.vd_is_active = 1 ',[storeId], function (err, vendor) {
         callback(err, vendor)
     });
 }
