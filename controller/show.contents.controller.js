@@ -3,6 +3,7 @@
  */
 var mysql = require('../config/db').pool;
 var SearchModel = require('../models/searchModel');
+var packManager = require('../models/packModel');
 var async = require('async');
 
 exports.showArrangeContents = function (req, res, next) {
@@ -212,6 +213,14 @@ function updatePackData( connection_ikon_cms, req ){
             connection_ikon_cms.release();
             res.status(500).json(err.message);
             return false;
+        }else{
+            packManager.updatePackageModified(connection_ikon_cms,req.body.packId,function(err,response){
+                if(err){
+                     connection_ikon_cms.release();
+                     res.status(500).json(err.message);
+                     return false;
+                }
+            });
         }
     });
     return true;

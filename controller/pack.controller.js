@@ -363,6 +363,14 @@ function updateIconPack( connection_ikon_cms, data,packId ){
              connection_ikon_cms.release();
              res.status(500).json(err.message);
              return false;
+         }else{
+            packManager.updatePackageModified(connection_ikon_cms,packId,function(err,response){
+                if(err){
+                     connection_ikon_cms.release();
+                     res.status(500).json(err.message);
+                     return false;
+                }
+            })
          }
     });
     return true;

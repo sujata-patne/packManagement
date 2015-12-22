@@ -138,6 +138,12 @@ exports.updateContentTypeStatus = function(dbConnection,packId,contentTypeId,act
 	});
 }
 
+exports.updatePackageModified = function(dbConnection,packId,callback){
+	var query = dbConnection.query("UPDATE `icn_store_package` SET sp_modified_on = NOW() WHERE sp_pk_id = ?  ",[packId], function (err, response) {
+		callback(err,response);
+	});
+}
+
 
 exports.getAllPacksForList = function( dbConnection,storeId, callback ) {
 	var query = dbConnection.query("SELECT pk.*,pct.pct_id, group_concat(Distinct(if(pct.pct_is_active = 1 AND ISNULL(pct.pct_crud_isactive),cd.cd_name,null))) as status1, "+
