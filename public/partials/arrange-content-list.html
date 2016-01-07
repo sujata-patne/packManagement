@@ -66,7 +66,7 @@
                                         <td class="col-md-1 col-xs-1">{{content.releaseYear}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
                                         <td ng-show="displayName != 'Auto'" class="col-md-1 col-xs-1">
-                                            <input type="number"  ngMinlength="0"  ngMaxlength="4"  min="1" max="9999" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" ng-change="checkForDuplicates(content.cm_id)" ng-model-options='{ debounce: 1000 }' ng-keypress="isNumber($event)" >
+                                            <input type="number"  ngMinlength="0"  ngMaxlength="4"  min="1" max="9999" class="form-control" name="sequence[]" ng-model="sequence[content.cm_id]" ng-change="checkForDuplicates(content.cm_id)" ng-model-options='{ debounce:200 }' ng-keypress="isNumber($event)" >
 
                                         </td>
                                         <td ng-show="displayName != 'Auto'" class="col-md-1 col-xs-1 text-center"><!-- <i class="fa fa-upload" style="color:green" title="Upload"> -->
