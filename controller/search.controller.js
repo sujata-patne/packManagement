@@ -139,7 +139,7 @@ exports.getContentTypeDetails = function (req, res, next) {
                         });
 
                     },
-                      rules: function (callback) {
+                    rules: function (callback) {
                         SearchModel.getRules(connection_ikon_cms, function (err, rules) {
                             callback(err, rules);
                         });
@@ -259,8 +259,6 @@ exports.saveSearchCriteria = function (req, res, next) {
                 /*update pack details*/
                 packUpdateResponse = updatePackData( connection_ikon_cms,packData );
 
-                
-
                 //To add/ update the duration and next execution date : 
                 var where_contentTypeDataDuration = {
                     pct_id : req.body.pctId,
@@ -291,19 +289,7 @@ exports.saveSearchCriteria = function (req, res, next) {
                     }
                 })
                 addEditSearch(0);
-                /*for (var searchFieldId in req.body.contentTypeDataDetails) {
-                    var data = {
-                        pcr_rec_type: 1,
-                        pcr_pct_id: req.body.pctId,
-                        pcr_start_year: req.body.releaseYearStart,
-                        pcr_end_year: req.body.releaseYearEnd,
-                        pcr_metadata_type: searchFieldId,
-                        pcr_metadata_search_criteria: req.body.contentTypeDataDetails[searchFieldId]
-                    }
 
-                    addSearchCriteriaField(connection_ikon_cms,data);
-
-                }*/
                 function addEditSearch(cnt) {
                     var j = cnt;
 
@@ -316,6 +302,7 @@ exports.saveSearchCriteria = function (req, res, next) {
                     for (var searchFieldId in req.body.contentTypeDataDetails[j]) {
                         data['pcr_metadata_type']= searchFieldId;
                         data['pcr_metadata_search_criteria'] = req.body.contentTypeDataDetails[j][searchFieldId];
+
                         getLastSearchCriteriaId(connection_ikon_cms, function (lastInsertedSearchCriteriaId) {
                             if (lastInsertedSearchCriteriaId) {
                                 data['pcr_id'] = lastInsertedSearchCriteriaId;
@@ -363,6 +350,7 @@ exports.getPackSearchResult = function (req, res, next) {
                             SearchModel.getPackSearchDetails( connection_ikon_cms, req.body.pctId, function(err,packSearchDetails){
                                 var contentTypeData = {};
 
+                                contentTypeData["storeId"] = req.session.pack_StoreId;
                                 contentTypeData["limitCount"] = req.body.limitCount;
                                 contentTypeData["searchWhereTitle"] = req.body.title;
                                 contentTypeData["searchWherePropertyTitle"] = req.body.property;
@@ -421,8 +409,6 @@ exports.getPackSearchResult = function (req, res, next) {
                                     if (metadataFields.cm_name === "Vendor") {
                                         contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
                                     }
-                                    
-                                    
                                 })
                                 callback(err, contentTypeData);
                             });

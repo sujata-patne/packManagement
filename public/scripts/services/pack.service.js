@@ -5,7 +5,6 @@ myApp.service('Packs', ['$http', function ($http) {
 
     //PrePopulate Add Pack form  : 
     service.getData = function ( data,success, error ) {
-        console.log(service.baseRestUrl + '/getData');
         $http.post(service.baseRestUrl + '/getData',data).success(function (items) {
             success(items);
         }).error(function (err) {

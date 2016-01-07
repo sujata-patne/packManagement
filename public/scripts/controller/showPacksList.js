@@ -85,7 +85,6 @@ myApp.controller('showPacksListCtrl', function ($scope, $http, $stateParams,$sta
                      $scope.tag_search_title = $scope.search_title;
                      $scope.tag_StartDate = $scope.StartDate;
                      $scope.tag_EndDate = $scope.EndDate;
-                     console.log($scope.StartDate);
                      var criteria = {
                         title_text : $scope.search_title,
                         st_date : $scope.StartDate,

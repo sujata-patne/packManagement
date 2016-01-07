@@ -46,9 +46,9 @@
                                             {{item.types.split(",").sort().reverse().join(",")}}
                                         </td>  -->
                                         <td class="col-md-2 col-xs-2">
-                                            <span style="color:blue">{{item.status1}}</span>
-                                            <span ng-if="item.status1.length > 0 && item.status0.length > 0">,</span>
-                                            <span style="color:red">{{item.status0}}</span>
+                                            <span style="color:blue">{{item.statusActive}}</span>
+                                            <span ng-if="item.statusActive.length > 0 && item.statusBlocked.length > 0">,</span>
+                                            <span style="color:red">{{item.statusBlocked}}</span>
                                         </td> 
                                          
                                         <td class="col-md-3 col-xs-3">{{item.pk_created_by}}</td>

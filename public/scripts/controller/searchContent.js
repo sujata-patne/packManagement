@@ -183,7 +183,6 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
             //    }
             //});
             $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
-            console.log($scope.contentTypeDataDetails);
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,
                 contentTypeData:$scope.contentTypeData,
