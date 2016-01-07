@@ -16,7 +16,6 @@ myApp.controller('contentListCtrl', function ($scope, $http, $stateParams,$state
             state : "get-pack"
         }
     Packs.getData(preData,function(data){
-        console.log(data.StorePacks)
         $scope.StorePacks = data.StorePacks;
     },function(error){
         console.log(error);

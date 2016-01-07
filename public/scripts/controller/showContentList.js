@@ -37,8 +37,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,thumb_
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property, rule: $scope.rule}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);
-console.log('$scope.packDetails')
-console.log($scope.packDetails)
         $scope.contentType = $scope.packDetails[0].type;
         $scope.parentType = $scope.packDetails[0].parent_type;
         $scope.display = $scope.packDetails[0].pk_cnt_display_opt;
@@ -55,8 +53,6 @@ console.log($scope.packDetails)
             }
             $scope.selectedContent[value.pc_cm_id] = true;
         })
-        console.log($scope.removedContent);
-        console.log($scope.action);
         if($scope.action == 2){ // remove option
             angular.forEach($scope.removedContent, function(value, key){
                 $scope.contents.push(value);
@@ -203,7 +199,6 @@ console.log($scope.packDetails)
                 showContents.showResetRules({pctId:$scope.pctId}, function (data) {
                     //$window.location.href = "/#/search-content/"+$scope.pctId;
                     var filename = 'search-content-'+$scope.displayName.toLowerCase()
-                    console.log(filename)
                     $state.go(filename, {pctId:$scope.pctId})
                     toastr.success(data.message)
                 },function(error){

@@ -70,16 +70,9 @@ exports.getPhotographer = function(dbConnection, callback){
     });
 }
 
-
-// exports.getVendor = function(dbConnection, callback){
-//     dbConnection.query('SELECT vd_id AS cd_id, vd_name AS cd_name, (select cm.cm_id FROM catalogue_master AS cm WHERE cm.cm_name in ("Vendor") )as cm_id ' +
-//         'FROM icn_vendor_detail WHERE vd_is_active = 1 ', function (err, vendor) {
-//         callback(err, vendor)
-//     });
-// }
-
 exports.getVendor = function(dbConnection,storeId, callback){
-    dbConnection.query('SELECT ivd.vd_id as cd_id,ivd.vd_name as cd_name , mlm.cmd_entity_type as cm_id  FROM icn_store st ' +
+    dbConnection.query('SELECT ivd.vd_id as cd_id,ivd.vd_name as cd_name, ' +
+    '(select cm.cm_id FROM catalogue_master AS cm WHERE cm.cm_name in ("Vendor") )as cm_id FROM icn_store st ' +
     'inner join   multiselect_metadata_detail mlm on (mlm.cmd_group_id = st.st_vendor) ' +
     'join icn_vendor_detail ivd on ivd.vd_id =  mlm.cmd_entity_detail ' +
     'WHERE st.st_id = ? and ivd.vd_is_active = 1 ',[storeId], function (err, vendor) {
@@ -87,10 +80,14 @@ exports.getVendor = function(dbConnection,storeId, callback){
     });
 }
 exports.getActorActress = function(dbConnection, callback){
-    dbConnection.query('SELECT distinct cd.cd_id, cd.cd_name, cd.cd_cm_id as cm_id FROM catalogue_detail AS cd ' +
+   /* dbConnection.query('SELECT distinct cd.cd_id, cd.cd_name, cd.cd_cm_id as cm_id FROM catalogue_detail AS cd ' +
         'inner join catalogue_master as cm on (cm.cm_id = cd.cd_cm_id) ' +
         'inner join multiselect_metadata_detail as mmd ON ( cd.cd_desc = mmd.cmd_group_id && cd.cd_cm_id = mmd.cmd_entity_type ) ' +
         'inner join catalogue_detail as role on (role.cd_id  = mmd.cmd_entity_detail) ' +
+        'where cm.cm_name="Celebrity" and role.cd_name in ("Actress","Actor")', function (err, actor_actress) {*/
+    dbConnection.query('select  distinct cd.cd_id, cd.cd_name, cd.cd_cm_id as cm_id from catalogue_detail cd inner join catalogue_master as cm on (cd.cd_cm_id = cm.cm_id ) ' +
+        'left outer join multiselect_metadata_detail as mmd on (cd.cd_desc = mmd.cmd_group_id ) ' +
+        'inner join catalogue_detail as role on (role.cd_id  = mmd.cmd_entity_detail)  ' +
         'where cm.cm_name="Celebrity" and role.cd_name in ("Actress","Actor")', function (err, actor_actress) {
         callback(err, actor_actress)
     });
@@ -283,12 +280,17 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
 }
 
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
-
-    var whereStr = ' ISNULL(cmd1.cm_property_id) AND cmd.cm_state = 4  ';
+    var whereStr = ' ISNULL(cmd1.cm_property_id) AND cmd.cm_state = 4 ';
     var limitstr = '';
+    var groupstr = ' GROUP BY cmd.cm_id';
+
     if (searchData.limitCount) {
         limitstr = ' LIMIT '+searchData.limitCount;
     }
+    if (searchData.storeId) {
+        whereStr += ' AND st.st_id = ' + searchData.storeId;
+    }
+
     if (searchData.contentTypeId) {
         whereStr += ' AND cmd.cm_content_type = ' + searchData.contentTypeId;
     }
@@ -334,9 +336,7 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
 
         whereStr += ' AND cmd.cm_id IN (' + Content_Ids + ') ';
     }
-    if (searchData.Vendor && searchData.Vendor != null) {
-        whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;
-    }
+
     if (searchData.Keywords  && searchData.Keywords != '' ) {
         var keywords = searchData.Keywords.split(',')
             .map(function (element) {
@@ -392,11 +392,22 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     if(searchData.ruleName == 'MostClicked'){
         whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
     }
+    if (searchData.Vendor && searchData.Vendor != null) {
+        whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;
+    } else {
+        whereStr += ' AND cmd.cm_vendor in (select group_concat(ivd.vd_id ) AS vendors FROM icn_vendor_detail ivd where ivd.vd_id =  mlm.cmd_entity_detail and ivd.vd_is_active = 1 ) ';
+    }
 
-    var query = dbConnection.query('SELECT cmd.*,cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' , ' +
+    var str = 'SELECT cmd.*,cmd1.cm_title AS property, cmd1.cm_release_year AS releaseYear, '+celebrity+' , ' +
         '(SELECT cf.cf_url_base FROM content_files as cf WHERE cmd.cm_id = cf.cf_cm_id and cf_url_base NOT LIKE "%3gp" Limit 1) AS contentUrl,' +
-        '(SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url  from content_metadata As cmd ' +
-        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + limitstr , function (err, result) {
+        '(SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url  ' +
+        'from icn_store as st ' +
+        'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_vendor) ' +
+        'join content_metadata As cmd ' +
+        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + groupstr + limitstr ;
+
+
+    var query = dbConnection.query(str, function (err, result) {
         callback(err,result);
     })
 }

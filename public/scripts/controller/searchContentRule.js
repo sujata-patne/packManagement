@@ -101,7 +101,6 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
             $scope.ruleChange(sel_arr[0].cd_name);
         }
 
-        console.log($scope.Rule_name)
         $scope.searchWhere = [
             { cd_id: 'start', cd_name: 'Title starting with' },
             { cd_id: 'end', cd_name: 'Title ending with' },

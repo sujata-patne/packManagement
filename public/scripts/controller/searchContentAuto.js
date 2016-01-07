@@ -36,6 +36,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper / Full track id.
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 1; //auto
+
         if($scope.packSearchDetails){
             if($scope.packSearchDetails[0]){
                 $scope.nextRuleDuration = $scope.packSearchDetails[0].duration;      
@@ -75,7 +76,7 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
             "Rules_id" : data.rules[0].cm_id,
             "Adult_id" : data.adult[0].cm_id
         };
-        
+
         $scope.contentTypeData = setContentTypeData($scope.packSearchDetails);
         $scope.contentTypeData['property_release_year'] = {'releaseYearStart': ( $scope.contentTypeData.property_release_year != undefined && ( $scope.contentTypeData.property_release_year.releaseYearStart != undefined || $scope.contentTypeData.property_release_year.releaseYearStart != '') ) ? $scope.contentTypeData.property_release_year.releaseYearStart : null ,
             'releaseYearEnd': ( $scope.contentTypeData.property_release_year !=undefined && ( $scope.contentTypeData.property_release_year.releaseYearEnd != undefined || $scope.contentTypeData.property_release_year.releaseYearEnd != '') ) ? $scope.contentTypeData.property_release_year.releaseYearEnd : null};
@@ -105,10 +106,13 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         $scope.limitCount = (option != 1 )? '':10;
     }
     $scope.submitForm = function (isValid) {
+
         if (isValid) {
             $scope.contentTypeDataDetails = [];
             $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
-            console.log($scope.contentTypeDataDetails);
+            console.log('contentTypeDataDetails')
+            console.log($scope.contentTypeDataDetails)
+
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,
                 contentTypeData:$scope.contentTypeData,

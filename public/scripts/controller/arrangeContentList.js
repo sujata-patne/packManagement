@@ -71,7 +71,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
         $scope.flag = false;
         angular.forEach($scope.sequence,function(value,key) {
             var data = {};
-            console.log(value);
             if( angular.isUndefined(value)){
                 $scope.flag = true;
             }else{
@@ -88,7 +87,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
         if( $scope.flag == true  ) {
             toastr.error("Enter a number in range 1 to 9999");
         } else{
-            console.log('test '+$scope.pctId)
             arrangeContents.saveArrangedContents({pctId:$scope.pctId, packId:$scope.packId, arrangedContentList:$scope.arrangedContentList}, function (data) {
                 //$window.location.href = "/#/search-content/"+$scope.pctId;
 
