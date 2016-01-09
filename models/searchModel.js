@@ -1,6 +1,8 @@
 /**
  * Created by sujata.patne on 11-09-2015.
  */
+var config = require('../config')();
+
 exports.getKeywords = function(dbConnection, callback){
     dbConnection.query('select cm.* from catalogue_master AS cm where cm.cm_name in ("Search Keywords") order by cm.cm_id ', function (err, keywords) {
         callback(err, keywords)
@@ -384,13 +386,13 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
 
     //Rule based most downloaded :
     if(searchData.ruleName == 'MostDownloaded'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+ config.db_name_site_user + '.content_download ORDER BY cd_download_count desc) ';
     }
     if(searchData.ruleName == 'MostViewedContent'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+ config.db_name_site_user + '.content_download ORDER BY cd_download_count desc) ';
     }
     if(searchData.ruleName == 'MostClicked'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+ config.db_name_site_user + '.content_download ORDER BY cd_download_count desc) ';
     }
     if (searchData.Vendor && searchData.Vendor != null) {
         whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;
