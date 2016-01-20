@@ -121,7 +121,9 @@ exports.saveIconPackContentType = function(dbConnection,data,callback){
 
 exports.getContentTypesByPackId = function(dbConnection,packId,callback){
 	var query = dbConnection.query("SELECT *," +
-			"(select count(pc.pc_pct_id) from icn_pack_content as pc WHERE pct.pct_id = pc.pc_pct_id and pc.pc_ispublished = 1 and ISNULL(pc.pc_crud_isactive) ) as content_count , "+
+			"(select count(pc.pc_pct_id) from icn_pack_content as pc " +
+				"JOIN content_metadata as cm ON cm.cm_id = pc.pc_cm_id " +
+				"WHERE pct.pct_id = pc.pc_pct_id and pc.pc_ispublished = 1 and ISNULL(pc.pc_crud_isactive) and cm.cm_state = 4 and cm.cm_is_active = 1 ) as content_count , "+
 			"(select cd_name from catalogue_detail cd, `icn_packs` as ip where cd.cd_id = (Select ip.pk_cnt_display_opt from icn_packs as ip where ip.pk_id = ? Limit 1) Limit 1) as type "+
 			"FROM `icn_pack_content_type` pct " +
 			"INNER JOIN `catalogue_detail` cd on (pct.pct_cnt_type = cd.cd_id) inner join icn_packs ip on(ip.pk_id = pct_pk_id) "+

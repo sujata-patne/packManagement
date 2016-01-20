@@ -245,7 +245,8 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
     dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+uploadedFiles+" "+celebrity+" FROM icn_pack_content AS pc " +
         "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
         "INNER JOIN content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id " +
-        "WHERE ISNULL(cmd1.cm_property_id) AND pc_pct_id = ? AND ISNULL(pc.pc_crud_isactive) ", [pctId],function (err, result) {
+        "WHERE cmd.cm_state = 4 and cmd.cm_is_active = 1 AND " +
+        "ISNULL(cmd1.cm_property_id) AND pc_pct_id = ? AND ISNULL(pc.pc_crud_isactive) ", [pctId],function (err, result) {
         callback(err,result);
     });
 }

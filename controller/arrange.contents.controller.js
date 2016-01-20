@@ -95,7 +95,6 @@ exports.savePublishedContents = function (req, res, next) {
     }
 }
 
-
 function updatePackData( connection_ikon_cms, req ){
     var data = {
         pk_id: req.body.packId,
