@@ -471,54 +471,57 @@ exports.UploadFile =  function (req, res, next) {
                 var absPath = "/contentFiles/"+files.file.name;
                 var tmp_path = files.file.path;
                 fs.rename(tmp_path,newPath, function (err) {
-                      if (err) console.log(err);
-                       // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-                       fs.unlink(tmp_path, function() {
-                        if (err) console.log(err);
-                       });
+                   if (err) {
+                      res.status(500).json(err.message);
+                      connection_ikon_cms.release();
+                   }
+                   // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+                   fs.unlink(tmp_path, function(err) {
+                       if (err) res.status(500).json(err.message);
+                   });
 
-                            mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                                async.parallel({
-                                    MaxTemplateId : function(callback){
-                                        ContentModel.getLastInsertedTemplateId(connection_ikon_cms,function(err,MaxTemplateId){
-                                                callback(err,MaxTemplateId);
-                                        }); 
-                                    },
-                                    MaxTemplateGroupId : function(callback){
-                                        ContentModel.getTemplateGroupIdForAny(connection_ikon_cms,function(err,MaxTemplateGroupId){
-                                                callback(err,MaxTemplateGroupId);
-                                        }); 
-                                    },
-                                    MaxContentFilesId : function(callback){
-                                        ContentModel.getLastInsertedContentFilesId(connection_ikon_cms,function(err,MaxContentFilesId){
-                                                callback(err,MaxContentFilesId);
-                                        }); 
-                                    }
-                                },function(err,results){
-                                            if(results.MaxContentFilesId == template_id){
-                                                template_id = template_id + 1;
-                                            }else{
-                                                template_id = results.MaxContentFilesId;
-                                            }
+                    mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                        async.parallel({
+                            MaxTemplateId : function(callback){
+                                ContentModel.getLastInsertedTemplateId(connection_ikon_cms,function(err,MaxTemplateId){
+                                        callback(err,MaxTemplateId);
+                                }); 
+                            },
+                            MaxTemplateGroupId : function(callback){
+                                ContentModel.getTemplateGroupIdForAny(connection_ikon_cms,function(err,MaxTemplateGroupId){
+                                        callback(err,MaxTemplateGroupId);
+                                }); 
+                            },
+                            MaxContentFilesId : function(callback){
+                                ContentModel.getLastInsertedContentFilesId(connection_ikon_cms,function(err,MaxContentFilesId){
+                                        callback(err,MaxContentFilesId);
+                                }); 
+                            }
+                        },function(err,results){
+                                if(results.MaxContentFilesId == template_id){
+                                    template_id = template_id + 1;
+                                }else{
+                                    template_id = results.MaxContentFilesId;
+                                }
 
-                                             var data = {
-                                                cf_id: template_id + parseInt(Date.now().toString().slice(-2)),
-                                                cf_cm_id : fields.cm_id,
-                                                cf_url_base : absPath,
-                                                cf_url : absPath,
-                                                cf_absolute_url : absPath,
-                                                cf_template_id : results.MaxTemplateGroupId
-                                             }
+                                var data = {
+                                    cf_id: template_id + parseInt(Date.now().toString().slice(-2)),
+                                    cf_cm_id : fields.cm_id,
+                                    cf_url_base : absPath,
+                                    cf_url : absPath,
+                                    cf_absolute_url : absPath,
+                                    cf_template_id : results.MaxTemplateGroupId
+                                }
 
-                                       var content_files_inserted = saveContentFiles( connection_ikon_cms, data );
-
-                                       if(content_files_inserted == true){
-                                            console.log("File uploaded!");
-                                       }else{
-                                            console.log("File not uploaded!");
-                                       }
-                                });
-                            });
+                               saveContentFiles( connection_ikon_cms, data, function( insertStatus ) {
+                                   if(insertStatus == true){
+                                        console.log("File uploaded!");
+                                   }else{
+                                        console.log("File not uploaded!");
+                                   }
+                               });
+                        });
+                    });
                 });
         });
 
@@ -535,15 +538,17 @@ function saveTemplateForUpload( connection_ikon_cms, data ){
     return true;
 }
 
-function saveContentFiles( connection_ikon_cms, data ){
+function saveContentFiles( connection_ikon_cms, data, callback ){
     ContentModel.saveContentFiles( connection_ikon_cms, data, function(err,response ){
         if(err){
             connection_ikon_cms.release();
             // res.status(500).json(err.message);
-            return false;
+            callback( false );
+        } else{
+            callback( true  );
         }
     });
-    return true;
+     
 }
 
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {

@@ -71,6 +71,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
         $scope.flag = false;
         angular.forEach($scope.sequence,function(value,key) {
             var data = {};
+           // console.log(value);
             if( angular.isUndefined(value)){
                 $scope.flag = true;
             }else{
@@ -111,6 +112,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
         if( $scope.flag == true  ) {
             toastr.error("Enter a number in range 1 to 9999");
         } else{
+        
             arrangeContents.savePublishedContents({pctId:$scope.pctId, packId:$scope.packId, arrangedContentList:$scope.arrangedContentList}, function (data) {
                 toastr.success(data.message)
             },function(error){
@@ -158,7 +160,31 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
             toastr.error("Max 2 files allowed per content type");
         }
 
-        if(valid){
+        /*for ( var errorCount = 0; errorCount < $scope.files.length; errorCount++ ) {
+            console.log($scope.files[errorCount].size);
+            console.log($scope.files[errorCount].$error !== undefined );
+             if ($scope.files[errorCount] && ( $scope.files[errorCount].$error !== 'undefined' ) ) {
+                valid = false;
+                $scope.fileUploads = [];
+                toastr.error("Max file size should not be greater than 1 MB");
+                break;
+             }
+        }*/
+        var errorCount = 0;
+        angular.forEach($scope.files[index], function(file) {
+             if (file && file.$error && file.$error ) {
+                valid = false;
+                if( file.$error == 'maxSize') {
+                    toastr.error(" Max file size should not be greater than 1 MB" );
+                }else if( file.$error == 'pattern' ){
+                    toastr.error("Invalid file type selected !.");
+                }
+                errorCount++;
+            }
+        });
+
+         
+        if( valid && errorCount == 0 ){
             angular.forEach($scope.files[index], function(file) {
                 if (file && !file.$error) {
                     file.upload = Upload.upload({
@@ -177,7 +203,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
                     });
 
                     file.upload.progress(function (evt) {
-                        var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                        var progressPercentage = parseInt(100 * parseInt( evt.loaded ) / parseInt( evt.total ));
                         $("#"+index).html("Uploaded: "+progressPercentage+"%");
                         $scope.fileUploads[index].progress = Math.min(100, parseInt(100.0 *
                             evt.loaded / evt.total));
@@ -185,7 +211,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
                         if( progressPercentage == 100 ){
                             setTimeout(function(){
                                 window.location.reload();
-
                             },1000);
                         }
                     });
@@ -212,6 +237,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
             'closeBtn'      : true
         });
     });
+    //for validation of space and decimal
     $scope.isNumber = function(e) {
         var key = e.keyCode ? e.keyCode : e.which;
         if( (isNaN(String.fromCharCode(key)) && key !=8 )||key == 32) e.preventDefault();
