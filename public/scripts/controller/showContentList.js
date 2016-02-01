@@ -7,7 +7,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
     $scope.title = $stateParams.title;
     $scope.property = $stateParams.property;
     $scope.ruleType = $stateParams.ruleType;
-    $scope.thumb_path = $rootScope.sitePath;
+    $scope.thumb_path = $rootScope.thumbPath;
     
     $scope.ruleAuto = false;
     if($scope.ruleType == 1){

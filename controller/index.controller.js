@@ -55,7 +55,7 @@ function Pad(padString, value, length) {
  * @description get list of menus with related pages
  */
 exports.getSitePath = function (req, res, next) {
-   res.send({"site_path": config.site_path});
+   res.send({"thumb_path": config.thumb_path});
 }
 exports.pages = function (req, res, next) {
     var role;

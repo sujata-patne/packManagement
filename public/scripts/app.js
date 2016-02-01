@@ -1,5 +1,4 @@
 var myApp = angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngProgress','angularUtils.directives.dirPagination','ngFileUpload','validation', 'validation.rule','ngMessages']);
-myApp.constant('thumb_path', 'http://192.168.1.159:4010/');
 
 var ContentTypeDetails ={
     "Manual":{
@@ -251,6 +250,6 @@ myApp.config(function ($stateProvider,$httpProvider) {
 }).run(function ($state,$http,$rootScope) {
     $state.go("add-pack");
     $http.get("/getSitePath").success(function (configData) {
-        $rootScope.sitePath = configData.site_path;
+        $rootScope.thumbPath = configData.thumb_path;
     })
 })

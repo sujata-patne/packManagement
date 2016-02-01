@@ -18,7 +18,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope,
     $scope.isAdded = false;
     $scope.published = [];
     $scope.sequence = [];
-    $scope.thumb_path = $rootScope.sitePath;
+    $scope.thumb_path = $rootScope.thumbPath;
 
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.searchContentList = angular.copy(data.contents);
