@@ -4,6 +4,8 @@ var index = require('../controller/index.controller');
 module.exports = function (app) {
     app.route('/')
         .get(index.pages);
+    app.route('/getSitePath')
+        .get(index.getSitePath);
     app.route('/accountlogin')
         .get(index.login)
         .post(index.authenticate);

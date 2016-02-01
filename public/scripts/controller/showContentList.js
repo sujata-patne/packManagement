@@ -1,4 +1,4 @@
-myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,thumb_path, $stateParams,$state, ngProgress, Search,showContents) {
+myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$stateParams,$state, ngProgress, Search,showContents,$rootScope) {
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
     $scope.pctId = $stateParams.pctId;
@@ -7,7 +7,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,thumb_
     $scope.title = $stateParams.title;
     $scope.property = $stateParams.property;
     $scope.ruleType = $stateParams.ruleType;
-    $scope.thumb_path = thumb_path;
+    $scope.thumb_path = $rootScope.sitePath;
     
     $scope.ruleAuto = false;
     if($scope.ruleType == 1){
@@ -33,7 +33,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,thumb_
     $scope.contents = [];
     $scope.dbcontents = [];
     $scope.unselectedContents = [];
-
     Search.getPackSearchContents({pctId: $scope.pctId, limitCount: $scope.limitCount, action: $scope.action, title: $scope.title, property: $scope.property, rule: $scope.rule}, function (data) {
         $scope.searchContentList = angular.copy(data.searchContentList);
         $scope.packDetails = angular.copy(data.packDetails);

@@ -5,6 +5,7 @@ var userManager = require('../models/userModel');
 var crypto = require('crypto');
  algorithm = 'aes-256-ctr', //Algorithm used for encrytion
  password = 'd6F3Efeq'; //Encryption password 
+var config = require('../config')();
 
  function encrypt(text){
   var cipher = crypto.createCipher(algorithm,password)
@@ -53,6 +54,9 @@ function Pad(padString, value, length) {
  * @param next
  * @description get list of menus with related pages
  */
+exports.getSitePath = function (req, res, next) {
+   res.send({"site_path": config.site_path});
+}
 exports.pages = function (req, res, next) {
     var role;
 

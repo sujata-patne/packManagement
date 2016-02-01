@@ -1,4 +1,4 @@
-myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path, $http, $stateParams,$state, ngProgress,Upload, Search,arrangeContents) {
+myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope, $http, $stateParams,$state, ngProgress,Upload, Search,arrangeContents) {
 
 
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
@@ -18,10 +18,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,thumb_path,
     $scope.isAdded = false;
     $scope.published = [];
     $scope.sequence = [];
-
-    $scope.thumb_path = thumb_path;
-
-
+    $scope.thumb_path = $rootScope.sitePath;
 
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.searchContentList = angular.copy(data.contents);
