@@ -8,19 +8,21 @@ exports.saveArrangedContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                var count = req.body.arrangedContentList[contentId];
-                var unique = [];
+                 var unique = [];
                 var duplicate = [];
+                var i = 0;
 
                 if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
                     updatePackData(connection_ikon_cms, req);
                 }
 
-                for (var contentId in req.body.arrangedContentList) { 
+                for (var contentId in req.body.arrangedContentList) {
+                    ++i;
+                    var sequenceOrder = (req.body.arrangedContentList[contentId] != null)? req.body.arrangedContentList[contentId]:i;
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: req.body.arrangedContentList[contentId]
+                        pc_arrange_seq: sequenceOrder
                     }
                     if( unique.length == 0 ) {
                         unique.push( parseInt( req.body.arrangedContentList[contentId] ) );
@@ -60,21 +62,23 @@ exports.saveArrangedContents = function (req, res, next) {
 }
 
 exports.savePublishedContents = function (req, res, next) {
+
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                
-                var count = req.body.arrangedContentList[contentId];
+
 
                 if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
                     updatePackData(connection_ikon_cms, req);
                 }
-
+                var i = 0;
                 for (var contentId in req.body.arrangedContentList) {
+                    ++i;
+                    var sequenceOrder = (req.body.arrangedContentList[contentId] != null)? req.body.arrangedContentList[contentId]:i;
                     var data = {
                         pc_pct_id: parseInt(req.body.pctId),
                         pc_cm_id: parseInt(contentId),
-                        pc_arrange_seq: req.body.arrangedContentList[contentId],
+                        pc_arrange_seq: sequenceOrder,
                         pc_ispublished: 1
                     }
                     addEditContents(connection_ikon_cms,data,req);

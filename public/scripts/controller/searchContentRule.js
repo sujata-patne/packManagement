@@ -185,7 +185,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                     ngProgress.start();
                     Search.saveSearchCriteria(searchData, function (data) {
                         if (data.success) {
-                            console.log($scope.Rule_name)
+                            //console.log($scope.Rule_name)
                             // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
                             var params = { pctId: $scope.pctId,
                                 limitCount: $scope.limitCount,

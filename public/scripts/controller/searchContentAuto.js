@@ -112,8 +112,8 @@ myApp.controller('searchContentAutoCtrl', function ($scope, $window, $http, $sta
         if (isValid) {
             $scope.contentTypeDataDetails = [];
             $scope.contentTypeDataDetails = getSearchedfields($scope.contentTypeData, $scope.list)
-            console.log('contentTypeDataDetails')
-            console.log($scope.contentTypeDataDetails)
+            //console.log('contentTypeDataDetails')
+            //console.log($scope.contentTypeDataDetails)
 
             var searchData = {
                 contentTypeDataDetails:$scope.contentTypeDataDetails,

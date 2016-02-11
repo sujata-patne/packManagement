@@ -57,7 +57,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
                 $scope.contents.push(value);
             })
         }
-        console.log($scope.contents);
+        //console.log($scope.contents);
 
 
     }, function (error) {

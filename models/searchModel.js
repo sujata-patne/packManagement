@@ -286,6 +286,8 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = ' ISNULL(cmd1.cm_property_id) AND cmd.cm_state = 4 ';
     var limitstr = '';
+    var joinstr = '';
+    var orderstr = '';
     var groupstr = ' GROUP BY cmd.cm_id';
 
     if (searchData.limitCount) {
@@ -388,7 +390,9 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
 
     //Rule based most downloaded :
     if(searchData.ruleName == 'MostDownloaded'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download GROUP BY cd_cmd_id  ORDER BY count(cd_download_count) desc) ';
+        //whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download GROUP BY cd_cmd_id  ORDER BY count(cd_download_count) desc) ';
+        joinstr = ' left join '+config.db_name_site_user+'.content_download as cntDownloaded on cmd.cm_id = cntDownloaded.cd_cmd_id ';
+        orderstr = ' ORDER BY count(cd_download_count) desc '
     }
     if(searchData.ruleName == 'MostViewedContent'){
         whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download GROUP BY cd_cmd_id ORDER BY count(cd_download_count) desc) ';
@@ -408,9 +412,9 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         'from icn_store as st ' +
         'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_vendor) ' +
         'join content_metadata As cmd ON cmd.cm_vendor = mlm.cmd_entity_detail ' +
-        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + groupstr + limitstr ;
-
-     var query = dbConnection.query(str, function (err, result) {
+        'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id ' + joinstr +
+        'WHERE ' + whereStr + groupstr + orderstr+ limitstr ;
+      var query = dbConnection.query(str, function (err, result) {
         callback(err,result);
     })
 }
