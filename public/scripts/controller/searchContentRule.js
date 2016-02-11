@@ -93,7 +93,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
         if($scope.contentTypeData['Rules'] == undefined){
             $scope.contentTypeData['Rules'] = data.rules[0].cd_id;
             //First  initialization
-            $scope.ruleChange('Most User Rated');
+            $scope.ruleChange('Most Downloaded');
         }else{
             var sel_arr = $scope.Rules.filter(function(item,index){ 
                 return item.cd_id == $scope.contentTypeData['Rules'];
@@ -185,6 +185,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                     ngProgress.start();
                     Search.saveSearchCriteria(searchData, function (data) {
                         if (data.success) {
+                            console.log($scope.Rule_name)
                             // $window.location.href = "/#/show-content-list/"+$scope.pctId+"/"+$scope.limitCount+"/"+$scope.action+"/"+$scope.searchWhereTitle+"/"+$scope.searchWherePropertyTitle;
                             var params = { pctId: $scope.pctId,
                                 limitCount: $scope.limitCount,

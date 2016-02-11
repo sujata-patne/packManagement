@@ -387,16 +387,14 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
 
 
     //Rule based most downloaded :
-    console.log('searchData.ruleName')
-    console.log(searchData.ruleName)
     if(searchData.ruleName == 'MostDownloaded'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download GROUP BY cd_cmd_id  ORDER BY count(cd_download_count) desc) ';
     }
     if(searchData.ruleName == 'MostViewedContent'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download GROUP BY cd_cmd_id ORDER BY count(cd_download_count) desc) ';
     }
     if(searchData.ruleName == 'MostClicked'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download GROUP BY cd_cmd_id ORDER BY count(cd_download_count) desc) ';
     }
     if (searchData.Vendor && searchData.Vendor != null) {
         whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;
@@ -409,11 +407,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         '(SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url  ' +
         'from icn_store as st ' +
         'inner join multiselect_metadata_detail as mlm on (mlm.cmd_group_id = st.st_vendor) ' +
-        'join content_metadata As cmd ' +
+        'join content_metadata As cmd ON cmd.cm_vendor = mlm.cmd_entity_detail ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id WHERE ' + whereStr + groupstr + limitstr ;
 
-
-    var query = dbConnection.query(str, function (err, result) {
+     var query = dbConnection.query(str, function (err, result) {
         callback(err,result);
     })
 }

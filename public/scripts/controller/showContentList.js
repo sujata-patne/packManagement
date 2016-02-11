@@ -105,7 +105,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
         }
     }
 
-
     $scope.removeContent = function (id) {
         $scope.contents = [];
         $scope.selectedContent = [];
@@ -118,28 +117,6 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
         angular.forEach($scope.removedContent, function(value, key){
             $scope.contents.push(value);
         })
-    }
-    $scope.showResetRules = function () {
-        var r = confirm("Are you sure you want to reset the previous data?");
-        if( r == true){
-            showContents.showResetRules({pctId:$scope.pctId}, function (data) {
-                //$window.location.href = "/#/search-content/"+$scope.pctId;
-                var filename = '';
-                if($scope.displayName == 'Rule Based'){
-                    filename = 'search-content-rule';
-                }else{
-                    filename = 'search-content-'+$scope.displayName.toLowerCase();
-                }
-                //var filename = 'search-content-'+$scope.displayName.toLowerCase()
-                $state.go(filename, {pctId:$scope.pctId});
-                toastr.success(data.message)
-            },function(error){
-                console.log(error)
-                toastr.error(error)
-            })
-        }else{
-
-        }
     }
 
     $scope.addMoreSearchContents = function () {
@@ -211,6 +188,31 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
             })
         }else{
             toastr.error('Please select at least one record to arrange!')
+        }
+    }
+
+    $scope.resetSearchCriteria = function () {
+        var r = confirm("Are you sure you want to reset the previous data?");
+        if( r == true){
+            showContents.showResetRules({pctId:$scope.pctId}, function (data) {
+                //$window.location.href = "/#/search-content/"+$scope.pctId;
+                var filename = '';
+                if($scope.displayName == 'Rule Based'){
+                    filename = 'search-content-rule';
+                }else{
+                    filename = 'search-content-'+$scope.displayName.toLowerCase();
+                }
+                //var filename = 'search-content-'+$scope.displayName.toLowerCase()
+                $state.go(filename, {pctId:$scope.pctId})
+               // $window.location.href = "/#/"+filename+"/"+$scope.pctId;
+
+                toastr.success(data.message)
+            },function(error){
+                console.log(error)
+                toastr.error(error)
+            })
+        }else{
+
         }
     }
 

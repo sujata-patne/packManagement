@@ -47,8 +47,8 @@
                         <div class="form-group">
                             <label for="title" class="col-md-3 control-label">Select a Rule</label>
                             <div class="col-md-6 col-xs-5">
-                                <div data-ng-repeat="rule in Rules">
-                                    <input type="radio" name="rule" ng-value="rule.cd_id" data-ng-model="contentTypeData['Rules']" ng-change='ruleChange(rule.cd_name)' required>&nbsp;<label class="control-label">{{rule.cd_name}}</label>
+                                 <div data-ng-repeat="rule in Rules"> <!-- ng-value="rule.cd_id"-->
+                                    <input type="radio" name="rule" ng-value="rule.cd_id" ng-checked="(contentTypeData['Rules'] == rule.cd_id)" data-ng-model="contentTypeData['Rules']" ng-change='ruleChange(rule.cd_name)' required>&nbsp;<label class="control-label">{{rule.cd_name}}</label>
                                 </div>
                             </div>
                         </div>
