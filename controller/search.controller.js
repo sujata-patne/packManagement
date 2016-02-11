@@ -349,7 +349,6 @@ exports.getPackSearchResult = function (req, res, next) {
                         function (callback) {
                             SearchModel.getPackSearchDetails( connection_ikon_cms, req.body.pctId, function(err,packSearchDetails){
                                 var contentTypeData = {};
-
                                 contentTypeData["storeId"] = req.session.pack_StoreId;
                                 contentTypeData["limitCount"] = req.body.limitCount;
                                 contentTypeData["searchWhereTitle"] = req.body.title;

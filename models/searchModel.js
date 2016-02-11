@@ -1,7 +1,9 @@
 /**
  * Created by sujata.patne on 11-09-2015.
  */
-exports.getKeywords = function(dbConnection, callback){
+var config = require('../config')();
+
+ exports.getKeywords = function(dbConnection, callback){
     dbConnection.query('select cm.* from catalogue_master AS cm where cm.cm_name in ("Search Keywords") order by cm.cm_id ', function (err, keywords) {
         callback(err, keywords)
     });
@@ -237,10 +239,11 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
 
-    var uploadedFiles = '(SELECT SUBSTRING_INDEX(group_concat(cf.cf_url), ",", -2) from content_files as cf where pc.pc_cm_id = cf.cf_cm_id and '+
+   /* var uploadedFiles = '(SELECT SUBSTRING_INDEX(group_concat(cf.cf_url), ",", -2) from content_files as cf where pc.pc_cm_id = cf.cf_cm_id and '+
         ' cf_template_id = (select ct_group_id from content_template where ct_param_value = "ANY" order by ct_id desc limit 1 ) '+
-        ' Limit 1) as uploadedFiles , ';
+        ' Limit 1) as uploadedFiles , ';*/
 
+    var uploadedFiles =' (SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url,  ';
 
     dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+uploadedFiles+" "+celebrity+" FROM icn_pack_content AS pc " +
         "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
@@ -384,14 +387,16 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
 
 
     //Rule based most downloaded :
+    console.log('searchData.ruleName')
+    console.log(searchData.ruleName)
     if(searchData.ruleName == 'MostDownloaded'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download ORDER BY cd_download_count desc) ';
     }
     if(searchData.ruleName == 'MostViewedContent'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download ORDER BY cd_download_count desc) ';
     }
     if(searchData.ruleName == 'MostClicked'){
-        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM siteuser.content_download ORDER BY cd_download_count desc) ';
+        whereStr += ' AND cmd.cm_id IN ( SELECT cd_cmd_id FROM '+config.db_name_site_user+'.content_download ORDER BY cd_download_count desc) ';
     }
     if (searchData.Vendor && searchData.Vendor != null) {
         whereStr += ' AND cmd.cm_vendor = ' + searchData.Vendor;

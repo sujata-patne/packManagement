@@ -84,20 +84,33 @@
                 </div>
             </div>
 			<br/><br/>
-            <div class="row" ng-show="searchContentList.length  > 0">
+            <div class="row">
                 <div class="col-md-12 col-xs-12">
-                	 <div class="col-xs-3 col-md-3">
+                    <div class="col-xs-3 col-md-3">
+                    </div>
+                    <div class="col-xs-6 col-md-6">
+                        <input type="button" class="btn btn-default btn-w-xs " data-ng-click="backToAddContentList()" value="<" />
+                        <input type="button" class="btn btn-default btn-w-xs " data-ng-click="showResetRules()" value="Reset Rules"/>
+                        <input type="button" class="btn btn-default btn-w-xs " ng-hide="displayName == 'Auto' || ruleAuto == true" data-ng-click="addMoreSearchContents()" value="Add more content"/>
+                        <span ng-show="searchContentList.length  > 0">
+                            <input type="button" class="btn btn-default btn-w-xs " ng-hide="displayName == 'Auto' || ruleAuto == true" data-ng-click="showArrangeContents()" value="Arrange" />
+                            <input type="button" class="btn btn-default btn-w-xs " data-ng-click="showPublishContents(displayName)" value="Publish current List" />
+                        </span>
+                    </div>
+                    <div class="col-xs-3 col-md-3">
+                    </div>
+                </div>
+            </div>
+            <!--<div class="row" ng-show="searchContentList.length  > 0">
+                <div class="col-md-12 col-xs-12">
+                	<div class="col-xs-3 col-md-3">
                 	 </div>
                     <div class="col-xs-6 col-md-6">
-                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="backToAddContentList()" > < </button>
                         <button type="button" class="btn btn-default btn-w-xs " ng-hide="displayName == 'Auto' || ruleAuto == true" data-ng-click="showArrangeContents()" >Arrange</button>
-                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="showResetRules()" >Reset Rules</button>
-                        <button type="button" class="btn btn-default btn-w-xs " ng-hide="displayName == 'Auto' || ruleAuto == true" data-ng-click="addMoreSearchContents()" >Add more content</button>
-
                         <button type="button" class="btn btn-default btn-w-xs " data-ng-click="showPublishContents(displayName)" >Publish current List</button>
                     </div>
                     <div class="col-xs-3 col-md-3">
-                	 </div>
+                	</div>
                 </div>
             </div>
             <div class="row" ng-show="searchContentList.length  == 0">
@@ -105,14 +118,11 @@
                     <div class="col-xs-3 col-md-3">
                     </div>
                     <div class="col-xs-6 col-md-6">
-                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="backToAddContentList()" > < </button>
-                        <button type="button" class="btn btn-default btn-w-xs " data-ng-click="showResetRules()" >Reset Rules</button>
-                         <button type="button" class="btn btn-default btn-w-xs " ng-hide="displayName == 'Auto' || ruleAuto == true" data-ng-click="addMoreSearchContents()" >Add more content</button>
                     </div>
                     <div class="col-xs-3 col-md-3">
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
     </div>
 </div>

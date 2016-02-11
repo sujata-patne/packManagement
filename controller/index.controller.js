@@ -21,7 +21,6 @@ function decrypt(text){
   return dec;
 }
 
-
 function getDate(val) {
     var d = new Date(val);
     var dt = d.getDate();
@@ -39,6 +38,7 @@ function getTime(val) {
     var selectdate = Pad("0", hour, 2) + ':' + Pad("0", minite, 2) + ':' + Pad("0", second, 2);
     return selectdate;
 }
+
 function Pad(padString, value, length) {
     var str = value.toString();
     while (str.length < length)
@@ -57,6 +57,7 @@ function Pad(padString, value, length) {
 exports.getSitePath = function (req, res, next) {
    res.send({"thumb_path": config.thumb_path});
 }
+
 exports.pages = function (req, res, next) {
     var role;
 
@@ -96,6 +97,7 @@ exports.pages = function (req, res, next) {
  * @param next
  * @description user can login
  */
+
 exports.login = function (req, res, next) {
     if(req.cookies.pack_remember == 1 && req.cookies.pack_username != '' ){
         mysql.getConnection('CMS', function (err, connection_ikon_cms) {
@@ -156,6 +158,7 @@ exports.login = function (req, res, next) {
             res.render('account-login', { error: '' });
     }
 }
+
 /**
  * @function logout
  * @param req
