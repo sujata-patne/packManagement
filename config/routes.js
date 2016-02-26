@@ -8,7 +8,7 @@ module.exports = function(app){
     require('../routes/packList')(app);
     require('../routes/showContents')(app);
     require('../routes/arrangeContents')(app);
-    // require('../cron/autoPublish');
+   // require('../cron/autoPublish');
 
     app.use('/*', function(req,res,next){
         res.status(404).json({"error":"No such service present"});

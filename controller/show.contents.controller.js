@@ -24,13 +24,18 @@ exports.showArrangeContents = function (req, res, next) {
                         callback(null, null);
                     },
                     function (callback) {
+                        var cnt = 0;
+                        uniqueArray = req.body.selectedContentList.filter(function(elem, pos) {
+                            return req.body.selectedContentList.indexOf(elem) == pos;
+                        })
+
                         async.each( req.body.selectedContentList, function( selectedContent, callback ) {
-                            var cnt = 0;
                             var data = {
                                 pc_pct_id: parseInt(req.body.pctId),
                                 pc_cm_id: selectedContent,
                             }
-                            addEditContents( connection_ikon_cms,data,req );
+                            addEditContents( connection_ikon_cms,data,req,++cnt );
+
                             callback(null, null);
                         });
                         callback(null, null);
@@ -66,6 +71,7 @@ exports.showPublishContents = function (req, res, next) {
     try {
         if (req.session && req.session.pack_UserName && req.session.pack_StoreId) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
+                var count = req.body.selectedContentList;
                 async.series([
                     function (callback) {
                         if(req.body.packId != undefined && req.body.packId != '' && req.body.packId != null) {
@@ -80,16 +86,22 @@ exports.showPublishContents = function (req, res, next) {
                         callback(null, null);
                     },
                     function (callback) {
-                        async.each( req.body.selectedContentList, function( selectedContent, callback ) {
+                        var cnt = 0;
+                        uniqueArray = req.body.selectedContentList.filter(function(elem, pos) {
+                            return req.body.selectedContentList.indexOf(elem) == pos;
+                        })
 
+                        async.each(uniqueArray , function( selectedContent, callback ) {
                             var data = {
                                 pc_pct_id: parseInt(req.body.pctId),
                                 pc_cm_id: selectedContent,
-                                pc_ispublished: 1
+                                pc_ispublished: 1,
+
                             }
-                            addEditContents( connection_ikon_cms,data,req );
+                            addEditContents( connection_ikon_cms,data,req,++cnt )
+
                             callback(null, null);
-                        });
+                        })
                         callback(null, null);
                     }
                 ],function( err, results ){
@@ -226,12 +238,14 @@ function updatePackData( connection_ikon_cms, req ){
     return true;
 }
 
-function addEditContents(connection_ikon_cms,data,req){
+function addEditContents(connection_ikon_cms,data,req,seq){
     SearchModel.searchContentsExist(connection_ikon_cms, data, function (err, response) {
         if (err) {
             connection_ikon_cms.release();
             res.status(500).json(err.message);
         }else {
+            data['pc_arrange_seq'] = (req.body.rule == "Auto" || req.body.auto == true) ? seq : null;
+
             data['pc_modified_on'] =  new Date();
             data['pc_modified_by'] =  req.session.pack_UserName;
             if (response) {
@@ -242,16 +256,19 @@ function addEditContents(connection_ikon_cms,data,req){
                     }
                 })
             } else {
-                data['pc_created_on'] = new Date();
-                data['pc_created_by'] = req.session.pack_UserName;
-                data['pc_modified_on'] =  new Date();
-                data['pc_modified_by'] =  req.session.pack_UserName;
-                SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
-                    if (err) {
-                        connection_ikon_cms.release();
-                        res.status(500).json(err.message);
-                    }
-                })
+
+                    data['pc_created_on'] = new Date();
+                    data['pc_created_by'] = req.session.pack_UserName;
+                    data['pc_modified_on'] =  new Date();
+                    data['pc_modified_by'] =  req.session.pack_UserName;
+                    SearchModel.insertSearchContents(connection_ikon_cms, data, function (err, response) {
+                        if (err) {
+                            connection_ikon_cms.release();
+                            res.status(500).json(err.message);
+                        }
+                    })
+
+
             }
         }
     })

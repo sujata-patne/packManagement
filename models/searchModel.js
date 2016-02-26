@@ -75,7 +75,7 @@ exports.getPhotographer = function(dbConnection, callback){
 exports.getVendor = function(dbConnection,storeId, callback){
     dbConnection.query('SELECT ivd.vd_id as cd_id,ivd.vd_name as cd_name, ' +
     '(select cm.cm_id FROM catalogue_master AS cm WHERE cm.cm_name in ("Vendor") )as cm_id FROM icn_store st ' +
-    'inner join   multiselect_metadata_detail mlm on (mlm.cmd_group_id = st.st_vendor) ' +
+    'inner join multiselect_metadata_detail mlm on (mlm.cmd_group_id = st.st_vendor) ' +
     'join icn_vendor_detail ivd on ivd.vd_id =  mlm.cmd_entity_detail ' +
     'WHERE st.st_id = ? and ivd.vd_is_active = 1 ',[storeId], function (err, vendor) {
         callback(err, vendor)
@@ -282,6 +282,73 @@ exports.getPackSearchDetails = function(dbConnection,pctId,callback){
         callback(err,result);
     });
 }
+exports.setPackSearchCriteraFields = function(dbConnection,pctId,callback){
+    var contentTypeData = {};
+
+    dbConnection.query("SELECT pct.pct_cnt_type AS contentTypeId,pct.pct_nxt_rule_duration as duration, pcr.*, cm.*, cd.* FROM icn_packs AS pk " +
+        "JOIN icn_pack_content_type AS pct ON pk.pk_id = pct.pct_pk_id " +
+        "JOIN icn_pack_content_rule AS pcr ON pcr.pcr_pct_id = pct.pct_id " +
+        "JOIN catalogue_master AS cm ON cm.cm_id = pcr.pcr_metadata_type " +
+        "LEFT JOIN catalogue_detail AS cd ON (cd.cd_cm_id = cm.cm_id and cd.cd_id = pcr.pcr_metadata_search_criteria )" +
+        " WHERE pct.pct_id = ? AND ISNULL(pcr.pcr_crud_isactive) ", [pctId],function (err, packSearchDetails) { //pct_is_active = 1 AND
+        packSearchDetails.forEach(function (metadataFields) {
+            contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
+
+            if (metadataFields.pcr_start_year != '0000' || metadataFields.pcr_end_year != '0000') {
+                contentTypeData["releaseYearStart"] = metadataFields.pcr_start_year;
+                contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_year;
+            }
+
+            if (metadataFields.cm_name === "Content Title") {
+                contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Property") {
+                contentTypeData["Property"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Search Keywords") {
+                contentTypeData["Keywords"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Content Ids") {
+                contentTypeData["Content_Ids"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Languages") {
+                contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Celebrity") {
+                contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Genres") {
+                contentTypeData["Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Singers") {
+                contentTypeData["Singers"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Music Directors") {
+                contentTypeData["Music_Directors"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Nudity") {
+                contentTypeData["Nudity"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Rules") {
+                contentTypeData["Rules"] = metadataFields.pcr_metadata_search_criteria;
+                contentTypeData["ruleName"] = metadataFields.cd_name.replace(/ /g,'');
+            }
+            if (metadataFields.cm_name === "Sub Genres") {
+                contentTypeData["Sub_Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Mood") {
+                contentTypeData["Mood"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Photographer") {
+                contentTypeData["Photographer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Vendor") {
+                contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+        })
+        callback(err, contentTypeData);
+    });
+}
 
 exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
     var whereStr = ' ISNULL(cmd1.cm_property_id) AND cmd.cm_state = 4 ';
@@ -353,8 +420,11 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
             'JOIN multiselect_metadata_detail AS mmd ON mmd.cmd_entity_detail = kcd.cd_id ' +
             'WHERE kcm.cm_name = "Search Keywords" AND cd_name IN (' + keywords + ') )';
     }
+
     if (searchData.Language && searchData.Language != null) {
-        whereStr += ' AND cmd.cm_language = ' + searchData.Language;
+        whereStr += ' AND cmd.cm_language IN (SELECT cmd_group_id FROM multiselect_metadata_detail AS mmdl ' +
+            'JOIN catalogue_detail AS lcd ON lcd.cd_id = mmdl.cmd_entity_detail ' +
+            'WHERE mmdl.cmd_entity_type = cmd.cm_content_type AND cmd_entity_detail = '+searchData.Language + ' )';
     }
     if (searchData.Actor_Actress && searchData.Actor_Actress != null) {
         whereStr += ' AND cmd.cm_celebrity = ' + searchData.Actor_Actress;
@@ -414,7 +484,10 @@ exports.getSearchCriteriaResult = function(dbConnection,searchData,callback) {
         'join content_metadata As cmd ON cmd.cm_vendor = mlm.cmd_entity_detail ' +
         'INNER join content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id ' + joinstr +
         'WHERE ' + whereStr + groupstr + orderstr+ limitstr ;
-      var query = dbConnection.query(str, function (err, result) {
+
+   // console.log(str);
+
+    var query = dbConnection.query(str, function (err, result) {
         callback(err,result);
     })
 }
@@ -533,10 +606,8 @@ exports.getSearchCriteriaByPackContentTypeId = function(dbConnection,pctId,callb
 }
 
 exports.deletePackContentsForCron = function(dbConnection, pctId, callback){
-    var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, result) {
-
+     var query = dbConnection.query("DELETE FROM icn_pack_content WHERE pc_pct_id = ? ", [pctId], function (err, result) {
         callback(err,result);
-
     })
 }
 

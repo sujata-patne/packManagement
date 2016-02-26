@@ -346,7 +346,8 @@ exports.getPackSearchResult = function (req, res, next) {
         if (req.session && req.session.pack_UserName) {
             mysql.getConnection('CMS', function (err, connection_ikon_cms) {
                     async.waterfall([
-                        function (callback) {
+                            /* function (callback) {
+                            //var contentTypeData = setPackSearchCriteraFields(connection_ikon_cms, req);
                             SearchModel.getPackSearchDetails( connection_ikon_cms, req.body.pctId, function(err,packSearchDetails){
                                 var contentTypeData = {};
                                 contentTypeData["storeId"] = req.session.pack_StoreId;
@@ -411,12 +412,26 @@ exports.getPackSearchResult = function (req, res, next) {
                                 })
                                 callback(err, contentTypeData);
                             });
-                        },
-                        function (data, callback) {
-                            SearchModel.getSearchCriteriaResult(connection_ikon_cms,data,function(err,result){
-                                //console.log(result)
-                                callback(err, result);
-                            });
+                            setPackSearchCriteraFields( connection_ikon_cms, data, function( contentTypeData ) {
+                                console.log(contentTypeData); process.exit(0);
+                                callback(err, contentTypeData);
+
+                            })
+                        },*/
+                        function (callback) {
+                            //setPackSearchCriteraFields( connection_ikon_cms, req.body.pctId, function( contentTypeData ) {
+                            SearchModel.setPackSearchCriteraFields( connection_ikon_cms, req.body.pctId, function(err,contentTypeData) {
+
+                                contentTypeData["storeId"] = req.session.pack_StoreId;
+                                contentTypeData["limitCount"] = req.body.limitCount;
+                                contentTypeData["searchWhereTitle"] = req.body.title;
+                                contentTypeData["searchWherePropertyTitle"] = req.body.property;
+                                contentTypeData["ruleName"] = req.body.rule;
+
+                                SearchModel.getSearchCriteriaResult(connection_ikon_cms,contentTypeData,function(err,result){
+                                    callback(err, result);
+                                });
+                            })
                         },
                         function (searchContentList, callback) {
                           //  console.log(req.body.pctId)
@@ -446,7 +461,8 @@ exports.getPackSearchResult = function (req, res, next) {
                             connection_ikon_cms.release();
                             res.status(500).json(err.message);
                             console.log(err.message)
-                        } else {
+                        }
+                        else {
                            // console.log(results.searchContentList.length)
                             connection_ikon_cms.release();
                             res.send(results);
@@ -526,17 +542,6 @@ exports.UploadFile =  function (req, res, next) {
 
 };
 
-function saveTemplateForUpload( connection_ikon_cms, data ){
-    ContentModel.saveTemplateForUpload( connection_ikon_cms, data, function(err,response ){
-        if(err){
-            connection_ikon_cms.release();
-            // res.status(500).json(err.message);
-            return false;
-        }
-    });
-    return true;
-}
-
 function saveContentFiles( connection_ikon_cms, data, callback ){
     ContentModel.saveContentFiles( connection_ikon_cms, data, function(err,response ){
         if(err){
@@ -547,7 +552,81 @@ function saveContentFiles( connection_ikon_cms, data, callback ){
             callback( true  );
         }
     });
-     
+
+}
+
+function setPackSearchCriteraFields( connection_ikon_cms, pctId, callback ){
+    SearchModel.getPackSearchDetails( connection_ikon_cms, pctId, function(err,packSearchDetails) {
+        //console.log(pctId)
+        var contentTypeData = {};
+
+        packSearchDetails.forEach(function (metadataFields) {
+            contentTypeData["contentTypeId"] = metadataFields.contentTypeId;
+
+            if (metadataFields.pcr_start_year != '0000' || metadataFields.pcr_end_year != '0000') {
+                contentTypeData["releaseYearStart"] = metadataFields.pcr_start_year;
+                contentTypeData["releaseYearEnd"] = metadataFields.pcr_end_year;
+            }
+
+            if (metadataFields.cm_name === "Content Title") {
+                contentTypeData["Content_Title"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Property") {
+                contentTypeData["Property"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Search Keywords") {
+                contentTypeData["Keywords"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Content Ids") {
+                contentTypeData["Content_Ids"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Languages") {
+                contentTypeData["Language"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Celebrity") {
+                contentTypeData["Actor_Actress"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Genres") {
+                contentTypeData["Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Singers") {
+                contentTypeData["Singers"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Music Directors") {
+                contentTypeData["Music_Directors"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Nudity") {
+                contentTypeData["Nudity"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Rules") {
+                contentTypeData["Rules"] = metadataFields.pcr_metadata_search_criteria;
+            }
+            if (metadataFields.cm_name === "Sub Genres") {
+                contentTypeData["Sub_Genres"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Mood") {
+                contentTypeData["Mood"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Photographer") {
+                contentTypeData["Photographer"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+            if (metadataFields.cm_name === "Vendor") {
+                contentTypeData["Vendor"] = parseInt(metadataFields.pcr_metadata_search_criteria);
+            }
+        })
+        callback(contentTypeData);
+    })
+}
+
+function saveTemplateForUpload( connection_ikon_cms, data ){
+    ContentModel.saveTemplateForUpload( connection_ikon_cms, data, function(err,response ){
+        if(err){
+            connection_ikon_cms.release();
+            // res.status(500).json(err.message);
+            return false;
+        }
+    });
+    return true;
 }
 
 function getLastSearchCriteriaId( connection_ikon_cms, callback ) {

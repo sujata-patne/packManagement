@@ -38,7 +38,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope,
         }
 
     }, function (error) {
-        toastr.success(error)
+        toastr.error(error)
     });
 
     $scope.checkForDuplicates = function(id) {

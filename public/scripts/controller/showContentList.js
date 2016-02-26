@@ -142,8 +142,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
                 $scope.contents.push(value.cm_id);
             });
             if($scope.contents.length > 0){
-                showContents.showPublishContents({pctId:$scope.pctId, packId:$scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
-                        //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
+                showContents.showPublishContents({rule: displayName, auto:$scope.ruleAuto, pctId:$scope.pctId, packId:$scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                     $timeout(function(){
                         $state.go('arrange-content-list', {pctId:$scope.pctId})
                         toastr.success(data.message)
@@ -157,7 +156,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
             }
         }else{
             if($scope.contents.length > 0){
-                showContents.showPublishContents({pctId:$scope.pctId, packId: $scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
+                showContents.showPublishContents({rule: displayName,  auto:$scope.ruleAuto, pctId:$scope.pctId, packId: $scope.packId, selectedContentList:$scope.contents,unselectedContentsList:$scope.unselectedContents}, function (data) {
                     //$window.location.href = "/#/arrange-content-list/"+$scope.pctId;
                     $timeout(function(){
                         $state.go('arrange-content-list', {pctId:$scope.pctId})
