@@ -57,7 +57,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <!-- {{searchContentList}} -->
+                                    <div loading-spinner></div>
                                     <tr data-ng-repeat="content in searchContentList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize track by $index">
                                         {{content}}
                                         <td class="col-md-1 col-xs-1 text-center">{{$index+1+(listcurrentPage*listpageSize)}}&nbsp;&nbsp;<span class="text-center" ng-show="published[content.cm_id]"><i class="fa fa-check" style="color:green"></i></span></td>
@@ -80,27 +80,23 @@
                                                     Upload
                                                 </button>
                                                 <div style="margin-top:8px" ng-show="content.uploadedFiles.split(',').length > 0" ng-init="prev_uploaded_files = content.uploadedFiles.split(',') ">
-                                                        <span ng-repeat="p in prev_uploaded_files track by $index">
-                                                            <a class="fancybox grouped_elements" href="{{p}}" title="{{p}}" >
-                                                                <img src="{{p}}" width="50" height="50"/>
-                                                            </a>
-                                                        </span>
+                                                    <span ng-repeat="p in prev_uploaded_files track by $index">
+                                                        <a class="fancybox grouped_elements" href="{{p}}" title="{{p}}" >
+                                                            <img src="{{p}}" width="50" height="50"/>
+                                                        </a>
+                                                    </span>
                                                 </div>
                                             </form>
                                             <!-- Files: {{$index}} -->
-
                                             <ul>
                                                 <li ng-repeat="f in fileUploads[$index]" style="font:smaller">
                                                     {{f.name}}
-                                                        <span style="color:red">
-                                                                     {{f.$error}}  {{f.$errorParam}}
-                                                                  </span>
+                                                    <span style="color:red">
+                                                        {{f.$error}}  {{f.$errorParam}}
+                                                    </span>
                                                 </li>
                                             </ul>
-                                                  <span class="progress" style="color:green" id="{{$index}}">
-                                                        
-                                                  </span>
-
+                                            <span class="progress" style="color:green" id="{{$index}}"></span>
                                         </td>
                                         <td class="col-md-1 col-xs-1 text-center" ng-show="displayName == 'Auto'">
                                             <span ng-if="content.new_thumb_url != ''">
@@ -108,7 +104,7 @@
                                             </span>
                                         </td>
                                     </tr>
-                                    <tr ng-hide="searchContentList.length > 0">
+                                    <tr ng-if="searchContentList != null && searchContentList.length <= 0">
                                         <td colspan="7">
                                             No Records found for given search criteria.
                                         </td>

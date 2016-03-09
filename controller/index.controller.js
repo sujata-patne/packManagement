@@ -144,7 +144,7 @@ exports.login = function (req, res, next) {
     }else if (req.session) {
             if (req.session.pack_UserName) {
                 if (req.session.pack_StoreId) {
-                    res.redirect("/add-pack");
+                    res.redirect("/#/add-pack");
                 }
                 else {
                     res.redirect("/accountlogin");

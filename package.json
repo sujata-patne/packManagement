@@ -11,6 +11,7 @@
     "debug": "~2.2.0",
     "ejs": "^2.3.3",
     "express": "~4.13.0",
+    "image-size": "^0.4.0",
     "morgan": "~1.6.1",
     "mysql": "^2.8.0",
     "nodemailer": "^1.4.0",

@@ -31,6 +31,11 @@ exports.saveTemplateForUpload = function(dbConnection,data,callback){
 		callback(err,response);
 	});
 }
+exports.saveStoreThumbnailFiles = function(dbConnection,data,callback){
+        var query = dbConnection.query("INSERT INTO `content_files_thumbnail` SET ? ",data, function (err, response) {
+            callback(err,response);
+        });
+    }
 exports.saveContentFiles = function(dbConnection,data,callback){
 	var query = dbConnection.query("INSERT INTO `content_files` SET ? ",data, function (err, response) {
 		callback(err,response);

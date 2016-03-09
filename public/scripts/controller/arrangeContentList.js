@@ -1,10 +1,8 @@
 myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope, $http, $stateParams,$state, ngProgress,Upload, Search,arrangeContents) {
-
-
     $scope.PageTitle = $state.current.name == "edit-store" ? "Edit " : "Add ";
     // $scope.PageTitle = "Add";
     $scope.pctId = $stateParams.pctId;
-
+    $scope.loading = true;
     $scope.success = "";
     $scope.successvisible = false;
     $scope.error = "";
@@ -19,6 +17,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope,
     $scope.published = [];
     $scope.sequence = [];
     $scope.thumb_path = $rootScope.thumbPath;
+    $scope.searchContentList = null;
 //console.log($scope.thumb_path)
     Search.getSavedContents({pctId:$scope.pctId}, function (data) {
         $scope.searchContentList = angular.copy(data.contents);
@@ -36,6 +35,7 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope,
         if($scope.ruleType == 1 && $scope.displayName == 'Rule Based'){
             $scope.displayName = 'Auto';
         }
+        $scope.loading = false;
 
     }, function (error) {
         toastr.error(error)
@@ -214,7 +214,6 @@ myApp.controller('arrangeContentListCtrl', function ($scope, $window,$rootScope,
                 }
             });
         }
-
     }
 
     $scope.backToAddContentList = function(){

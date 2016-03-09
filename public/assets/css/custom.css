@@ -144,3 +144,8 @@ display:none;
     /* visibility: hidden; */
     z-index: 999;
 }
+.request-loading{
+    alignment-adjust: central;
+    position: relative;
+    z-index: 99999;
+}

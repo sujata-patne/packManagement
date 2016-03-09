@@ -26,7 +26,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr data-ng-repeat="content in searchContentList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
+                                <div loading-spinner></div>
+
+                                <tr data-ng-repeat="content in searchContentList | startFrom:listcurrentPage*listpageSize | limitTo:listpageSize ">
                                         {{content}}
                                         <td class="col-md-1 col-xs-1 text-center">{{$index+1+(listcurrentPage*listpageSize)}}</td>
                                         <td class="col-md-2 col-xs-2">{{content.cm_title}}</td>
@@ -35,14 +37,15 @@
                                         <td class="col-md-2 col-xs-2">{{content.celebrity}}</td>
                                         <td class="col-md-1 col-xs-1">
                                             <div class="row">
-
                                                 <div class="col-md-6 col-xs-6" style="text-align: center">
-                                                    <a class="fancybox grouped_elements" href="{{thumb_path}}{{content.contentUrl}}" ng-if="parentType != 'Audio' && parentType != 'Video'" title="{{content.cm_title}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
+                                                    <span ng-show="content.new_thumb_url != null"><a class="fancybox grouped_elements" href="{{thumb_path}}{{content.contentUrl}}" ng-if="parentType != 'Audio' && parentType != 'Video'" title="{{content.cm_title}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
                                                         <!--<img width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />-->
-                                                        <img ng-show="content.new_thumb_url != null" width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />
-                                                        <img ng-hide="content.new_thumb_url != null" width="50" height="50" src="contentFiles/no_image.gif" />
-
-                                                    </a>
+                                                        <img width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />
+                                                    </a></span>
+                                                    <span ng-hide="content.new_thumb_url != null" ng-if="parentType != 'Audio' && parentType != 'Video'" title="{{content.cm_title}}"><!-- <i class="fa fa-picture-o"   style="color:green" title="View"></i> -->
+                                                        <!--<img width="50" height="50" src="{{thumb_path}}{{content.new_thumb_url}}" />-->
+                                                         <img width="50" height="50" src="contentFiles/no_image.gif" />
+                                                    </span>
                                                     <a  class="fancybox-video fancybox.iframe" ng-if="parentType == 'Video' && content.contentUrl != null" href="{{thumb_path}}{{ content.contentUrl }}" title="{{files.filename}}">
                                                             <i class="fa fa-play" style="color:green" title="View"></i>
                                                     </a>
@@ -59,7 +62,9 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr ng-hide="searchContentList.length > 0">
+                                <tr ng-if="searchContentList != null && searchContentList.length <= 0">
+
+                                <!--<tr ng-hide="searchContentList.length > 0">-->
                                         <td colspan="6">
                                             No Records found for given search criteria.
                                         </td>

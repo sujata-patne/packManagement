@@ -14,6 +14,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
     $scope.contentTypeDataDetails = [];
     //$scope.ContentRender = $scope.ContentTypeDetails[1].Auto[0].FullTrack;
     $scope.contentTypeData = {};
+    $scope.loading = true;
 
     //$scope.contentTypeData = ['Language','Actor_Actress','Genres','SubGenres','Mood','Photographer']
     Search.getContentTypeDetails($scope.pctId, function (data) {
@@ -30,6 +31,7 @@ myApp.controller('searchContentRuleCtrl', function ($scope, $window, $http, $sta
                 angular.forEach(displayType, function(contentType, contentIndex ){
                     if( contentIndex == $scope.packType ){
                         $scope.contentType = displayType[contentIndex];
+                        $scope.loading = false;
                     }
                 });
             }

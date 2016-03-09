@@ -13,6 +13,8 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
     if($scope.ruleType == 1){
         $scope.ruleAuto = true;
     }
+    $scope.searchContentList = null;
+    $scope.loading = true;
 
     $scope.success = "";
     $scope.successvisible = false;
@@ -58,6 +60,7 @@ myApp.controller('showContentListCtrl', function ($scope, $timeout, $http,$state
             })
         }
         //console.log($scope.contents);
+        $scope.loading = false;
 
 
     }, function (error) {

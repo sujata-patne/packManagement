@@ -15,6 +15,7 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
     $scope.CurrentPage = $state.current.name;
     ngProgress.color('yellowgreen');
     ngProgress.height('3px');
+    $scope.loading = true;
 
     $scope.contentTypeData = {};
     $scope.contentTypeDataDetails = [];
@@ -28,15 +29,18 @@ myApp.controller('searchContentCtrl', function ($scope, $window, $state,$http, $
         $scope.packType = $scope.packDetails[0].type;
 
         $scope.contentType = {};
+
         angular.forEach(ContentTypeDetails, function( displayType, displayKey ){
             if( displayKey == $scope.displayName ){
                 angular.forEach(displayType, function(contentType, contentIndex ){
                     if( contentIndex == $scope.packType ){
                         $scope.contentType = displayType[contentIndex];
+                        $scope.loading = false;
                     }
                 });
             }
         });
+
 
         $scope.contentTypeId = $scope.packDetails[0].contentTypeId; //wallpaper
         $scope.ruleType = ($scope.packDetails[0].pk_rule_type) ? $scope.packDetails[0].pk_rule_type : 2; //manual

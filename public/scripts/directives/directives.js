@@ -33,3 +33,18 @@ myApp.directive("compareWithStartDate", function () {
     };
 });
 
+myApp.directive('loadingSpinner',function(){
+
+    return {
+        restrict:'EA',
+        template:" <center><span class='center-block' ng-show='loading'><i class='fa fa-spinner fa-spin'></i></span></center>"
+    }
+
+});
+
+myApp.directive("requestLoading",function(){
+    return {
+        templateUrl:"../../partials/loading.html"
+
+    };
+});

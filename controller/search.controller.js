@@ -6,7 +6,8 @@ var formidable = require('formidable');
 var fs = require('fs');
 var inspect = require('util-inspect');
 var moment = require('moment');
-
+var logger = require("../controller/logger.controller");
+var sizeOf = require('image-size');
 //var data = require('../config/config');
 
 //console.log(data.ContentTypeDetails[0].Manual[0].Wallpaper);
@@ -483,61 +484,102 @@ exports.UploadFile =  function (req, res, next) {
             var count = 0;
             form.parse(req, function (err, fields, files) {
                 var newPath = __dirname + "/../public/contentFiles/"+files.file.name;
+                var newPath = __dirname + "/../public/contentFiles/"+files.file.name;
+                var dimensions = sizeOf(files.file.path);
+
+                var width = dimensions.width;
+                var height = dimensions.height;
                 var absPath = "/contentFiles/"+files.file.name;
                 var tmp_path = files.file.path;
-                fs.rename(tmp_path,newPath, function (err) {
-                   if (err) {
-                      res.status(500).json(err.message);
-                      connection_ikon_cms.release();
-                   }
-                   // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-                   fs.unlink(tmp_path, function(err) {
-                       if (err) res.status(500).json(err.message);
-                   });
+                fs.readFile(tmp_path, function (err, data) {
+                    if (err) {
+                        logger.writeLog('Upload File : ' + JSON.stringify(err));
+                        res.status(500).json(err.message);
+                    } else {
+                        logger.writeLog('Upload File : ' + JSON.stringify(err));
+                        fs.writeFile(newPath, data, function (err) {
+                            if (err) {
 
-                    mysql.getConnection('CMS', function (err, connection_ikon_cms) {
-                        async.parallel({
-                            MaxTemplateId : function(callback){
-                                ContentModel.getLastInsertedTemplateId(connection_ikon_cms,function(err,MaxTemplateId){
-                                        callback(err,MaxTemplateId);
-                                }); 
-                            },
-                            MaxTemplateGroupId : function(callback){
-                                ContentModel.getTemplateGroupIdForAny(connection_ikon_cms,function(err,MaxTemplateGroupId){
-                                        callback(err,MaxTemplateGroupId);
-                                }); 
-                            },
-                            MaxContentFilesId : function(callback){
-                                ContentModel.getLastInsertedContentFilesId(connection_ikon_cms,function(err,MaxContentFilesId){
-                                        callback(err,MaxContentFilesId);
-                                }); 
+                            } else {
+
                             }
-                        },function(err,results){
-                                if(results.MaxContentFilesId == template_id){
-                                    template_id = template_id + 1;
-                                }else{
-                                    template_id = results.MaxContentFilesId;
-                                }
+                        })
+                        fs.writeFile(newPath, data, function (err) {
+                            if (err) {
+                                logger.writeLog('Upload File : ' + JSON.stringify(err));
+                                res.status(500).json(err.message);
+                            } else {
 
-                                var data = {
-                                    cf_id: template_id + parseInt(Date.now().toString().slice(-2)),
-                                    cf_cm_id : fields.cm_id,
-                                    cf_url_base : absPath,
-                                    cf_url : absPath,
-                                    cf_absolute_url : absPath,
-                                    cf_template_id : results.MaxTemplateGroupId
-                                }
+                                // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+                                fs.unlink(tmp_path, function (err) {
+                                    if (err) res.status(500).json(err.message);
+                                });
+                                mysql.getConnection('CMS', function (err, connection_ikon_cms) {
 
-                               saveContentFiles( connection_ikon_cms, data, function( insertStatus ) {
-                                   if(insertStatus == true){
-                                        console.log("File uploaded!");
-                                   }else{
-                                        console.log("File not uploaded!");
-                                   }
-                               });
-                        });
-                    });
-                });
+                                    async.parallel({
+                                        MaxTemplateId: function (callback) {
+                                            ContentModel.getLastInsertedTemplateId(connection_ikon_cms, function (err, MaxTemplateId) {
+                                                callback(err, MaxTemplateId);
+                                            });
+                                        },
+                                        MaxTemplateGroupId: function (callback) {
+                                            ContentModel.getTemplateGroupIdForAny(connection_ikon_cms, function (err, MaxTemplateGroupId) {
+                                                callback(err, MaxTemplateGroupId);
+                                            });
+                                        },
+                                        MaxContentFilesId: function (callback) {
+                                            ContentModel.getLastInsertedContentFilesId(connection_ikon_cms, function (err, MaxContentFilesId) {
+                                                callback(err, MaxContentFilesId);
+                                            });
+                                        }
+                                    },
+                                    function (err, results) {
+                                        if (results.MaxContentFilesId == template_id) {
+                                            template_id = template_id + 1;
+                                        } else {
+                                            template_id = results.MaxContentFilesId;
+                                        }
+
+                                        var data = {
+                                            cf_id: template_id + parseInt(Date.now().toString().slice(-2)),
+                                            cf_cm_id: fields.cm_id,
+                                            cf_url_base: absPath,
+                                            cf_url: absPath,
+                                            cf_absolute_url: absPath,
+                                            cf_template_id: results.MaxTemplateGroupId
+                                        }
+
+                                        saveContentFiles(connection_ikon_cms, data, function (insertStatus) {
+                                            if (insertStatus == true) {
+                                                console.log("File uploaded!");
+                                            } else {
+                                                console.log("File not uploaded!");
+                                            }
+                                        });
+                                    });
+                                    /*var data = {
+                                     'cft_cm_id' : fields.cm_id,
+                                     'cft_thumbnail_size' : width +"*"+ height,
+                                     'cft_thumbnail_img_browse' : absPath,
+                                     'cft_created_on' : new Date(),
+                                     'cft_created_by' : req.session.pack_UserName,
+                                     'cft_modified_on' :  new Date(),
+                                     'cft_modified_by' : req.session.pack_UserName
+                                     }
+
+
+                                     saveStoreThumbnailFiles(connection_ikon_cms, data, function (insertStatus) {
+                                     if (insertStatus == true) {
+                                     console.log("File uploaded!");
+                                     } else {
+                                     console.log("File not uploaded!");
+                                     }
+                                     });*/
+                                });
+                            }
+                        })
+                    }
+                })
         });
 
 };

@@ -239,13 +239,15 @@ exports.getSavedContents = function(dbConnection, pctId, callback){
         'JOIN catalogue_master AS cm1 ON (cd1.cd_cm_id = cm1.cm_id) ' +
         'WHERE cm1.cm_name="Celebrity" AND cd1.cd_id = cmd.cm_celebrity ) AS celebrity ';
 
-   /* var uploadedFiles = '(SELECT SUBSTRING_INDEX(group_concat(cf.cf_url), ",", -2) from content_files as cf where pc.pc_cm_id = cf.cf_cm_id and '+
-        ' cf_template_id = (select ct_group_id from content_template where ct_param_value = "ANY" order by ct_id desc limit 1 ) '+
-        ' Limit 1) as uploadedFiles , ';*/
+    var uploadedFiles = '(SELECT SUBSTRING_INDEX(group_concat(cf.cf_url), ",", -2) from content_files as cf where pc.pc_cm_id = cf.cf_cm_id and '+
+       ' cf_template_id = (select ct_group_id from content_template where ct_param_value = "ANY" order by ct_id desc limit 1 ) '+
+        ' Limit 1) as uploadedFiles , ';
 
-    var uploadedFiles =' (SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url,  ';
 
-    dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+uploadedFiles+" "+celebrity+" FROM icn_pack_content AS pc " +
+    var autoThumbUrl =' (SELECT cft_thumbnail_img_browse FROM content_files_thumbnail WHERE cft_cm_id = cmd.cm_id Limit 1 ) as new_thumb_url,  ';
+    //var uploadedFiles =' (SELECT SUBSTRING_INDEX(group_concat(cft.cft_thumbnail_img_browse), ",", -2) from content_files_thumbnail as cft where cft_cm_id = cmd.cm_id ) as uploadedFiles,  ';
+
+    dbConnection.query("SELECT pc.*, cmd.*, cmd1.cm_title AS property,cmd1.cm_release_year AS releaseYear, "+autoThumbUrl+" "+uploadedFiles+" "+celebrity+" FROM icn_pack_content AS pc " +
         "JOIN content_metadata As cmd ON cmd.cm_id = pc.pc_cm_id " +
         "INNER JOIN content_metadata as cmd1 ON cmd1.cm_id = cmd.cm_property_id " +
         "WHERE cmd.cm_state = 4 and cmd.cm_is_active = 1 AND " +
